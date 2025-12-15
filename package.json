@@ -1,0 +1,38 @@
+{
+  "name": "MilleSens",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "react-router build",
+    "dev": "react-router dev --host",
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc"
+  },
+  "dependencies": {
+    "@react-router/node": "7.10.1",
+    "@react-router/serve": "7.10.1",
+    "comlink": "^4.4.2",
+    "idb": "^8.0.3",
+    "isbot": "^5.1.31",
+    "luxon": "^3.7.2",
+    "millegrilles_cryptography": "github:dugrema/millegrilles.cryptography.ts#noforge",
+    "millegrilles.reactdeps.typescript": "github:dugrema/millegrilles.reactdeps.typescript#noforge",
+    "react": "^19.2.2",
+    "react-dom": "^19.2.2",
+    "react-router": "7.10.1",
+    "recharts": "^3.5.1",
+    "vite-plugin-comlink": "^5.3.0",
+    "zustand": "^5.0.9"
+  },
+  "devDependencies": {
+    "@react-router/dev": "7.10.1",
+    "@tailwindcss/vite": "^4.1.13",
+    "@types/node": "^22",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.7",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}

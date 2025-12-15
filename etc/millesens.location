@@ -1,0 +1,43 @@
+# Application React millesens
+
+# https://gkedge.gitbooks.io/react-router-in-the-real/content/nginx.html
+
+# --- START REMOVE FOR DEV ---
+# Code resources with hash in name
+#location /apps/static/ {
+#  root /usr/share/nginx/html/applications;
+#  try_files $uri =404;
+#  expires 1y;
+#  access_log off;
+#  add_header Cache-Control "public, immutable";
+#  include /etc/nginx/conf.d/component_gzip.include;
+#}
+
+# Image resources
+#location ~/apps/.*\.(?:png|svg)$ {
+#  root /usr/share/nginx/html/applications;
+#  try_files $uri =404;
+#  expires 15m;
+#  access_log off;
+#  add_header Cache-Control "public";
+#}
+# --- END REMOVE FOR DEV ---
+
+location /millesens {
+#  root /usr/share/nginx/html/applications;
+#  add_header 'Cache-Control' 'public,max-age=300';
+#  include /etc/nginx/conf.d/component_gzip.include;
+#  try_files $uri $uri/ /apps/index.html;
+
+# DEV : Retirer root, include et add_header Cache-Control et utiliser les lignes suivantes. Remplacer [**DEV SERVER**] par le hostname dev.
+set $upstream_millegrilles_millesens http://bureau1.maple.maceroc.com:5273;
+  include /etc/nginx/conf.d/component_base.include;
+  proxy_pass $upstream_millegrilles_millesens;
+}
+
+# React development only
+#location /millesens/ws {
+#  set $upstream_millegrilles_millesens_ws https://bureau1.maple.maceroc.com:3005;
+#  proxy_pass $upstream_millegrilles_private_apps_ws;
+#  include /etc/nginx/conf.d/component_base.include;
+#}

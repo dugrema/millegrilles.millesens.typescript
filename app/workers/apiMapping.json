@@ -1,0 +1,35 @@
+{
+  "defaults": {
+    "domain": "SenseursPassifs",
+    "exchange": "2.prive"
+  },
+  "requests": [
+    {
+      "domain": "CoreTopologie",
+      "action": "getFilehosts",
+      "exchange": "1.public"
+    },
+    { "action": "getAppareilsUsager" },
+    { "action": "getStatistiquesSenseur" },
+    { "action": "getConfigurationUsager" }
+  ],
+  "commands": [
+    { "action": "challengeAppareil" },
+    { "action": "majAppareil" },
+    { "action": "supprimerAppareil" },
+    { "action": "signerAppareil" },
+    { "action": "restaurerAppareil" },
+    { "action": "majConfigurationUsager" },
+    { "domain": "senseurspassifs_relai", "action": "commandeAppareil" }
+  ],
+  "subscriptions": {
+    "userDeviceEvents": {
+      "exchanges": ["2.prive"],
+      "routingKeys": [
+        "evenement.SenseursPassifs.{USER_ID}.lectureConfirmee",
+        "evenement.SenseursPassifs.{USER_ID}.majAppareil",
+        "evenement.SenseursPassifs.{USER_ID}.presenceAppareil"
+      ]
+    }
+  }
+}
