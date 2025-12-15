@@ -1,0 +1,16 @@
+{
+  "pubkey": "26c772e3bd03c402a86ecc4eebfb73d859028c24261e94c5d24090cc981f990d",
+  "estampille": 1765830707,
+  "kind": 2,
+  "contenu": "{\"commands\":[{\"action\":\"challengeAppareil\"},{\"action\":\"majAppareil\"},{\"action\":\"supprimerAppareil\"},{\"action\":\"signerAppareil\"},{\"action\":\"restaurerAppareil\"},{\"action\":\"majConfigurationUsager\"},{\"action\":\"commandeAppareil\",\"domain\":\"senseurspassifs_relai\"}],\"defaults\":{\"domain\":\"SenseursPassifs\",\"exchange\":\"2.prive\"},\"requests\":[{\"action\":\"getFilehosts\",\"domain\":\"CoreTopologie\",\"exchange\":\"1.public\"},{\"action\":\"getAppareilsUsager\"},{\"action\":\"getStatistiquesSenseur\"},{\"action\":\"getConfigurationUsager\"}],\"subscriptions\":{\"userDeviceEvents\":{\"exchanges\":[\"2.prive\"],\"routingKeys\":[\"evenement.SenseursPassifs.{USER_ID}.lectureConfirmee\",\"evenement.SenseursPassifs.{USER_ID}.majAppareil\",\"evenement.SenseursPassifs.{USER_ID}.presenceAppareil\"]}}}",
+  "routage": {
+    "action": "configuration",
+    "domaine": "webapi"
+  },
+  "id": "ee19a97ab8712ae414a6599f76f07f81ac83fb174b032eb04801d55d85c4bae4",
+  "sig": "e0b75db3fe0f53175468be80f54bd1f0354c69e936cd77e4fca18c270d64c577c6883cb3408eee56c46b8d73de0dc817ca6f3385c55d61dff783c8894c0de809",
+  "certificat": [
+    "-----BEGIN CERTIFICATE-----\nMIIBqjCCAVygAwIBAgIUVFkCuqUs75IbgfUnDmQKXjxY8p0wBQYDK2VwMBYxFDAS\nBgNVBAMTC01pbGxlR3JpbGxlMB4XDTI1MTIxNTIwMTIxM1oXDTI2MDExNTIwMTIz\nM1owazESMBAGA1UEAwwJU2lnbmF0dXJlMRIwEAYDVQQLDAlzaWduYXR1cmUxQTA/\nBgNVBAoMOHplWW5jUnFFcVo2ZVRFbVVaOHdoSkZ1SEc3OTZlU3ZDVFdFNE00MzJp\nelhycDIyYkF0d0dtN0pmMCowBQYDK2VwAyEAJsdy470DxAKobsxO6/tz2FkCjCQm\nHpTF0kCQzJgfmQ2jZzBlMCMGBCoDBAEEG3NpZ25hdHVyZSxjYXRhbG9ndWVzLHdl\nYmFwaTAfBgNVHSMEGDAWgBTTiP/MFw4DDwXqQ/J2LLYPRUkkETAdBgNVHQ4EFgQU\nB63b+MDw1A+REo/xPib+gaIK3bEwBQYDK2VwA0EA5jX7Z/PeneW4LlO7tCuwiw+f\nDbZydLUn8zO0pVBGotclr9wolOo7jDjvEmCZ7oVYh/u67KVCb1lNHV0iAelgCw==\n-----END CERTIFICATE-----"
+  ],
+  "millegrille": "-----BEGIN CERTIFICATE-----\nMIIBQzCB9qADAgECAgoHBykXJoaCCWAAMAUGAytlcDAWMRQwEgYDVQQDEwtNaWxs\nZUdyaWxsZTAeFw0yMjAxMTMyMjQ3NDBaFw00MjAxMTMyMjQ3NDBaMBYxFDASBgNV\nBAMTC01pbGxlR3JpbGxlMCowBQYDK2VwAyEAnnixameVCZAzfx4dO+L63DOk/34I\n/TC4fIA1Rxn19+KjYDBeMA8GA1UdEwEB/wQFMAMBAf8wCwYDVR0PBAQDAgLkMB0G\nA1UdDgQWBBTTiP/MFw4DDwXqQ/J2LLYPRUkkETAfBgNVHSMEGDAWgBTTiP/MFw4D\nDwXqQ/J2LLYPRUkkETAFBgMrZXADQQBSb0vXhw3pw25qrWoMjqROjawe7/kMlu7p\nMJyb/Ppa2C6PraSVPgJGWKl+/5S5tBr58KFNg+0H94CH4d1VCPwI\n-----END CERTIFICATE-----"
+}
