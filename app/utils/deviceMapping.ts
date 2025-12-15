@@ -55,11 +55,12 @@ export function mapDeviceReadingsArrayToDeviceGroups(
  */
 export function mapDeviceReadingsToDevice(readings: DeviceReadings): Device[] {
   const devices: Device[] = [];
-  const { uuid_appareil, types_donnees, configuration } = readings;
+  const { uuid_appareil, configuration, senseurs } = readings;
 
-  if (!types_donnees) return devices;
+  if (!senseurs) return devices;
 
-  Object.entries(types_donnees).forEach(([key, rawType]) => {
+  Object.entries(senseurs).forEach(([key, value]) => {
+    const rawType = value.type;
     const sanitizedKey = key.replaceAll("/", "_");
     const id = `${uuid_appareil}__${sanitizedKey}`;
 

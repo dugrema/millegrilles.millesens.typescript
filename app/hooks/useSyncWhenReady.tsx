@@ -47,7 +47,7 @@ export function useSyncWhenReady() {
   const hasSynced = useRef(false);
 
   // Access setters from zustand stores
-  const { setDeviceValues } = useDeviceValuesStore();
+  const { setDeviceValues, updateDeviceValue } = useDeviceValuesStore();
   const { setUserId: setUserIdPersist, setPreferences } =
     useConfigurationStore();
 
@@ -61,7 +61,7 @@ export function useSyncWhenReady() {
       const values = mapDeviceReadingsToDeviceValues(
         msg.message as DeviceReadings,
       );
-      setDeviceValues(values);
+      values.map((device) => updateDeviceValue(device));
     }
   });
 
@@ -158,9 +158,18 @@ async function fetchDevices(workers: AppWorkers) {
   }
   const deviceReadings = deviceResponse.appareils ?? [];
   const groups = mapDeviceReadingsArrayToDeviceGroups(deviceReadings);
-  const devices = deviceReadings
-    .map((device) => mapDeviceReadingsToDevice(device))
-    .flat();
+  const devicesSublist = deviceReadings.map((device) =>
+    mapDeviceReadingsToDevice(device),
+  );
+  const devices = devicesSublist.flat();
+
+  console.debug(
+    "FETCH deviceGroupss: %O, deviceSublist: %O, devices: %O",
+    groups,
+    devicesSublist,
+    devices,
+  );
+
   useDeviceGroupsStore.getState().setGroups(groups);
   useDevicesStore.getState().setDevices(devices);
   const values = deviceReadings.flatMap(mapDeviceReadingsToDeviceValues);

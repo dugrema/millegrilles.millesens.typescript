@@ -74,10 +74,22 @@ export const useDeviceValuesStore = create<DeviceValuesState>((set) => ({
   },
 
   updateDeviceValue: (d) => {
-    set((s) => ({
-      deviceValues: s.deviceValues.map((dev) => (dev.id === d.id ? d : dev)),
-    }));
-    idb.setItem(d.id, d);
+    let updated: DeviceValue | null = null;
+    set((s) => {
+      const mergedList = s.deviceValues.map((dev) => {
+        if (dev.id !== d.id) return dev;
+        const mergedDev: DeviceValue = {
+          ...dev,
+          ...d,
+          changePending: false,
+          lastUpdate: Date.now(),
+        };
+        updated = mergedDev;
+        if (updated) idb.setItem(updated.id, updated);
+        return mergedDev;
+      });
+      return { deviceValues: mergedList };
+    });
   },
 
   updateDeviceStatusAndPending: (id, status, changePending) => {
