@@ -1,3 +1,4 @@
+/// <reference path="../vite-env.d.ts" />
 import { useEffect } from "react";
 import {
   isRouteErrorResponse,
@@ -131,7 +132,8 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
       {children}
 
       <footer className="py-4 bg-gray-200 dark:bg-gray-800 text-center">
-        MilleGrilles: MilleSens <span className="font-semibold">DEV</span>
+        MilleGrilles: MilleSens{" "}
+        <span className="text-sm">{__APP_VERSION__}</span>
       </footer>
     </>
   );
