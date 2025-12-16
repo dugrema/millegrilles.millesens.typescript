@@ -24,14 +24,18 @@ export default function DeviceGroup() {
   );
   const [localTimezone, setLocalTimezone] = useState(group?.timezone ?? "");
   const [localName, setLocalName] = useState(group?.name ?? "");
-  const [localLatitude, setLocalLatitude] = useState(group?.latitude ?? "");
-  const [localLongitude, setLocalLongitude] = useState(group?.longitude ?? "");
+  const [localLatitude, setLocalLatitude] = useState<
+    number | string | undefined
+  >(group?.latitude ?? undefined);
+  const [localLongitude, setLocalLongitude] = useState<
+    number | string | undefined
+  >(group?.longitude ?? undefined);
   useEffect(() => {
     if (group) {
       setLocalTimezone(group.timezone ?? "");
       setLocalName(group.name ?? "");
-      setLocalLatitude(group.latitude ?? "");
-      setLocalLongitude(group.longitude ?? "");
+      setLocalLatitude(group.latitude ?? undefined);
+      setLocalLongitude(group.longitude ?? undefined);
     }
   }, [group]);
   const updateGroup = useDeviceGroupsStore((state) => state.updateGroup);
@@ -189,7 +193,10 @@ export default function DeviceGroup() {
                   let geoposition = undefined as
                     | GeopositionConfiguration
                     | undefined;
-                  if (localLatitude && localLongitude) {
+                  if (
+                    typeof localLatitude === "number" &&
+                    typeof localLongitude === "number"
+                  ) {
                     geoposition = {
                       latitude: localLatitude,
                       longitude: localLongitude,
@@ -210,8 +217,14 @@ export default function DeviceGroup() {
                         ...group,
                         timezone: localTimezone,
                         name: localName,
-                        latitude: localLatitude,
-                        longitude: localLongitude,
+                        latitude:
+                          typeof localLatitude === "number"
+                            ? localLatitude
+                            : undefined,
+                        longitude:
+                          typeof localLongitude === "number"
+                            ? localLongitude
+                            : undefined,
                       });
                     });
                 }
@@ -220,8 +233,14 @@ export default function DeviceGroup() {
                 group &&
                 group.timezone === localTimezone &&
                 group.name === localName &&
-                group.latitude === localLatitude &&
-                group.longitude === localLongitude
+                group.latitude ===
+                  (typeof localLatitude === "number"
+                    ? localLatitude
+                    : undefined) &&
+                group.longitude ===
+                  (typeof localLongitude === "number"
+                    ? localLongitude
+                    : undefined)
               }
             >
               Save
@@ -241,8 +260,14 @@ export default function DeviceGroup() {
                 group &&
                 group.timezone === localTimezone &&
                 group.name === localName &&
-                group.latitude === localLatitude &&
-                group.longitude === localLongitude
+                group.latitude ===
+                  (typeof localLatitude === "number"
+                    ? localLatitude
+                    : undefined) &&
+                group.longitude ===
+                  (typeof localLongitude === "number"
+                    ? localLongitude
+                    : undefined)
               }
             >
               Cancel
