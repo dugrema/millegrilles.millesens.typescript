@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   isRouteErrorResponse,
   Links,
@@ -82,7 +83,11 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
   return (
     <>
       <header
-        className={`py-1 md:py-4 ${ready ? "bg-gray-200 dark:bg-gray-800" : "bg-pink-500 dark:bg-red-500 opacity-60"} flex items-center justify-between`}
+        className={`py-1 md:py-4 ${
+          ready
+            ? "bg-gray-200 dark:bg-gray-800"
+            : "bg-pink-500 dark:bg-red-500 opacity-60"
+        } flex items-center justify-between`}
       >
         {/* Desktop navigation */}
         <nav className="mx-auto space-x-4 sm:space-x-8">
@@ -130,6 +135,20 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
  * throughout the application.
  */
 export default function App() {
+  // Service worker registration for production
+  useEffect(() => {
+    if ("serviceWorker" in navigator && !import.meta.env.DEV) {
+      navigator.serviceWorker
+        .register("/millesens/sw.js")
+        .then((registration) => {
+          console.log("Service worker registered:", registration);
+        })
+        .catch((error) => {
+          console.error("Service worker registration failed:", error);
+        });
+    }
+  }, []);
+
   return (
     <TimeProvider>
       <MilleGrillesWorkerProvider>
