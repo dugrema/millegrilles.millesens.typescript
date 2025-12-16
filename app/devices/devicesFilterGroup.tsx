@@ -4,6 +4,7 @@ import { DeviceCard } from "../components/DeviceCard";
 import { useDevicesStore } from "../state/devicesStore";
 import { useDeviceValuesStore } from "../state/deviceValueStore";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
+import { useToggleSwitch } from "../hooks/useToggleSwitch";
 
 export default function DevicesGroupFilter() {
   // The group name comes from the route parameter; it is `undefined` if the
@@ -13,9 +14,7 @@ export default function DevicesGroupFilter() {
   // Retrieve devices and device values from the Zustand store
   const devices = useDevicesStore((state) => state.devices);
   const deviceValues = useDeviceValuesStore((state) => state.deviceValues);
-  const updateDeviceValue = useDeviceValuesStore(
-    (state) => state.updateDeviceValue,
-  );
+  const toggleSwitch = useToggleSwitch();
 
   // Filter out deleted devices and apply group filtering
   const filteredDevices = devices.filter((device) => {
@@ -71,13 +70,17 @@ export default function DevicesGroupFilter() {
                   numberValue={value?.numberValue}
                   stringValue={value?.stringValue}
                   status={value?.status}
+                  changePending={value?.changePending}
                   onToggle={
                     device.type === "Switch" && value?.status !== undefined
-                      ? () =>
-                          updateDeviceValue({
-                            ...value,
-                            status: !value.status,
-                          })
+                      ? () => {
+                          if (!value) return;
+                          const group = groups.find(
+                            (g) => g.id === device.deviceGroup,
+                          );
+                          if (!group) return;
+                          toggleSwitch(group, device, !value.status);
+                        }
                       : undefined
                   }
                   connected={value?.connected}
