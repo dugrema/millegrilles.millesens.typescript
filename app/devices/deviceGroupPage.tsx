@@ -1,4 +1,5 @@
 import { useParams, NavLink } from "react-router";
+import { useState, useEffect } from "react";
 import { useDevicesStore } from "~/state/devicesStore";
 import { useDeviceGroupsStore } from "~/state/deviceGroupsStore";
 import { useDeviceValuesStore } from "~/state/deviceValueStore";
@@ -15,6 +16,18 @@ export default function DeviceGroup() {
   const group = useDeviceGroupsStore((state) =>
     state.groups.find((g) => g.id === groupId),
   );
+  const [localTimezone, setLocalTimezone] = useState(group?.timezone ?? "");
+  const [localName, setLocalName] = useState(group?.name ?? "");
+  const [localLatitude, setLocalLatitude] = useState(group?.latitude ?? "");
+  const [localLongitude, setLocalLongitude] = useState(group?.longitude ?? "");
+  useEffect(() => {
+    if (group) {
+      setLocalTimezone(group.timezone ?? "");
+      setLocalName(group.name ?? "");
+      setLocalLatitude(group.latitude ?? "");
+      setLocalLongitude(group.longitude ?? "");
+    }
+  }, [group]);
   const updateGroup = useDeviceGroupsStore((state) => state.updateGroup);
   const { preferences } = useConfigurationStore();
   const tz =
@@ -99,8 +112,8 @@ export default function DeviceGroup() {
               <strong>Timezone:</strong>{" "}
               <input
                 type="text"
-                value={group.timezone ?? ""}
-                onChange={(e) => setGroupField("timezone", e.target.value)}
+                value={localTimezone}
+                onChange={(e) => setLocalTimezone(e.target.value)}
                 className="border rounded p-1 ml-2"
               />
             </div>
@@ -108,8 +121,8 @@ export default function DeviceGroup() {
               <strong>Name:</strong>{" "}
               <input
                 type="text"
-                value={group.name}
-                onChange={(e) => setGroupField("name", e.target.value)}
+                value={localName}
+                onChange={(e) => setLocalName(e.target.value)}
                 className="border rounded p-1 ml-2"
               />
             </div>
@@ -139,10 +152,9 @@ export default function DeviceGroup() {
               <input
                 type="number"
                 placeholder="Lat"
-                value={group.latitude ?? ""}
+                value={localLatitude ?? ""}
                 onChange={(e) =>
-                  setGroupField(
-                    "latitude",
+                  setLocalLatitude(
                     e.target.value ? parseFloat(e.target.value) : undefined,
                   )
                 }
@@ -151,16 +163,63 @@ export default function DeviceGroup() {
               <input
                 type="number"
                 placeholder="Lon"
-                value={group.longitude ?? ""}
+                value={localLongitude ?? ""}
                 onChange={(e) =>
-                  setGroupField(
-                    "longitude",
+                  setLocalLongitude(
                     e.target.value ? parseFloat(e.target.value) : undefined,
                   )
                 }
                 className="border rounded p-1 w-20"
               />
             </div>
+          </div>
+
+          <div className="flex space-x-2 mt-4 pb-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                if (group) {
+                  updateGroup({
+                    ...group,
+                    timezone: localTimezone,
+                    name: localName,
+                    latitude: localLatitude,
+                    longitude: localLongitude,
+                  });
+                }
+              }}
+              disabled={
+                group &&
+                group.timezone === localTimezone &&
+                group.name === localName &&
+                group.latitude === localLatitude &&
+                group.longitude === localLongitude
+              }
+            >
+              Save
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                if (group) {
+                  setLocalTimezone(group.timezone ?? "");
+                  setLocalName(group.name ?? "");
+                  setLocalLatitude(group.latitude ?? "");
+                  setLocalLongitude(group.longitude ?? "");
+                }
+              }}
+              disabled={
+                group &&
+                group.timezone === localTimezone &&
+                group.name === localName &&
+                group.latitude === localLatitude &&
+                group.longitude === localLongitude
+              }
+            >
+              Cancel
+            </Button>
           </div>
 
           {groupDevices.length === 0 ? (
