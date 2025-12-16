@@ -9,9 +9,13 @@ import { Button } from "~/components/Button";
 import { useConfigurationStore } from "~/state/configurationStore";
 import { DateTime } from "luxon";
 import { RegistrationButton } from "~/components/RegistrationButton";
+import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
+import type { GeopositionConfiguration } from "~/workers/connection.worker";
 
 export default function DeviceGroup() {
   const { groupId } = useParams<{ groupId: string }>();
+
+  const workers = useMilleGrillesWorkers();
 
   const group = useDeviceGroupsStore((state) =>
     state.groups.find((g) => g.id === groupId),
@@ -179,14 +183,35 @@ export default function DeviceGroup() {
               type="button"
               variant="outline"
               onClick={() => {
-                if (group) {
-                  updateGroup({
-                    ...group,
+                if (group && workers) {
+                  let geoposition = undefined as
+                    | GeopositionConfiguration
+                    | undefined;
+                  if (localLatitude && localLongitude) {
+                    geoposition = {
+                      latitude: localLatitude,
+                      longitude: localLongitude,
+                    };
+                  }
+                  const configuration = {
+                    descriptif: localName,
                     timezone: localTimezone,
-                    name: localName,
-                    latitude: localLatitude,
-                    longitude: localLongitude,
-                  });
+                    geoposition,
+                  };
+
+                  workers.connection
+                    ?.updateDeviceConfiguration(group.id, configuration)
+                    .then((result) => {
+                      if (!result.persiste)
+                        throw new Error(`Error saving changes: ${result.err}`);
+                      updateGroup({
+                        ...group,
+                        timezone: localTimezone,
+                        name: localName,
+                        latitude: localLatitude,
+                        longitude: localLongitude,
+                      });
+                    });
                 }
               }}
               disabled={
