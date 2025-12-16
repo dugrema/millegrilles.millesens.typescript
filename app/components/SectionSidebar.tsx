@@ -1,11 +1,28 @@
 import { useSidebar } from "./SidebarContext";
+import { useRef, useEffect } from "react";
 import type { ReactNode } from "react";
 
 export const SectionSidebar = ({ children }: { children: ReactNode }) => {
   const { isOpen, close } = useSidebar();
+  const sidebarRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(e.target as Node)
+      ) {
+        close();
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, [close]);
 
   return (
     <aside
+      ref={sidebarRef}
       className={`
         fixed inset-y-0 left-0
         w-64
@@ -45,7 +62,9 @@ export const SectionSidebar = ({ children }: { children: ReactNode }) => {
           ×
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto">{children}</div>
+      <div className="flex-1 overflow-y-auto" onClick={close}>
+        {children}
+      </div>
     </aside>
   );
 };
