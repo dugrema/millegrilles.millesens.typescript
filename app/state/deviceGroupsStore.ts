@@ -15,8 +15,8 @@ export interface DeviceGroup {
   /** Optional geographic coordinates. */
   latitude?: number;
   longitude?: number;
-  /** Optional instance identifier (from backend). */
-  instance_id?: string;
+  /** Instance identifier (from backend). */
+  instance_id: string;
   registrationPending?: boolean;
   registrationRequested?: boolean;
 }
@@ -58,6 +58,29 @@ export const useDeviceGroupsStore = create<DeviceGroupsState>()(
         set((s) => ({
           groups: s.groups.map((x) => (x.id === g.id ? g : x)),
         })),
+      /** Merge an incoming group with the existing one.  Any undefined
+       *  properties are ignored, leaving the original values untouched. */
+      mergeGroup: (g: Partial<DeviceGroup> & Pick<DeviceGroup, "id">) =>
+        set((s) => {
+          const merged = s.groups.map((x) => {
+            if (x.id !== g.id) return x;
+            // Only overwrite fields that are defined in the payload.
+            if (g.name === "") delete g.name;
+            if (
+              typeof g.latitude !== "number" ||
+              typeof g.longitude !== "number"
+            ) {
+              delete g.latitude;
+              delete g.longitude;
+            }
+            if (!g.timezone) delete g.timezone;
+            const updated: DeviceGroup = { ...x, ...g };
+            // Persist the merged group.
+            idb.setItem(updated.id, updated);
+            return updated;
+          });
+          return { groups: merged };
+        }),
     }),
     {
       name: "deviceGroupsStore",

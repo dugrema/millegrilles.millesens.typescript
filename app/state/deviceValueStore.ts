@@ -26,6 +26,8 @@ export interface DeviceValuesState {
     status?: boolean,
     changePending?: boolean,
   ) => void;
+  /** Update all values belonging to a device group by setting them as connected and refreshing their timestamp. */
+  touchDeviceGroupPresence: (deviceGroup: string) => void;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -109,6 +111,25 @@ export const useDeviceValuesStore = create<DeviceValuesState>((set) => ({
       };
     });
     if (updatedDevice) idb.setItem(updatedDevice.id, updatedDevice);
+  },
+
+  /** Update all values of a specific device group to be connected and refresh timestamp */
+  touchDeviceGroupPresence: (deviceGroup) => {
+    const now = Math.floor(Date.now() / 1000);
+    const prefix = `${deviceGroup}__`;
+    set((s) => {
+      const updatedList = s.deviceValues.map((dv) => {
+        if (!dv.id.startsWith(prefix)) return dv;
+        const updated: DeviceValue = {
+          ...dv,
+          connected: true,
+          lastUpdate: now,
+        };
+        idb.setItem(updated.id, updated);
+        return updated;
+      });
+      return { deviceValues: updatedList };
+    });
   },
 }));
 

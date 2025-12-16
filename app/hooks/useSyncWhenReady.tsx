@@ -1,4 +1,3 @@
-// react-view5/app/hooks/useSyncWhenReady.tsx
 import { useEffect, useRef } from "react";
 import { useConnectionStore } from "~/state/connectionStore";
 import {
@@ -15,163 +14,144 @@ import {
 } from "~/workers/MilleGrillesWorkerContext";
 import * as Comlink from "comlink";
 import {
-  mapDeviceReadingsArrayToDeviceGroups,
   mapDeviceReadingsToDevice,
   mapDeviceReadingsToDeviceValues,
+  mapDeviceReadingsArrayToDeviceGroups,
+  mapDeviceReadingsToDeviceGroup,
 } from "../utils/deviceMapping";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { useDevicesStore } from "~/state/devicesStore";
-import type {
-  DeviceReadings,
-  DeviceReadingValue,
-} from "~/workers/connection.worker";
+import type { DeviceReadings } from "~/workers/connection.worker";
 
 /**
- * A hook that watches the `ready` state of the connection store.
- * When the connection becomes ready, it performs a one‑time sync to fetch the
- * user's preferences from the worker and stores them in the configuration store.
+ * Hook that synchronises the application state when the connection becomes ready.
  *
- * The hook also loads all previously persisted device values into zustand
- * and keeps the userId in sync between the connection store and
- * configuration store.  The sync is guarded by a `hasSynced` ref so that
- * it only runs once per ready cycle.
+ * - Loads persisted device values from IndexedDB.
+ * - Keeps the user id in sync between the connection and configuration stores.
+ * - When ready, fetches user preferences and device data once.
+ * - Subscribes to device events from the worker; in particular handles
+ *   `presenceAppareil` to mark all sensors of a device as connected.
  */
 export function useSyncWhenReady() {
-  // Destructure readiness flag and current user id from the connection store
   const { ready, userId } = useConnectionStore();
-
-  // Access the worker proxy that exposes the backend API
   const workers = useMilleGrillesWorkers();
-
-  // Prevent multiple syncs while the connection stays ready
   const hasSynced = useRef(false);
 
-  // Access setters from zustand stores
-  const { setDeviceValues, updateDeviceValue } = useDeviceValuesStore();
+  const { mergeGroup } = useDeviceGroupsStore();
+  const { setDeviceValues, updateDeviceValue, touchDeviceGroupPresence } =
+    useDeviceValuesStore();
   const { setUserId: setUserIdPersist, setPreferences } =
     useConfigurationStore();
 
+  // Receive device messages from the worker
   const receivedDeviceMessage = Comlink.proxy((msg: any) => {
-    console.debug("[useSyncWhenReady] received device message:", msg);
     if (!msg) return;
-    console.debug("[useSyncWhenReady.receivedDeviceMessage] onMessage: ", msg);
     const messageType = msg.routingKey.split(".").pop();
+
+    console.debug("receivedDeviceMessage: ", msg);
+
+    // Partial update of a device group (sensor values)
     if (messageType === "lectureConfirmee") {
-      msg.message.connecte = true; // Force value of connected
+      msg.message.connecte = true; // Force connected flag
+      const group = mapDeviceReadingsToDeviceGroup(msg.message);
+      group.name = "";
+      mergeGroup(group);
+      console.debug(
+        "receivedDeviceMessage lectureConfirmee deviceGroup",
+        group,
+      );
       const values = mapDeviceReadingsToDeviceValues(
         msg.message as DeviceReadings,
       );
-      values.map((device) => updateDeviceValue(device));
+      values.forEach(updateDeviceValue);
+    }
+
+    // Presence event – mark all sensors of the device as connected
+    else if (messageType === "presenceAppareil") {
+      const uuid = msg.message.uuid_appareil;
+      // Update the store in bulk: keep other properties unchanged
+      touchDeviceGroupPresence(uuid);
     }
   });
 
-  // -----------------------------------------------------------------------
-  // 1. Load all persisted device values on mount
-  // -----------------------------------------------------------------------
+  // 1. Load persisted values on mount
   useEffect(() => {
     loadAllDeviceValues()
-      .then((devices) => setDeviceValues(devices))
+      .then(setDeviceValues)
       .catch((err) =>
         console.error("Error loading device values from IDB: ", err),
       );
   }, []);
 
-  // -----------------------------------------------------------------------
-  // 2. Keep configuration store's userId in sync with connection store
-  // -----------------------------------------------------------------------
+  // 2. Sync userId
   useEffect(() => {
     if (userId) setUserIdPersist(userId);
   }, [userId]);
 
-  // -----------------------------------------------------------------------
-  // 3. When the connection becomes ready, fetch user preferences once
-  // -----------------------------------------------------------------------
+  // 3. Once ready, fetch preferences and devices once
   useEffect(() => {
-    if (!ready) return; // Not ready yet
-    if (hasSynced.current) return; // Already synced for this cycle
+    if (!ready || hasSynced.current || !workers) return;
 
     async function sync() {
       try {
-        console.debug("[useSyncWhenReady] syncing...");
-        // `setPreferences` is typed as `(prefs: UserPreferences) => void`
+        if (!workers) throw new Error("Workers not initialized");
         await fetchUserConfiguration(workers, setPreferences);
         await fetchDevices(workers);
-      } catch (err) {
-        console.error("[useSyncWhenReady] sync error:", err);
+      } catch (e) {
+        console.error("[useSyncWhenReady] sync error:", e);
       }
     }
-
     sync();
     hasSynced.current = true;
   }, [ready, workers, userId]);
 
-  // Reset the sync flag when the connection goes back to not ready
+  // Subscribe/unsubscribe to device events when ready
   useEffect(() => {
     if (!ready || !workers) return;
-    // Subscribe to device events from the worker
     workers.connection?.subscribeUserDevices(receivedDeviceMessage);
     return () => {
       workers.connection?.unsubscribeUserDevices(receivedDeviceMessage);
     };
   }, [ready, workers, receivedDeviceMessage]);
 
-  // Reset the sync flag when the connection goes back to not ready
+  // Reset flag when not ready
   useEffect(() => {
     if (!ready) hasSynced.current = false;
   }, [ready]);
 }
 
 /**
- * Fetches the user's configuration from the worker.
- * The second argument is the setter returned by `useConfigurationStore`; it
- * accepts a `UserPreferences` object and merges it into the existing state.
- *
- * @param workers - The worker proxy that provides the `getUserConfiguration`
- *   method.
- * @param setPreferences - Function to update preferences in the zustand store.
- *   Expected signature: `(prefs: UserPreferences) => void`.
+ * Fetch user configuration from the worker.
  */
 async function fetchUserConfiguration(
   workers: AppWorkers,
   setPreferences: (prefs: UserPreferences) => void,
 ) {
-  const userConfigurationResponse =
-    await workers.connection?.getUserConfiguration();
-  if (userConfigurationResponse.ok) {
-    console.debug("User configuration: ", userConfigurationResponse);
-    if (userConfigurationResponse.timezone)
-      setPreferences({ timezone: userConfigurationResponse.timezone });
-  } else {
-    console.error(
-      "Error fetching user configuration: ",
-      userConfigurationResponse.err,
-    );
+  const resp = await workers.connection?.getUserConfiguration();
+  if (resp?.ok && resp.timezone) {
+    setPreferences({ timezone: resp.timezone });
+  } else if (resp?.err) {
+    console.error("Error fetching user configuration:", resp.err);
   }
 }
 
+/**
+ * Fetch user devices from the worker and populate zustand stores.
+ */
 async function fetchDevices(workers: AppWorkers) {
-  const deviceResponse = await workers.connection?.getUserDevices();
-  console.debug("User devices: ", deviceResponse);
-  if (!deviceResponse?.ok) {
-    console.error("Failed to fetch devices: ", deviceResponse?.err);
+  const resp = await workers.connection?.getUserDevices();
+  if (!resp?.ok) {
+    console.error("Failed to fetch devices:", resp?.err);
     return;
   }
-  const deviceReadings = deviceResponse.appareils ?? [];
-  const groups = mapDeviceReadingsArrayToDeviceGroups(deviceReadings);
-  const devicesSublist = deviceReadings.map((device) =>
-    mapDeviceReadingsToDevice(device),
-  );
-  const devices = devicesSublist.flat();
 
-  console.debug(
-    "FETCH deviceGroupss: %O, deviceSublist: %O, devices: %O",
-    groups,
-    devicesSublist,
-    devices,
-  );
+  const deviceReadings = resp.appareils ?? [];
+  const groups = mapDeviceReadingsArrayToDeviceGroups(deviceReadings);
+  const devices = deviceReadings.map(mapDeviceReadingsToDevice).flat();
+
+  const values = deviceReadings.flatMap(mapDeviceReadingsToDeviceValues);
 
   useDeviceGroupsStore.getState().setGroups(groups);
   useDevicesStore.getState().setDevices(devices);
-  const values = deviceReadings.flatMap(mapDeviceReadingsToDeviceValues);
   useDeviceValuesStore.getState().setDeviceValues(values);
 }
