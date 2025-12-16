@@ -8,8 +8,9 @@ import {
 
 export default [
   layout("./devices/layout.tsx", [
-    index("./devices/index.tsx"),
+    index("./redirect.tsx"),
     ...prefix("devices", [
+      route("all", "./devices/index.tsx"),
       route("hidden", "./devices/devicesFilterHidden.tsx"),
       // New route to filter devices by group. The group parameter is optional
       // to handle the "unassigned" group case.

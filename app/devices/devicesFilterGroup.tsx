@@ -5,11 +5,20 @@ import { useDevicesStore } from "../state/devicesStore";
 import { useDeviceValuesStore } from "../state/deviceValueStore";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { useToggleSwitch } from "../hooks/useToggleSwitch";
+import { useEffect } from "react";
+import { STORAGE_KEY_LASTGROUP } from "~/utils/constants";
 
 export default function DevicesGroupFilter() {
   // The group name comes from the route parameter; it is `undefined` if the
   // link was rendered for an unassigned group (no `group` in the URL).
   const { group } = useParams<{ group?: string }>();
+
+  /* 1️⃣ Persist the current group to localStorage */
+  useEffect(() => {
+    if (group) {
+      localStorage.setItem(STORAGE_KEY_LASTGROUP, group);
+    }
+  }, [group]);
 
   // Retrieve devices and device values from the Zustand store
   const devices = useDevicesStore((state) => state.devices);

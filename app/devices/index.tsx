@@ -6,12 +6,19 @@ import { useDeviceValuesStore } from "../state/deviceValueStore";
 import { useToggleSwitch } from "../hooks/useToggleSwitch";
 import type { Device } from "../state/devicesStore";
 import type { DeviceValue } from "../state/deviceValueStore";
+import { useEffect } from "react";
+import { STORAGE_KEY_LASTGROUP } from "~/utils/constants";
 
 export default function Devices() {
   const devices = useDevicesStore((state) => state.devices);
   const groups = useDeviceGroupsStore((state) => state.groups);
   const toggleSwitch = useToggleSwitch();
   const deviceValues = useDeviceValuesStore((state) => state.deviceValues);
+
+  /* 1️⃣ Reset the current group to localStorage */
+  useEffect(() => {
+    localStorage.removeItem(STORAGE_KEY_LASTGROUP);
+  }, []);
 
   const sortedDevices = [...devices]
     .filter((d: Device) => !d.deleted)

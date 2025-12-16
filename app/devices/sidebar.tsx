@@ -25,7 +25,7 @@ export default function DevicesSidebar() {
 
       <nav className="space-y-2">
         <NavLink
-          to="/"
+          to="/devices/all"
           className="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
         >
           All Devices
