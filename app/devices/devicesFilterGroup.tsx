@@ -1,10 +1,9 @@
-import { DeviceCard } from "../components/DeviceCard";
-import { useDevicesStore } from "../state/devicesStore";
-import type { Device } from "../state/devicesStore";
-import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
-import { useDeviceValuesStore } from "../state/deviceValueStore";
 import { NavLink } from "react-router";
 import { useParams } from "react-router";
+import { DeviceCard } from "../components/DeviceCard";
+import { useDevicesStore } from "../state/devicesStore";
+import { useDeviceValuesStore } from "../state/deviceValueStore";
+import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 
 export default function DevicesGroupFilter() {
   // The group name comes from the route parameter; it is `undefined` if the
@@ -19,14 +18,14 @@ export default function DevicesGroupFilter() {
   );
 
   // Filter out deleted devices and apply group filtering
-  const filteredDevices = devices.filter((device: Device) => {
+  const filteredDevices = devices.filter((device) => {
     if (device.deleted) return false;
-    const deviceGroup = device.group?.trim();
+    const groupList = device.group ?? [];
     if (!group) {
       // Show unassigned devices when no group parameter is present
-      return !deviceGroup;
+      return groupList.length === 0;
     }
-    return deviceGroup === group;
+    return groupList.includes(group);
   });
 
   // Retrieve group names for sorting
@@ -56,7 +55,7 @@ export default function DevicesGroupFilter() {
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mt-2">
-          {sortedDevices.map((device: Device) => {
+          {sortedDevices.map((device) => {
             const value = deviceValues.find((v) => v.id === device.id);
             return (
               <NavLink

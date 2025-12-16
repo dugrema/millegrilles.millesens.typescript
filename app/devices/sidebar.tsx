@@ -4,17 +4,20 @@ import { SectionSidebar } from "~/components/SectionSidebar";
 import { useDevicesStore } from "~/state/devicesStore";
 
 export default function DevicesSidebar() {
-  // Retrieve current devices from the zustand store
   const devices = useDevicesStore((state) => state.devices);
 
-  // Derive a sorted list of unique groups (excluding undefined / empty)
-  const groupList = Array.from(
-    new Set(
-      devices
-        .map((d) => d.group)
-        .filter((g): g is string => typeof g === "string" && g.trim() !== ""),
-    ),
-  ).sort((a, b) => a.localeCompare(b));
+  // Collect unique group names from array group filters
+  const groupSet = new Set<string>();
+  devices.forEach((d) => {
+    d.group?.forEach((g) => {
+      const trimmed = g?.trim();
+      if (trimmed) {
+        groupSet.add(trimmed);
+      }
+    });
+  });
+
+  const groupList = Array.from(groupSet).sort((a, b) => a.localeCompare(b));
 
   return (
     <SectionSidebar>

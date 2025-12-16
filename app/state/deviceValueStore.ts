@@ -82,7 +82,8 @@ export const useDeviceValuesStore = create<DeviceValuesState>((set) => ({
           ...dev,
           ...d,
           changePending: false,
-          lastUpdate: Date.now(),
+          // lastUpdate: Math.floor(Date.now() / 1000),
+          lastUpdate: d.lastUpdate || Math.floor(Date.now() / 1000),
         };
         updated = mergedDev;
         if (updated) idb.setItem(updated.id, updated);

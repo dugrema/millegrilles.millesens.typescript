@@ -1,4 +1,5 @@
-import { NavLink, useParams } from "react-router";
+import { useParams, NavLink } from "react-router";
+import { useState, useEffect } from "react";
 import { Button } from "~/components/Button";
 import { RegistrationButton } from "~/components/RegistrationButton";
 import { UNIT_MAP } from "~/components/DeviceCard";
@@ -11,6 +12,7 @@ import { DateTime } from "luxon";
 
 export default function DevicePage() {
   const { deviceId } = useParams<{ deviceId: string }>();
+
   const device = useDevicesStore((state) =>
     state.devices.find((d) => d.id === deviceId),
   );
@@ -32,12 +34,20 @@ export default function DevicePage() {
     );
   }
 
-  // Destructure static device properties for clarity
-  const { id, name, deviceGroup, type, group, deleted } = device;
+  const {
+    id,
+    name: deviceName,
+    deviceGroup,
+    type,
+    group: deviceGroupFilter,
+    deleted,
+  } = device;
+
   const groupInfo = useDeviceGroupsStore((state) =>
     state.groups.find((g) => g.id === deviceGroup),
   );
   const updateGroup = useDeviceGroupsStore((state) => state.updateGroup);
+
   const handleRegister = async (): Promise<boolean> => {
     if (!groupInfo) return false;
     updateGroup({ ...groupInfo, registrationPending: true });
@@ -54,19 +64,53 @@ export default function DevicePage() {
   const updateDeviceValue = useDeviceValuesStore(
     (state) => state.updateDeviceValue,
   );
-  const { preferences } = useConfigurationStore();
   const updateDevice = useDevicesStore((state) => state.updateDevice);
   const toggleDelete = () =>
     updateDevice({ ...device, deleted: !device.deleted });
+
+  const { preferences } = useConfigurationStore();
   const tz =
     preferences.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // Local state for editable fields
+  const [localName, setLocalName] = useState(deviceName);
+  const [localGroup, setLocalGroup] = useState(
+    Array.isArray(deviceGroupFilter) ? deviceGroupFilter.join(",") : "",
+  );
+
+  // Keep local state in sync if device changes
+  useEffect(() => {
+    setLocalName(deviceName);
+    setLocalGroup(
+      Array.isArray(deviceGroupFilter) ? deviceGroupFilter.join(",") : "",
+    );
+  }, [deviceName, deviceGroupFilter]);
+
+  const handleSave = () => {
+    const groups = localGroup
+      .split(",")
+      .map((g) => g.trim())
+      .filter((g) => g !== "");
+    updateDevice({
+      ...device,
+      name: localName,
+      group: groups.length ? groups : undefined,
+    });
+  };
+
+  const handleCancel = () => {
+    setLocalName(deviceName);
+    setLocalGroup(
+      Array.isArray(deviceGroupFilter) ? deviceGroupFilter.join(",") : "",
+    );
+  };
 
   return (
     <div className="p-4">
       <DeviceCard
         key={id}
         id={id}
-        name={name}
+        name={localName}
         deviceGroup={deviceGroup}
         type={type}
         numberValue={deviceValue?.numberValue}
@@ -92,7 +136,6 @@ export default function DevicePage() {
         >
           <Button variant="secondary">View Group</Button>
         </NavLink>
-        {/* Button to view the chart for this device */}
         {deviceValue?.numberValue !== undefined && (
           <NavLink
             to={`/devices/chart/${id}`}
@@ -108,30 +151,31 @@ export default function DevicePage() {
         <dl className="grid grid-cols-2 gap-4">
           <dt className="font-medium">ID</dt>
           <dd>{id}</dd>
+
           <dt className="font-medium">Name</dt>
           <dd>
             <input
               className="border rounded p-1"
-              value={name}
-              onChange={(e) =>
-                updateDevice({ ...device, name: e.target.value })
-              }
+              value={localName}
+              onChange={(e) => setLocalName(e.target.value)}
             />
           </dd>
+
           <dt className="font-medium">Group</dt>
           <dd>{deviceGroup}</dd>
+
           <dt className="font-medium">Group (filter)</dt>
           <dd>
             <input
               className="border rounded p-1"
-              value={group ?? ""}
-              onChange={(e) =>
-                updateDevice({ ...device, group: e.target.value })
-              }
+              value={localGroup}
+              onChange={(e) => setLocalGroup(e.target.value)}
             />
           </dd>
+
           <dt className="font-medium">Type</dt>
           <dd>{type}</dd>
+
           {deviceValue?.numberValue !== undefined && (
             <>
               <dt className="font-medium">Value</dt>
@@ -141,18 +185,21 @@ export default function DevicePage() {
               </dd>
             </>
           )}
+
           {deviceValue?.stringValue !== undefined && (
             <>
               <dt className="font-medium">Value</dt>
               <dd>{deviceValue.stringValue}</dd>
             </>
           )}
+
           {deviceValue?.status !== undefined && (
             <>
               <dt className="font-medium">Status</dt>
               <dd>{deviceValue.status ? "On" : "Off"}</dd>
             </>
           )}
+
           <dt className="font-medium">Last Update</dt>
           <dd>
             {DateTime.fromSeconds(deviceValue?.lastUpdate ?? 0)
@@ -160,6 +207,33 @@ export default function DevicePage() {
               .toFormat("yyyy-LL-dd HH:mm:ss")}
           </dd>
         </dl>
+
+        {/* Save / Cancel buttons for local edits */}
+        <div className="flex space-x-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleSave}
+            disabled={
+              localName === deviceName &&
+              localGroup === (deviceGroupFilter ?? "")
+            }
+          >
+            Save
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleCancel}
+            disabled={
+              localName === deviceName &&
+              localGroup === (deviceGroupFilter ?? "")
+            }
+          >
+            Cancel
+          </Button>
+        </div>
+
         <Button
           type="button"
           variant="outline"

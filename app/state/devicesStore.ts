@@ -1,5 +1,3 @@
-// react-view5/app/state/devicesStore.ts
-
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { createIDBStorage } from "../utils/idbStorage";
@@ -18,8 +16,8 @@ export interface Device {
   type: string;
   /** Optional notification flag */
   notification?: boolean;
-  /** Optional group used for filtering. */
-  group?: string;
+  /** Optional group(s) used for filtering. */
+  group?: string[];
   /** Optional flag for deleted devices. */
   deleted?: boolean;
 }
