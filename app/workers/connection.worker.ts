@@ -97,6 +97,7 @@ export type DeviceConfiguration = {
   geoposition?: GeopositionConfiguration;
   timezone?: string;
   programmes?: ProgramsConfiguration;
+  filtres_senseurs?: { [key: string]: string[] };
 };
 
 export type DisplayInformation = {
@@ -273,16 +274,17 @@ export class AppsConnectionWorker extends ConnectionWorker {
     );
   }
 
-  async updateDeviceConfiguration(params: {
-    uuid_appareil: string;
-    configuration: DeviceConfiguration;
-  }) {
+  async updateDeviceConfiguration(
+    uuid_appareil: string,
+    configuration: DeviceConfiguration,
+  ) {
     if (!this.connection) throw new Error("Connection is not initialized");
-    return await this.connection.sendCommand(
-      params,
+    const command = { uuid_appareil, configuration };
+    return (await this.connection.sendCommand(
+      command,
       DOMAIN_SENSEURS_PASSIFS_NAME,
       "majAppareil",
-    );
+    )) as Promise<MessageResponse & { persiste?: boolean }>;
   }
 
   async deleteDevice(uuid_appareil: string) {

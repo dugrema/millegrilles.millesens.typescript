@@ -121,7 +121,7 @@ export const MilleGrillesWorkerProvider: React.FC<{
  * Hook for accessing the worker proxy.  It throws if called outside of
  * `MilleGrillesWorkerProvider`.
  */
-export const useMilleGrillesWorkers = (): any => {
+export const useMilleGrillesWorkers = (): AppWorkers | null => {
   const context = useContext(MilleGrillesWorkerContext);
   if (!context) {
     throw new Error(

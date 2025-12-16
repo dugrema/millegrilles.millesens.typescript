@@ -9,6 +9,7 @@ import { useDeviceValuesStore } from "~/state/deviceValueStore";
 import { useConfigurationStore } from "~/state/configurationStore";
 import { useDeviceGroupsStore } from "~/state/deviceGroupsStore";
 import { DateTime } from "luxon";
+import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
 
 export default function DevicePage() {
   const { deviceId } = useParams<{ deviceId: string }>();
@@ -19,6 +20,7 @@ export default function DevicePage() {
   const deviceValue = useDeviceValuesStore((state) =>
     state.deviceValues.find((v) => v.id === device?.id),
   );
+  const workers = useMilleGrillesWorkers();
 
   if (!device) {
     return (
@@ -36,6 +38,7 @@ export default function DevicePage() {
 
   const {
     id,
+    internalId,
     name: deviceName,
     deviceGroup,
     type,
@@ -87,15 +90,35 @@ export default function DevicePage() {
   }, [deviceName, deviceGroupFilter]);
 
   const handleSave = () => {
+    if (!workers) throw new Error("Workers not initialized");
     const groups = localGroup
       .split(",")
       .map((g) => g.trim())
       .filter((g) => g !== "");
-    updateDevice({
-      ...device,
-      name: localName,
-      group: groups.length ? groups : undefined,
-    });
+
+    // Update back-end
+    const params = {
+      descriptif_senseurs: { [internalId]: localName },
+      filtres_senseurs: { [internalId]: groups },
+    };
+    console.debug(`Sauvegarde params`, params);
+    workers.connection
+      ?.updateDeviceConfiguration(deviceGroup, params)
+      .then((result) => {
+        console.debug("updateDeviceConfiguration Result", result);
+        if (!result.persiste) {
+          throw new Error(`Error updating device configuration: ${result.err}`);
+        }
+
+        updateDevice({
+          ...device,
+          name: localName,
+          group: groups.length ? groups : undefined,
+        });
+      })
+      .catch((err) =>
+        console.error("Error updating device configuration", err),
+      );
   };
 
   const handleCancel = () => {

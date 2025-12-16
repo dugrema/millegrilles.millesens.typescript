@@ -80,6 +80,7 @@ export function mapDeviceReadingsToDevice(readings: DeviceReadings): Device[] {
     }
 
     const name = configuration?.descriptif_senseurs?.[key] ?? key;
+    const groupFilters = configuration?.filtres_senseurs?.[key];
 
     const deleted = configuration?.cacher_senseurs?.includes(key) ?? false;
     devices.push({
@@ -90,6 +91,7 @@ export function mapDeviceReadingsToDevice(readings: DeviceReadings): Device[] {
       type,
       notification: false,
       deleted,
+      group: groupFilters,
     });
   });
 
