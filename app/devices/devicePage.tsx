@@ -8,6 +8,7 @@ import { useDevicesStore } from "~/state/devicesStore";
 import { useDeviceValuesStore } from "~/state/deviceValueStore";
 import { useConfigurationStore } from "~/state/configurationStore";
 import { useDeviceGroupsStore } from "~/state/deviceGroupsStore";
+import { useToggleSwitch } from "~/hooks/useToggleSwitch";
 import { DateTime } from "luxon";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
 import type { MessageResponse } from "millegrilles.reactdeps.typescript";
@@ -21,7 +22,9 @@ export default function DevicePage() {
   const deviceValue = useDeviceValuesStore((state) =>
     state.deviceValues.find((v) => v.id === device?.id),
   );
+  const changePending = deviceValue?.changePending;
   const workers = useMilleGrillesWorkers();
+  const toggleSwitch = useToggleSwitch();
 
   if (!device) {
     return (
@@ -65,9 +68,7 @@ export default function DevicePage() {
     }
   };
 
-  const updateDeviceValue = useDeviceValuesStore(
-    (state) => state.updateDeviceValue,
-  );
+  // Switch toggling is handled by toggleSwitch hook
   const updateDevice = useDevicesStore((state) => state.updateDevice);
   const toggleDelete = () => {
     const newValue = !device.deleted;
@@ -170,13 +171,13 @@ export default function DevicePage() {
         connected={deviceValue?.connected}
         notification={deviceValue?.notification}
         lastUpdate={deviceValue?.lastUpdate ?? 0}
+        changePending={changePending}
         onToggle={
           type === "Switch" && deviceValue?.status !== undefined
-            ? () =>
-                updateDeviceValue({
-                  ...deviceValue,
-                  status: !deviceValue.status,
-                })
+            ? () => {
+                if (!groupInfo) return;
+                toggleSwitch(groupInfo, device, !deviceValue.status);
+              }
             : undefined
         }
       />

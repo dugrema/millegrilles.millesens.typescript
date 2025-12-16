@@ -8,6 +8,7 @@ import { DeviceCard } from "~/components/DeviceCard";
 import { Button } from "~/components/Button";
 import { useConfigurationStore } from "~/state/configurationStore";
 import { DateTime } from "luxon";
+import { useToggleSwitch } from "~/hooks/useToggleSwitch";
 import { RegistrationButton } from "~/components/RegistrationButton";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
 import type { GeopositionConfiguration } from "~/workers/connection.worker";
@@ -16,6 +17,7 @@ export default function DeviceGroup() {
   const { groupId } = useParams<{ groupId: string }>();
 
   const workers = useMilleGrillesWorkers();
+  const toggleSwitch = useToggleSwitch();
 
   const group = useDeviceGroupsStore((state) =>
     state.groups.find((g) => g.id === groupId),
@@ -270,6 +272,15 @@ export default function DeviceGroup() {
                       connected={value?.connected}
                       notification={value?.notification}
                       lastUpdate={value?.lastUpdate ?? 0}
+                      changePending={value?.changePending}
+                      onToggle={
+                        device.type === "Switch" && value?.status !== undefined
+                          ? () => {
+                              if (!group) return;
+                              toggleSwitch(group, device, !value.status);
+                            }
+                          : undefined
+                      }
                     />
                   </NavLink>
                 );
