@@ -39,9 +39,18 @@ export const SectionSidebar = ({ children }: { children: ReactNode }) => {
           `}
       aria-label="Section navigation"
     >
-      <h1 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
-        MilleSens
-      </h1>
+      <div className="flex items-center justify-between mb-4 lg:hidden">
+        <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+          MilleSens
+        </h1>
+        <a href="/" className="flex items-center p-1">
+          <img
+            src="/millesens/icons/logout-svgrepo-com.svg"
+            alt="Logout"
+            className="h-6 w-6"
+          />
+        </a>
+      </div>
       <div className="flex items-center justify-between mb-4 lg:hidden">
         <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
           Menu

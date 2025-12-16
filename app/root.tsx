@@ -119,7 +119,7 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
             Settings
           </NavLink>
         </nav>
-        <a href="/" className="flex items-center p-1">
+        <a href="/" className="flex items-center p-1 hidden lg:inline-flex">
           <img
             src="/millesens/icons/logout-svgrepo-com.svg"
             alt="Logout"
