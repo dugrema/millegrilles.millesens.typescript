@@ -20,6 +20,7 @@
     { "action": "signerAppareil" },
     { "action": "restaurerAppareil" },
     { "action": "majConfigurationUsager" },
+    { "action": "showHideSensor" },
     { "domain": "senseurspassifs_relai", "action": "commandeAppareil" }
   ],
   "subscriptions": {

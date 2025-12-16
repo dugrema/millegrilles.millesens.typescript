@@ -287,7 +287,7 @@ export class AppsConnectionWorker extends ConnectionWorker {
     )) as Promise<MessageResponse & { persiste?: boolean }>;
   }
 
-  async deleteDevice(uuid_appareil: string) {
+  async deleteDeviceGroup(uuid_appareil: string) {
     if (!this.connection) throw new Error("Connection is not initialized");
     return await this.connection.sendCommand(
       { uuid_appareil },
@@ -296,12 +296,30 @@ export class AppsConnectionWorker extends ConnectionWorker {
     );
   }
 
-  async restoreDevice(uuid_appareil: string) {
+  async restoreDeviceGroup(uuid_appareil: string) {
     if (!this.connection) throw new Error("Connection is not initialized");
     return await this.connection.sendCommand(
       { uuid_appareil },
       DOMAIN_SENSEURS_PASSIFS_NAME,
       "restaurerAppareil",
+    );
+  }
+
+  async deleteDevice(deviceGroupId: string, deviceId: string) {
+    if (!this.connection) throw new Error("Connection is not initialized");
+    return await this.connection.sendCommand(
+      { uuid_appareil: deviceGroupId, senseur_id: deviceId, hide: true },
+      DOMAIN_SENSEURS_PASSIFS_NAME,
+      "showHideSensor",
+    );
+  }
+
+  async restoreDevice(deviceGroupId: string, deviceId: string) {
+    if (!this.connection) throw new Error("Connection is not initialized");
+    return await this.connection.sendCommand(
+      { uuid_appareil: deviceGroupId, senseur_id: deviceId, show: true },
+      DOMAIN_SENSEURS_PASSIFS_NAME,
+      "showHideSensor",
     );
   }
 

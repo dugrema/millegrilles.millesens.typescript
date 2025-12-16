@@ -10,6 +10,7 @@ import { useConfigurationStore } from "~/state/configurationStore";
 import { useDeviceGroupsStore } from "~/state/deviceGroupsStore";
 import { DateTime } from "luxon";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
+import type { MessageResponse } from "millegrilles.reactdeps.typescript";
 
 export default function DevicePage() {
   const { deviceId } = useParams<{ deviceId: string }>();
@@ -68,8 +69,35 @@ export default function DevicePage() {
     (state) => state.updateDeviceValue,
   );
   const updateDevice = useDevicesStore((state) => state.updateDevice);
-  const toggleDelete = () =>
-    updateDevice({ ...device, deleted: !device.deleted });
+  const toggleDelete = () => {
+    const newValue = !device.deleted;
+    const run = async () => {
+      let response: MessageResponse | undefined;
+      if (newValue) {
+        // true -> hide (delete) device
+        response = await workers?.connection.deleteDevice(
+          deviceGroup,
+          internalId,
+        );
+      } else {
+        // restore
+        response = await workers?.connection.restoreDevice(
+          deviceGroup,
+          internalId,
+        );
+      }
+      if (!response?.ok) {
+        throw new Error(
+          `Error toggling device show/hide status: ${response?.err}`,
+        );
+      }
+      console.debug("Show/hide status updated");
+      updateDevice({ ...device, deleted: !device.deleted });
+    };
+    run().catch((err) =>
+      console.error(`Error toggling device show/hide status: ${err}`),
+    );
+  };
 
   const { preferences } = useConfigurationStore();
   const tz =
