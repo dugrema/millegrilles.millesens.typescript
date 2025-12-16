@@ -145,18 +145,18 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
  */
 export default function App() {
   // Service worker registration for production
-  useEffect(() => {
-    if ("serviceWorker" in navigator && !import.meta.env.DEV) {
-      navigator.serviceWorker
-        .register("/millesens/sw.js")
-        .then((registration) => {
-          console.log("Service worker registered:", registration);
-        })
-        .catch((error) => {
-          console.error("Service worker registration failed:", error);
-        });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if ("serviceWorker" in navigator && !import.meta.env.DEV) {
+  //     navigator.serviceWorker
+  //       .register("/millesens/sw.js")
+  //       .then((registration) => {
+  //         console.log("Service worker registered:", registration);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Service worker registration failed:", error);
+  //       });
+  //   }
+  // }, []);
 
   return (
     <TimeProvider>
