@@ -1,5 +1,6 @@
 import { useState, ChangeEvent } from "react";
 import { Button } from "~/components/Button";
+import { DeviceProgramArgsEditor } from "./deviceProgramArgsEditor";
 
 interface Program {
   programme_id: string;
@@ -121,22 +122,12 @@ export default function DevicePrograms() {
               className="ml-2"
             />
           </label>
-          <label>
-            Args (JSON):
-            <textarea
-              value={JSON.stringify(editProgram.args, null, 2)}
-              onChange={(e) => {
-                try {
-                  const parsed = JSON.parse(e.target.value);
-                  setEditProgram({ ...editProgram, args: parsed });
-                } catch {
-                  /* ignore parse errors */
-                }
-              }}
-              className="w-full border rounded p-1"
-              rows={6}
-            />
-          </label>
+          <DeviceProgramArgsEditor
+            program={editProgram}
+            onChange={(newArgs) =>
+              setEditProgram({ ...editProgram, args: newArgs })
+            }
+          />
           <div className="flex space-x-2 mt-2">
             <Button variant="primary" onClick={handleSave}>
               Save
