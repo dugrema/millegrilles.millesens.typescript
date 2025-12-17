@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import type { ChangeEvent } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { Button } from "~/components/Button";
-import { DeviceProgramArgsEditor } from "./deviceProgramArgsEditor";
+import { useParams } from "react-router";
 
 interface Program {
   programme_id: string;
@@ -12,6 +12,7 @@ interface Program {
   args: any;
 }
 
+/* Program class options – kept for potential future UI use */
 const PROGRAM_CLASS_OPTIONS = [
   {
     value: "programmes.horaire.HoraireHebdomadaire",
@@ -20,164 +21,53 @@ const PROGRAM_CLASS_OPTIONS = [
   { value: "programmes.environnement.Humidificateur", label: "Humidificateur" },
   { value: "programmes.environnement.Chauffage", label: "Chauffage" },
   { value: "programmes.environnement.Climatisation", label: "Climatisation" },
-];
+] as const;
 
+/**
+ * DevicePrograms – list view only.
+ * Renders an "Add Program" link and a clickable list of programs.
+ * Clicking a program navigates to the edit page for that program.
+ */
 export default function DevicePrograms() {
-  const [programs, setPrograms] = useState<Program[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [editProgram, setEditProgram] = useState<Program | null>(null);
+  const { groupId } = useParams<{ groupId: string }>();
+  console.debug("Params: ", useParams());
 
-  const groups = useDeviceGroupsStore((state) => state.groups);
+  const group = useDeviceGroupsStore((state) =>
+    state.groups.find((g) => g.id === groupId),
+  );
+  const [programs, setPrograms] = useState<Program[]>([]);
+
   useEffect(() => {
-    if (groups.length === 0) {
+    console.debug("Loading group id %O programs: %O", groupId, group);
+    if (!group) {
       setPrograms([]);
-      setSelectedId(null);
-      setEditProgram(null);
       return;
     }
-    // Collect all program configurations from every group
-    const allProgramsConfig: any[] = [];
-    groups.forEach((g) => {
-      if (g.programmes) {
-        allProgramsConfig.push(...Object.values(g.programmes));
-      }
-    });
-    // Convert to Program objects
-    const newPrograms: Program[] = allProgramsConfig.map((pc) => ({
-      programme_id: pc.programme_id,
-      class: pc.class,
-      descriptif: pc.descriptif ?? "",
-      actif: pc.actif,
-      args: pc.args ?? {},
-    }));
-    // Update state only if the program list changed
-    setPrograms(newPrograms);
-    setSelectedId(null);
-    setEditProgram(null);
-  }, [groups]);
-
-  const resetEdit = () => {
-    setSelectedId(null);
-    setEditProgram(null);
-  };
-
-  const handleAdd = () => {
-    const newProg: Program = {
-      programme_id: crypto.randomUUID(),
-      class: "",
-      descriptif: "",
-      actif: true,
-      args: {},
-    };
-    setPrograms((prev) => [...prev, newProg]);
-    setSelectedId(newProg.programme_id);
-    setEditProgram(newProg);
-  };
-
-  const handleDelete = (id: string) => {
-    setPrograms((prev) => prev.filter((p) => p.programme_id !== id));
-    if (selectedId === id) resetEdit();
-  };
-
-  const handleChange =
-    (field: keyof Program) =>
-    (
-      e: ChangeEvent<
-        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >,
-    ) => {
-      if (!editProgram) return;
-      const value =
-        field === "actif"
-          ? (e.target as HTMLInputElement).checked
-          : e.target.value;
-      setEditProgram({ ...editProgram, [field]: value });
-    };
-
-  const handleSave = () => {
-    if (!editProgram) return;
-    setPrograms((prev) =>
-      prev.map((p) =>
-        p.programme_id === editProgram.programme_id ? editProgram : p,
-      ),
-    );
-    resetEdit();
-  };
-
-  const handleCancel = () => {
-    if (
-      editProgram &&
-      !programs.some((p) => p.programme_id === editProgram.programme_id)
-    ) {
-      handleDelete(editProgram.programme_id);
+    const allPrograms: Program[] = [];
+    if (group.programmes) {
+      Object.values(group.programmes).forEach((p: any) => {
+        allPrograms.push({
+          programme_id: p.programme_id,
+          class: p.class,
+          descriptif: p.descriptif ?? "",
+          actif: p.actif,
+          args: p.args ?? {},
+        });
+      });
     }
-    resetEdit();
-  };
-
-  const renderEditor = () => {
-    if (!editProgram) return null;
-    return (
-      <div className="p-4 border rounded mt-4">
-        <h2 className="text-xl font-semibold mb-2">Edit Program</h2>
-        <div className="space-y-2">
-          <label>
-            Description:
-            <input
-              type="text"
-              value={editProgram.descriptif}
-              onChange={handleChange("descriptif")}
-              className="w-full border rounded p-1"
-            />
-          </label>
-          <label>
-            Class:
-            <select
-              value={editProgram.class}
-              onChange={handleChange("class")}
-              className="w-full border rounded p-1"
-            >
-              <option value="">Select class</option>
-              {PROGRAM_CLASS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex items-center">
-            Active:
-            <input
-              type="checkbox"
-              checked={editProgram.actif}
-              onChange={handleChange("actif")}
-              className="ml-2"
-            />
-          </label>
-          <DeviceProgramArgsEditor
-            program={editProgram}
-            onChange={(newArgs) =>
-              setEditProgram({ ...editProgram, args: newArgs })
-            }
-          />
-          <div className="flex space-x-2 mt-2">
-            <Button variant="primary" onClick={handleSave}>
-              Save
-            </Button>
-            <Button variant="secondary" onClick={handleCancel}>
-              Cancel
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  };
+    setPrograms(allPrograms);
+  }, [group, groupId]);
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">Device Programs</h1>
-      <Button variant="primary" onClick={handleAdd} className="mb-4">
-        Add Program
-      </Button>
+
+      {/* Add Program button – navigates to the dedicated add page */}
+      <Link to={`/devices/programs/${groupId}/add`}>
+        <Button variant="primary" className="mb-4">
+          Add Program
+        </Button>
+      </Link>
 
       {programs.length === 0 ? (
         <p>No programs defined.</p>
@@ -186,40 +76,29 @@ export default function DevicePrograms() {
           {programs.map((p) => (
             <li
               key={p.programme_id}
-              className={`p-2 border rounded cursor-pointer ${
-                selectedId === p.programme_id ? "bg-blue-100" : ""
-              }`}
-              onClick={() => {
-                setSelectedId(p.programme_id);
-                setEditProgram(p);
-              }}
+              className="p-2 border rounded cursor-pointer"
             >
-              <div className="flex justify-between items-center">
-                <span className="font-medium">
-                  {p.descriptif || "Untitled"}
-                </span>
-                <Button
-                  variant="outline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(p.programme_id);
-                  }}
-                >
-                  Delete
-                </Button>
-              </div>
-              <div className="text-sm text-gray-600">
-                <span className="font-medium">Class:</span> {p.class}
-                <br />
-                <span className="font-medium">Active:</span>{" "}
-                {p.actif ? "Yes" : "No"}
-              </div>
+              {/* Linking each program to its edit page */}
+              <Link
+                to={`/devices/programs/${groupId}/${p.programme_id}`}
+                className="block w-full hover:bg-blue-100"
+              >
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">
+                    {p.descriptif || "Untitled"}
+                  </span>
+                </div>
+                <div className="text-sm text-gray-600">
+                  <span className="font-medium">Class:</span> {p.class}
+                  <br />
+                  <span className="font-medium">Active:</span>{" "}
+                  {p.actif ? "Yes" : "No"}
+                </div>
+              </Link>
             </li>
           ))}
         </ul>
       )}
-
-      {selectedId && renderEditor()}
     </div>
   );
 }
