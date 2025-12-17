@@ -46,7 +46,7 @@ export default function Devices() {
             );
 
             return (
-              <NavLink key={device.id} to={`./devices/device/${device.id}`}>
+              <NavLink key={device.id} to={`/devices/device/${device.id}`}>
                 <DeviceCard
                   id={device.id}
                   name={device.name}
