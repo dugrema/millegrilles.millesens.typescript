@@ -1,5 +1,3 @@
-import { expose } from "comlink";
-
 import {
   ConnectionWorker,
   type MessageResponse,
@@ -7,6 +5,7 @@ import {
 } from "millegrilles.reactdeps.typescript";
 
 import apiMapping from "./apiMapping.json";
+import { expose } from "comlink";
 
 /** Domain name for the SenseursPassifs service. */
 const DOMAIN_SENSEURS_PASSIFS_NAME = "SenseursPassifs";
@@ -353,8 +352,6 @@ export class AppsConnectionWorker extends ConnectionWorker {
   }
 }
 
-// /** The worker instance that will be exposed to the main thread. */
+/** The worker instance that will be exposed to the main thread. */
 const WORKER = new AppsConnectionWorker();
-
-// /** Expose the worker via Comlink so the main thread can call its methods. */
 expose(WORKER);

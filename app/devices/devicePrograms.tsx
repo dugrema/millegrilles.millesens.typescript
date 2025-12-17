@@ -1,4 +1,6 @@
-import { useState, ChangeEvent } from "react";
+import { useState, useEffect } from "react";
+import type { ChangeEvent } from "react";
+import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { Button } from "~/components/Button";
 import { DeviceProgramArgsEditor } from "./deviceProgramArgsEditor";
 
@@ -24,6 +26,35 @@ export default function DevicePrograms() {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editProgram, setEditProgram] = useState<Program | null>(null);
+
+  const groups = useDeviceGroupsStore((state) => state.groups);
+  useEffect(() => {
+    if (groups.length === 0) {
+      setPrograms([]);
+      setSelectedId(null);
+      setEditProgram(null);
+      return;
+    }
+    // Collect all program configurations from every group
+    const allProgramsConfig: any[] = [];
+    groups.forEach((g) => {
+      if (g.programmes) {
+        allProgramsConfig.push(...Object.values(g.programmes));
+      }
+    });
+    // Convert to Program objects
+    const newPrograms: Program[] = allProgramsConfig.map((pc) => ({
+      programme_id: pc.programme_id,
+      class: pc.class,
+      descriptif: pc.descriptif ?? "",
+      actif: pc.actif,
+      args: pc.args ?? {},
+    }));
+    // Update state only if the program list changed
+    setPrograms(newPrograms);
+    setSelectedId(null);
+    setEditProgram(null);
+  }, [groups]);
 
   const resetEdit = () => {
     setSelectedId(null);

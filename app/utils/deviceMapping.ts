@@ -24,6 +24,7 @@ export function mapDeviceReadingsToDeviceGroup(
     timezone: readings.configuration?.timezone ?? undefined,
     latitude: readings.configuration?.geoposition?.latitude ?? undefined,
     longitude: readings.configuration?.geoposition?.longitude ?? undefined,
+    programmes: readings.configuration?.programmes,
     registrationPending: !!readings.csr_present,
     registrationRequested: false,
   };

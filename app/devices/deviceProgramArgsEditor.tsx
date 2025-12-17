@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect } from "react";
 
 interface Horaire {
   etat: 0 | 1;
@@ -69,10 +69,10 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
   }, [program.args]);
 
   // Notify parent of any arg changes
-  const update = (field: keyof ProgramArgs, value: any) => {
+  const update = (field: string, value: any) => {
     const updated = { ...localArgs, [field]: value };
-    setLocalArgs(updated as ProgramArgs);
-    onChange(updated as ProgramArgs);
+    setLocalArgs(updated as any);
+    onChange(updated as any);
   };
 
   // Safe helpers for list inputs
@@ -87,6 +87,32 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
   switch (program.class) {
     case "programmes.horaire.HoraireHebdomadaire": {
       const args = localArgs as HoraireHebdomadaireArgs;
+      const horaire = args.horaire ?? [];
+
+      // Update a specific schedule entry
+      const updateSchedule = (
+        index: number,
+        field: keyof Horaire,
+        value: any,
+      ) => {
+        const newSchedule = { ...horaire[index], [field]: value };
+        const newHoraire = [...horaire];
+        newHoraire[index] = newSchedule;
+        update("horaire", newHoraire);
+      };
+
+      // Remove a schedule entry
+      const removeSchedule = (index: number) => {
+        const newHoraire = horaire.filter((_, i) => i !== index);
+        update("horaire", newHoraire);
+      };
+
+      // Add a blank schedule entry
+      const addSchedule = () => {
+        const newEntry: Horaire = { etat: 0, heure: 0, minute: 0 };
+        update("horaire", [...horaire, newEntry]);
+      };
+
       return (
         <div className="space-y-3">
           <label className="flex items-center gap-2">
@@ -110,22 +136,119 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             />
           </label>
 
-          <label>
-            Horaire (JSON):
-            <textarea
-              value={JSON.stringify(args.horaire ?? [], null, 2)}
-              onChange={(e) => {
-                try {
-                  const parsed = JSON.parse(e.target.value);
-                  update("horaire", parsed);
-                } catch {
-                  // ignore parse errors
-                }
-              }}
-              className="w-full border rounded p-1"
-              rows={6}
-            />
-          </label>
+          <fieldset className="border p-3 rounded">
+            <legend className="font-medium mb-2">Horaire</legend>
+            {horaire.map((item, idx) => (
+              <div
+                key={idx}
+                className="border rounded p-2 mb-2 flex flex-col gap-2"
+              >
+                <div className="flex items-center gap-2">
+                  <label>
+                    Etat:
+                    <select
+                      value={item.etat}
+                      onChange={(e) =>
+                        updateSchedule(idx, "etat", Number(e.target.value))
+                      }
+                      className="border rounded p-1"
+                    >
+                      <option value={0}>0</option>
+                      <option value={1}>1</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    Heure:
+                    <input
+                      type="number"
+                      min={0}
+                      max={23}
+                      value={item.heure}
+                      onChange={(e) =>
+                        updateSchedule(idx, "heure", Number(e.target.value))
+                      }
+                      className="w-16 border rounded p-1"
+                    />
+                  </label>
+
+                  <label>
+                    Minute:
+                    <input
+                      type="number"
+                      min={0}
+                      max={59}
+                      value={item.minute}
+                      onChange={(e) =>
+                        updateSchedule(idx, "minute", Number(e.target.value))
+                      }
+                      className="w-16 border rounded p-1"
+                    />
+                  </label>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <label>
+                    Jour (0-6):
+                    <input
+                      type="number"
+                      min={0}
+                      max={6}
+                      value={item.jour ?? ""}
+                      onChange={(e) =>
+                        updateSchedule(
+                          idx,
+                          "jour",
+                          e.target.value === ""
+                            ? undefined
+                            : Number(e.target.value),
+                        )
+                      }
+                      className="w-20 border rounded p-1"
+                    />
+                  </label>
+
+                  <label>
+                    Solaire:
+                    <select
+                      value={item.solaire ?? ""}
+                      onChange={(e) =>
+                        updateSchedule(
+                          idx,
+                          "solaire",
+                          e.target.value === "" ? undefined : e.target.value,
+                        )
+                      }
+                      className="border rounded p-1"
+                    >
+                      <option value="">None</option>
+                      <option value="sunset">Sunset</option>
+                      <option value="dusk">Dusk</option>
+                      <option value="noon">Noon</option>
+                      <option value="dawn">Dawn</option>
+                      <option value="sunrise">Sunrise</option>
+                    </select>
+                  </label>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => removeSchedule(idx)}
+                  className="self-start text-red-600 hover:text-red-800"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={addSchedule}
+              className="bg-green-600 text-white rounded p-2 hover:bg-green-700"
+            >
+              Add Schedule
+            </button>
+          </fieldset>
         </div>
       );
     }

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { createIDBStorage } from "../utils/idbStorage";
+import type { ProgramsConfiguration } from "../workers/connection.worker";
 
 /** Representation of a device group (physical platform). */
 export interface DeviceGroup {
@@ -15,6 +16,8 @@ export interface DeviceGroup {
   /** Optional geographic coordinates. */
   latitude?: number;
   longitude?: number;
+  /** Programme configuration for the device group. */
+  programmes?: ProgramsConfiguration;
   /** Instance identifier (from backend). */
   instance_id: string;
   registrationPending?: boolean;
@@ -74,6 +77,7 @@ export const useDeviceGroupsStore = create<DeviceGroupsState>()(
               delete g.longitude;
             }
             if (!g.timezone) delete g.timezone;
+            if (!g.programmes) delete g.programmes;
             const updated: DeviceGroup = { ...x, ...g };
             // Persist the merged group.
             idb.setItem(updated.id, updated);
