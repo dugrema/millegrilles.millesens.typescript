@@ -199,6 +199,12 @@ export default function DevicePage() {
         {groupInfo?.registrationRequested && (
           <RegistrationButton onRegister={handleRegister} className="ml-2" />
         )}
+        <NavLink
+          to={`/devices/programs/${deviceGroup}`}
+          className="mt-4 inline-block text-blue-600 hover:underline"
+        >
+          <Button variant="secondary">Programs</Button>
+        </NavLink>
         <h2 className="text-xl font-semibold">Device details</h2>
         <dl className="grid grid-cols-2 gap-4">
           <dt className="font-medium">ID</dt>
