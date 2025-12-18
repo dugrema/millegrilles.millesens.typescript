@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import { Button } from "~/components/Button";
 import { DeviceProgramArgsEditor } from "./deviceProgramArgsEditor";
@@ -49,6 +49,11 @@ export default function DeviceProgramsEdit() {
     s.groups.find((g) => g.id === device?.deviceGroup),
   );
 
+  const editLock = useRef(false);
+  useEffect(() => {
+    editLock.current = false;
+  }, [programId]);
+
   const [editProgram, setEditProgram] = useState<Program>(defaultProgram);
 
   /* --------------------------------------------------------------
@@ -61,9 +66,10 @@ export default function DeviceProgramsEdit() {
       setEditProgram(defaultProgram);
       return;
     }
+    if (editLock.current) return;
 
     // If editing an existing program, load it
-    if (programId) {
+    if (programId !== "add") {
       const prog = Object.values(group.programmes ?? {}).find(
         (p: any) => p.programme_id === programId,
       );
@@ -110,6 +116,7 @@ export default function DeviceProgramsEdit() {
         if (!prev) return prev;
         return { ...prev, [field]: value };
       });
+      editLock.current = true;
     };
 
   /* --------------------------------------------------------------
@@ -117,6 +124,7 @@ export default function DeviceProgramsEdit() {
    * -------------------------------------------------------------- */
   const handleSave = () => {
     if (!editProgram || !group) return;
+    editLock.current = false;
 
     if (!editProgram.programme_id) {
       editProgram.programme_id = crypto.randomUUID();
@@ -153,6 +161,7 @@ export default function DeviceProgramsEdit() {
           throw new Error(`Error updating device: ${response.err}`);
         // Return to the list view
         window.history.back();
+        editLock.current = false;
       })
       .catch((err) =>
         console.error("handleSave Error updating device group", err),
@@ -163,6 +172,7 @@ export default function DeviceProgramsEdit() {
    * Cancel – simply navigate back to the list page
    * -------------------------------------------------------------- */
   const handleCancel = () => {
+    editLock.current = false;
     window.history.back();
   };
 
@@ -188,6 +198,7 @@ export default function DeviceProgramsEdit() {
         <label>
           Class:
           <select
+            disabled={programId !== "add"}
             value={editProgram?.class ?? ""}
             onChange={handleChange("class")}
             className="w-full border rounded p-1"
@@ -216,6 +227,7 @@ export default function DeviceProgramsEdit() {
           onChange={(newArgs) => {
             if (editProgram) {
               setEditProgram({ ...editProgram, args: newArgs });
+              editLock.current = true;
             }
           }}
         />
