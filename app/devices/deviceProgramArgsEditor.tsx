@@ -192,7 +192,8 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                       onChange={(e) =>
                         updateSchedule(idx, "heure", Number(e.target.value))
                       }
-                      className="w-16 border rounded p-1"
+                      className={`w-16 border rounded p-1 ${item.solaire ? "bg-gray-200" : ""}`}
+                      disabled={!!item.solaire}
                     />
                   </label>
 
@@ -225,16 +226,16 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                             : Number(e.target.value),
                         )
                       }
-                      className="w-20 border rounded p-1"
+                      className="w-28 border rounded p-1"
                     >
                       <option value="">None</option>
-                      <option value="0">Sunday</option>
-                      <option value="1">Monday</option>
-                      <option value="2">Tuesday</option>
-                      <option value="3">Wednesday</option>
-                      <option value="4">Thursday</option>
-                      <option value="5">Friday</option>
-                      <option value="6">Saturday</option>
+                      <option value="6">Sunday</option>
+                      <option value="0">Monday</option>
+                      <option value="1">Tuesday</option>
+                      <option value="2">Wednesday</option>
+                      <option value="3">Thursday</option>
+                      <option value="4">Friday</option>
+                      <option value="5">Saturday</option>
                     </select>
                   </label>
 
@@ -329,6 +330,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
               }
               className="w-full border rounded p-1"
               deviceType="Humidity"
+              currentDeviceGroup={device?.deviceGroup}
             />
           </label>
 
@@ -393,6 +395,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
               }
               className="w-full border rounded p-1"
               deviceType="Temperature"
+              currentDeviceGroup={device?.deviceGroup}
             />
           </label>
 
@@ -451,6 +454,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
           <label>
             Senseurs:
             <DevicePickList
+              currentDeviceGroup={device?.deviceGroup}
               value={args.senseurs?.[0] ?? ""}
               onChange={(e) =>
                 update("senseurs", e.target.value ? [e.target.value] : [])

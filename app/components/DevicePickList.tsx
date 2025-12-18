@@ -3,6 +3,8 @@ import { useDevicesStore } from "../state/devicesStore";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 
 export interface DevicePickListProps {
+  /** The group id of the current device being edited. */
+  currentDeviceGroup?: string;
   /** The selected option value, in the format "group:internalId". */
   value?: string;
   /** Called when the user changes the selection. */
@@ -26,6 +28,7 @@ export interface DevicePickListProps {
  * The first option is an empty selection labelled "Select a device".
  */
 export const DevicePickList: React.FC<DevicePickListProps> = ({
+  currentDeviceGroup,
   value,
   onChange,
   name,
@@ -63,7 +66,11 @@ export const DevicePickList: React.FC<DevicePickListProps> = ({
       {sortedDevices.map((device) => (
         <option
           key={device.id}
-          value={`${device.deviceGroup}:${device.internalId}`}
+          value={
+            currentDeviceGroup && device.deviceGroup === currentDeviceGroup
+              ? `${device.internalId}`
+              : `${device.deviceGroup}:${device.internalId}`
+          }
         >
           {`${getGroupName(device.deviceGroup)} / ${device.name}`}
         </option>

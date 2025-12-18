@@ -10,7 +10,7 @@ When identifying sensor devices for reading values, it is possible to access oth
 - **programmes.horaire.HoraireHebdomadaire**:  
   * `activationInitiale` (boolean) – whether the program should execute immediately upon activation.  
   * `switches` (array of string) – device id of the switch devices affected.  
-  * `horaire` (array of objects) – each object contains `etat` (0 or 1), `heure` (0‑23), `minute` (0‑59), optional `jour` (0‑6 where 0 is Sunday) and optional `solaire` (values: 'sunset', 'dusk', 'noon', 'dawn', 'sunrise').  
+  * `horaire` (array of objects) – each object contains `etat` (0 or 1), `heure` (0‑23), `minute` (0‑59), optional `jour` (0‑6 where 0 is Monday and 6 is Sunday) and optional `solaire` (values: 'sunset', 'dusk', 'noon', 'dawn', 'sunrise').  
 
 - **programmes.environnement.Humidificateur**:  
   * `humidite` (number) – target humidity percentage.  
