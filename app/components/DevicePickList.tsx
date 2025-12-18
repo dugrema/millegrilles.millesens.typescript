@@ -13,6 +13,8 @@ export interface DevicePickListProps {
   id?: string;
   /** Optional Tailwind / CSS class string. */
   className?: string;
+  /** Optional device type filter (e.g., "Humidity", "Temperature", "AtmPressure"). */
+  deviceType?: string;
 }
 
 /**
@@ -29,6 +31,7 @@ export const DevicePickList: React.FC<DevicePickListProps> = ({
   name,
   id,
   className,
+  deviceType,
 }) => {
   const devices = useDevicesStore((state) => state.devices);
   const groups = useDeviceGroupsStore((state) => state.groups);
@@ -37,7 +40,12 @@ export const DevicePickList: React.FC<DevicePickListProps> = ({
     const group = groups.find((g) => g.id === groupId);
     return group?.name ?? groupId;
   };
-  const sortedDevices = [...devices].sort((a, b) => {
+
+  const filteredDevices = deviceType
+    ? devices.filter((d) => d.type === deviceType)
+    : devices;
+
+  const sortedDevices = [...filteredDevices].sort((a, b) => {
     const labelA = `${getGroupName(a.deviceGroup)} / ${a.name}`;
     const labelB = `${getGroupName(b.deviceGroup)} / ${b.name}`;
     return labelA.localeCompare(labelB);

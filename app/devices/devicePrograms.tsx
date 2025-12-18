@@ -15,17 +15,6 @@ interface Program {
   args: any;
 }
 
-/* Program class options – kept for potential future UI use */
-const PROGRAM_CLASS_OPTIONS = [
-  {
-    value: "programmes.horaire.HoraireHebdomadaire",
-    label: "Horaire Hebdomadaire",
-  },
-  { value: "programmes.environnement.Humidificateur", label: "Humidificateur" },
-  { value: "programmes.environnement.Chauffage", label: "Chauffage" },
-  { value: "programmes.environnement.Climatisation", label: "Climatisation" },
-] as const;
-
 /**
  * DevicePrograms – list view only.
  * Renders an "Add Program" link and a clickable list of programs.

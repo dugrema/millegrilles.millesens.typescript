@@ -284,7 +284,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Humidité target:
             <input
               type="number"
-              value={args.humidite ?? 0}
+              value={args.humidite ?? 40}
               onChange={(e) => update("humidite", Number(e.target.value))}
               className="w-full border rounded p-1"
             />
@@ -294,7 +294,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Precision:
             <input
               type="number"
-              value={args.precision ?? 0}
+              value={args.precision ?? 2}
               onChange={(e) => update("precision", Number(e.target.value))}
               className="w-full border rounded p-1"
             />
@@ -304,7 +304,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Duree_off_min:
             <input
               type="number"
-              value={args.duree_off_min ?? 0}
+              value={args.duree_off_min ?? 30}
               onChange={(e) => update("duree_off_min", Number(e.target.value))}
               className="w-full border rounded p-1"
             />
@@ -321,6 +321,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                 )
               }
               className="w-full border rounded p-1"
+              deviceType="Humidity"
             />
           </label>
 
@@ -328,7 +329,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Duree_on_min:
             <input
               type="number"
-              value={args.duree_on_min ?? 0}
+              value={args.duree_on_min ?? 30}
               onChange={(e) => update("duree_on_min", Number(e.target.value))}
               className="w-full border rounded p-1"
             />
@@ -350,7 +351,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Temperature:
             <input
               type="number"
-              value={args.temperature ?? 0}
+              value={args.temperature ?? 20}
               onChange={(e) => update("temperature", Number(e.target.value))}
               className="w-full border rounded p-1"
             />
@@ -360,7 +361,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Precision:
             <input
               type="number"
-              value={args.precision ?? 0}
+              value={args.precision ?? 1}
               onChange={(e) => update("precision", Number(e.target.value))}
               className="w-full border rounded p-1"
             />
@@ -370,7 +371,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Duree_off_min:
             <input
               type="number"
-              value={args.duree_off_min ?? 0}
+              value={args.duree_off_min ?? 30}
               onChange={(e) => update("duree_off_min", Number(e.target.value))}
               className="w-full border rounded p-1"
             />
@@ -384,6 +385,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                 update("senseurs", e.target.value ? [e.target.value] : [])
               }
               className="w-full border rounded p-1"
+              deviceType="Temperature"
             />
           </label>
 
@@ -391,7 +393,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Duree_on_min:
             <input
               type="number"
-              value={args.duree_on_min ?? 0}
+              value={args.duree_on_min ?? 10}
               onChange={(e) => update("duree_on_min", Number(e.target.value))}
               className="w-full border rounded p-1"
             />
@@ -413,7 +415,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Temperature:
             <input
               type="number"
-              value={args.temperature ?? 0}
+              value={args.temperature ?? 20}
               onChange={(e) => update("temperature", Number(e.target.value))}
               className="w-full border rounded p-1"
             />
@@ -423,7 +425,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Precision:
             <input
               type="number"
-              value={args.precision ?? 0}
+              value={args.precision ?? 1}
               onChange={(e) => update("precision", Number(e.target.value))}
               className="w-full border rounded p-1"
             />
@@ -433,7 +435,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Duree_off_min:
             <input
               type="number"
-              value={args.duree_off_min ?? 0}
+              value={args.duree_off_min ?? 60}
               onChange={(e) => update("duree_off_min", Number(e.target.value))}
               className="w-full border rounded p-1"
             />
@@ -447,6 +449,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                 update("senseurs", e.target.value ? [e.target.value] : [])
               }
               className="w-full border rounded p-1"
+              deviceType="Temperature"
             />
           </label>
 
@@ -454,7 +457,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Duree_on_min:
             <input
               type="number"
-              value={args.duree_on_min ?? 0}
+              value={args.duree_on_min ?? 10}
               onChange={(e) => update("duree_on_min", Number(e.target.value))}
               className="w-full border rounded p-1"
             />
