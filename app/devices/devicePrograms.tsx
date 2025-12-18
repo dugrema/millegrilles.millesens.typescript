@@ -3,7 +3,9 @@ import { Link } from "react-router";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { useDevicesStore } from "../state/devicesStore";
 import { Button } from "~/components/Button";
+import { ConfirmButton } from "~/components/ConfirmButton";
 import { useParams } from "react-router";
+import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
 
 interface Program {
   programme_id: string;
@@ -32,6 +34,8 @@ const PROGRAM_CLASS_OPTIONS = [
  */
 export default function DevicePrograms() {
   const { deviceId } = useParams<{ deviceId: string }>();
+
+  const workers = useMilleGrillesWorkers();
 
   const device = useDevicesStore((state) =>
     state.devices.find((d) => d.id === deviceId),
@@ -76,7 +80,25 @@ export default function DevicePrograms() {
     const updatedProgrammes = group.programmes ? { ...group.programmes } : {};
     delete updatedProgrammes[programId];
     const updatedGroup = { ...group, programmes: updatedProgrammes };
+    if (!updatedGroup) throw new Error("Unable to load group to edit");
     updateGroup(updatedGroup);
+
+    useDeviceGroupsStore.getState().mergeGroup({
+      id: group.id,
+      programmes: updatedProgrammes,
+    });
+
+    const updateCommand = { programmes: updatedGroup.programmes };
+    workers?.connection
+      ?.updateDeviceConfiguration(updatedGroup.id, updateCommand)
+      .then((response) => {
+        if (!response.persiste)
+          throw new Error(`Error updating device: ${response.err}`);
+      })
+      .catch((err) =>
+        console.error("handleSave Error updating device group", err),
+      );
+
     setPrograms((prev) => prev.filter((p) => p.programme_id !== programId));
   };
 
@@ -117,14 +139,14 @@ export default function DevicePrograms() {
                   {p.actif ? "Yes" : "No"}
                 </div>
               </Link>
-              <Button
+              <ConfirmButton
                 variant="outline"
-                size="sm"
+                confirmLabel="Confirm delete"
                 className="absolute top-2 right-2"
                 onClick={(e) => deleteProgram(p.programme_id, e)}
               >
                 Delete
-              </Button>
+              </ConfirmButton>
             </li>
           ))}
         </ul>
