@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router";
+import { useDevicesStore } from "../state/devicesStore";
 
 interface Horaire {
   etat: 0 | 1;
@@ -63,10 +65,37 @@ interface Props {
 export function DeviceProgramArgsEditor({ program, onChange }: Props) {
   const [localArgs, setLocalArgs] = useState<ProgramArgs>(program.args);
 
-  // Keep local copy in sync with prop changes
+  // Retrieve the current device id from the route and get its internal id
+  const { deviceId } = useParams<{ deviceId: string }>();
+  const device = useDevicesStore((s) =>
+    s.devices.find((d) => d.id === deviceId),
+  );
+  const deviceInternalId = device?.internalId ?? "";
+
+  // Keep local copy in sync with prop changes only when the program itself changes
   useEffect(() => {
-    setLocalArgs(program.args);
-  }, [program.args]);
+    console.debug("Loading program args: %O", program.args);
+    let changed = false;
+    if (deviceInternalId && program.class) {
+      const newArgs = { ...program.args } as any;
+      switch (program.class) {
+        case "programmes.environnement.Humidificateur":
+          if (!newArgs["switches_humidificateurs"]) {
+            changed = true;
+            newArgs["switches_humidificateurs"] = [deviceInternalId];
+          }
+        default:
+          if (!newArgs.switches) {
+            changed = true;
+            newArgs.switches = [deviceInternalId];
+          }
+      }
+      setLocalArgs(newArgs);
+      if (changed) onChange(newArgs);
+    } else {
+      setLocalArgs(program.args);
+    }
+  }, [program.args, program.class, deviceInternalId]);
 
   // Notify parent of any arg changes
   const update = (field: string, value: any) => {
@@ -123,6 +152,11 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             />
             Activation initiale
           </label>
+          <input
+            type="hidden"
+            name="switches"
+            value={arrayToStringList(args.switches)}
+          />
 
           <fieldset className="border p-3 rounded">
             <legend className="font-medium mb-2">Horaire</legend>
@@ -296,6 +330,11 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
               className="w-full border rounded p-1"
             />
           </label>
+          <input
+            type="hidden"
+            name="switches_humidificateurs"
+            value={arrayToStringList(args.switches_humidificateurs)}
+          />
         </div>
       );
     }
@@ -355,6 +394,11 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
               className="w-full border rounded p-1"
             />
           </label>
+          <input
+            type="hidden"
+            name="switches"
+            value={arrayToStringList(args.switches)}
+          />
         </div>
       );
     }
@@ -414,6 +458,11 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
               className="w-full border rounded p-1"
             />
           </label>
+          <input
+            type="hidden"
+            name="switches"
+            value={arrayToStringList(args.switches)}
+          />
         </div>
       );
     }

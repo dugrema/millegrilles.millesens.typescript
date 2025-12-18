@@ -75,7 +75,7 @@ export default function DeviceProgramsEdit() {
         });
       }
     } else {
-      // Only set a new default if we don't already have one
+      // No programId: create a new default program if not already set
       if (!editProgram || editProgram.programme_id === "") {
         setEditProgram({
           programme_id: crypto.randomUUID(),
@@ -86,7 +86,7 @@ export default function DeviceProgramsEdit() {
         });
       }
     }
-  }, [group, programId, editProgram]);
+  }, [group, programId]);
 
   /* --------------------------------------------------------------
    * Generic change handler for description, class and active fields
@@ -115,9 +115,21 @@ export default function DeviceProgramsEdit() {
   const handleSave = () => {
     if (!editProgram || !group) return;
 
+    if (!editProgram.programme_id) {
+      editProgram.programme_id = crypto.randomUUID();
+    }
+    const programId = editProgram.programme_id;
+
+    console.debug(
+      "Handle save programId %s:\nProgram %O\nGroup: %O",
+      programId,
+      editProgram,
+      group,
+    );
+
     const updatedProgrammes = {
       ...(group.programmes ?? {}),
-      [editProgram.programme_id]: editProgram,
+      [programId]: editProgram,
     };
 
     useDeviceGroupsStore.getState().mergeGroup({
