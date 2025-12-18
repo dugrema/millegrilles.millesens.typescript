@@ -28,10 +28,10 @@ const PROGRAM_CLASS_OPTIONS = [
  * DevicePrograms – list view only.
  * Renders an "Add Program" link and a clickable list of programs.
  * Clicking a program navigates to the edit page for that program.
+ * A delete button is also provided to remove the program from the group.
  */
 export default function DevicePrograms() {
   const { deviceId } = useParams<{ deviceId: string }>();
-  console.debug("Params: ", useParams());
 
   const device = useDevicesStore((state) =>
     state.devices.find((d) => d.id === deviceId),
@@ -39,6 +39,7 @@ export default function DevicePrograms() {
   const group = useDeviceGroupsStore((state) =>
     state.groups.find((g) => g.id === device?.deviceGroup),
   );
+  const updateGroup = useDeviceGroupsStore((state) => state.updateGroup);
   const [programs, setPrograms] = useState<Program[]>([]);
 
   useEffect(() => {
@@ -68,6 +69,17 @@ export default function DevicePrograms() {
     setPrograms(allPrograms);
   }, [group, deviceId, device]);
 
+  const deleteProgram = (programId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!group) return;
+    const updatedProgrammes = group.programmes ? { ...group.programmes } : {};
+    delete updatedProgrammes[programId];
+    const updatedGroup = { ...group, programmes: updatedProgrammes };
+    updateGroup(updatedGroup);
+    setPrograms((prev) => prev.filter((p) => p.programme_id !== programId));
+  };
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">Device Programs</h1>
@@ -86,7 +98,7 @@ export default function DevicePrograms() {
           {programs.map((p) => (
             <li
               key={p.programme_id}
-              className="p-2 border rounded cursor-pointer"
+              className="p-2 border rounded cursor-pointer relative"
             >
               {/* Linking each program to its edit page */}
               <Link
@@ -105,6 +117,14 @@ export default function DevicePrograms() {
                   {p.actif ? "Yes" : "No"}
                 </div>
               </Link>
+              <Button
+                variant="outline"
+                size="sm"
+                className="absolute top-2 right-2"
+                onClick={(e) => deleteProgram(p.programme_id, e)}
+              >
+                Delete
+              </Button>
             </li>
           ))}
         </ul>

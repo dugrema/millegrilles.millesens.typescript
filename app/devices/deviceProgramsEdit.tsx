@@ -4,6 +4,7 @@ import { Button } from "~/components/Button";
 import { DeviceProgramArgsEditor } from "./deviceProgramArgsEditor";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { useDevicesStore } from "../state/devicesStore";
+import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
 
 export interface Program {
   programme_id: string;
@@ -37,6 +38,8 @@ export default function DeviceProgramsEdit() {
     deviceId: string;
     programId?: string;
   }>();
+
+  const workers = useMilleGrillesWorkers();
 
   // Get the device and its group
   const device = useDevicesStore((s) =>
@@ -137,8 +140,23 @@ export default function DeviceProgramsEdit() {
       programmes: updatedProgrammes,
     });
 
-    // Return to the list view
-    window.history.back();
+    const updatedGroup = useDeviceGroupsStore
+      .getState()
+      .groups.find((g) => g.id === group.id);
+
+    if (!updatedGroup) throw new Error("Unable to load group to edit");
+    const updateCommand = { programmes: updatedGroup.programmes };
+    workers?.connection
+      ?.updateDeviceConfiguration(updatedGroup.id, updateCommand)
+      .then((response) => {
+        if (!response.persiste)
+          throw new Error(`Error updating device: ${response.err}`);
+        // Return to the list view
+        window.history.back();
+      })
+      .catch((err) =>
+        console.error("handleSave Error updating device group", err),
+      );
   };
 
   /* --------------------------------------------------------------
