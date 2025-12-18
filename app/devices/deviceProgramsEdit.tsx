@@ -24,8 +24,15 @@ const PROGRAM_CLASS_OPTIONS = [
 ] as const;
 
 export default function DeviceProgramsEdit() {
-  const { programId } = useParams<{ programId?: string }>();
-  const groups = useDeviceGroupsStore((s) => s.groups);
+  const { groupId, programId } = useParams<{
+    groupId: string;
+    programId?: string;
+  }>();
+
+  // Find the group that contains the program with the given ID
+  const groupWithProgram = useDeviceGroupsStore((s) =>
+    s.groups.find((g) => g.id === groupId),
+  );
   const [editProgram, setEditProgram] = useState<Program | null>(null);
 
   /* --------------------------------------------------------------
@@ -34,7 +41,7 @@ export default function DeviceProgramsEdit() {
    * initialise a brand‑new empty program object.
    * -------------------------------------------------------------- */
   useEffect(() => {
-    if (!groups.length) {
+    if (!groupWithProgram) {
       setEditProgram(null);
       return;
     }
@@ -50,13 +57,6 @@ export default function DeviceProgramsEdit() {
       });
       return;
     }
-
-    // Find the group that contains the program with the given ID
-    const groupWithProgram = groups.find(
-      (g) =>
-        g.programmes &&
-        Object.values(g.programmes).some((p) => p.programme_id === programId),
-    );
 
     if (!groupWithProgram) {
       // Program not found → treat as a new program
@@ -84,7 +84,7 @@ export default function DeviceProgramsEdit() {
         args: prog.args ?? {},
       });
     }
-  }, [groups, programId]);
+  }, [groupWithProgram, programId]);
 
   /* --------------------------------------------------------------
    * Generic change handler for description, class and active fields
@@ -113,16 +113,7 @@ export default function DeviceProgramsEdit() {
   const handleSave = () => {
     if (!editProgram) return;
 
-    // Find the group that contains this program
-    const group = groups.find(
-      (g) =>
-        g.programmes &&
-        Object.values(g.programmes).some(
-          (p) => p.programme_id === editProgram.programme_id,
-        ),
-    );
-
-    if (!group || !group.programmes) {
+    if (!groupWithProgram || !groupWithProgram.programmes) {
       // Should never happen – fallback navigation
       window.history.back();
       return;
@@ -130,13 +121,13 @@ export default function DeviceProgramsEdit() {
 
     // Build the updated programmes map
     const updatedProgrammes = {
-      ...group.programmes,
+      ...groupWithProgram.programmes,
       [editProgram.programme_id]: editProgram,
     };
 
     // Persist using the store's mergeGroup action
     useDeviceGroupsStore.getState().mergeGroup({
-      id: group.id,
+      id: groupWithProgram.id,
       programmes: updatedProgrammes,
     });
 
