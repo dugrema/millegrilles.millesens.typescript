@@ -16,8 +16,11 @@ export default [
       route("device/:deviceId", "./devices/devicePage.tsx"),
       route("deviceGroup/:groupId", "./devices/deviceGroupPage.tsx"),
       route("chart/:deviceId", "./devices/deviceChart.tsx"),
-      route("programs/:groupId", "./devices/devicePrograms.tsx"),
-      route("programs/:groupId/:programId", "./devices/deviceProgramsEdit.tsx"),
+      route("programs/:deviceId", "./devices/devicePrograms.tsx"),
+      route(
+        "programs/:deviceId/:programId",
+        "./devices/deviceProgramsEdit.tsx",
+      ),
     ]),
   ]),
   ...prefix("settings", [

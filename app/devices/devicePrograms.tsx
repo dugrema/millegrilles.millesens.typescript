@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
+import { useDevicesStore } from "../state/devicesStore";
 import { Button } from "~/components/Button";
 import { useParams } from "react-router";
 
@@ -29,41 +30,50 @@ const PROGRAM_CLASS_OPTIONS = [
  * Clicking a program navigates to the edit page for that program.
  */
 export default function DevicePrograms() {
-  const { groupId } = useParams<{ groupId: string }>();
+  const { deviceId } = useParams<{ deviceId: string }>();
   console.debug("Params: ", useParams());
 
+  const device = useDevicesStore((state) =>
+    state.devices.find((d) => d.id === deviceId),
+  );
   const group = useDeviceGroupsStore((state) =>
-    state.groups.find((g) => g.id === groupId),
+    state.groups.find((g) => g.id === device?.deviceGroup),
   );
   const [programs, setPrograms] = useState<Program[]>([]);
 
   useEffect(() => {
-    console.debug("Loading group id %O programs: %O", groupId, group);
-    if (!group) {
+    console.debug("Loading device id %O programs: %O", deviceId, group);
+    if (!group || !device) {
       setPrograms([]);
       return;
     }
     const allPrograms: Program[] = [];
     if (group.programmes) {
       Object.values(group.programmes).forEach((p: any) => {
-        allPrograms.push({
-          programme_id: p.programme_id,
-          class: p.class,
-          descriptif: p.descriptif ?? "",
-          actif: p.actif,
-          args: p.args ?? {},
-        });
+        const targetSwitches = p.args?.switches ?? [];
+        if (
+          Array.isArray(targetSwitches) &&
+          targetSwitches.includes(device.internalId)
+        ) {
+          allPrograms.push({
+            programme_id: p.programme_id,
+            class: p.class,
+            descriptif: p.descriptif ?? "",
+            actif: p.actif,
+            args: p.args ?? {},
+          });
+        }
       });
     }
     setPrograms(allPrograms);
-  }, [group, groupId]);
+  }, [group, deviceId, device]);
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">Device Programs</h1>
 
       {/* Add Program button – navigates to the dedicated add page */}
-      <Link to={`/devices/programs/${groupId}/add`}>
+      <Link to={`/devices/programs/${deviceId}/add`}>
         <Button variant="primary" className="mb-4">
           Add Program
         </Button>
@@ -80,7 +90,7 @@ export default function DevicePrograms() {
             >
               {/* Linking each program to its edit page */}
               <Link
-                to={`/devices/programs/${groupId}/${p.programme_id}`}
+                to={`/devices/programs/${deviceId}/${p.programme_id}`}
                 className="block w-full hover:bg-blue-100"
               >
                 <div className="flex justify-between items-center">

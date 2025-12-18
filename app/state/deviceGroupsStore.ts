@@ -31,6 +31,7 @@ export interface DeviceGroupsState {
   removeGroup: (id: string) => void;
   setGroups: (gs: DeviceGroup[]) => void;
   updateGroup: (g: DeviceGroup) => void;
+  mergeGroup: (g: Partial<DeviceGroup> & Pick<DeviceGroup, "id">) => void;
 }
 
 /** Persist to IndexedDB using a string‑based storage wrapper. */

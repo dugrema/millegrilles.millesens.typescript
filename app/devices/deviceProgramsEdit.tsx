@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { Button } from "~/components/Button";
 import { DeviceProgramArgsEditor } from "./deviceProgramArgsEditor";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
+import { useDevicesStore } from "../state/devicesStore";
 
 export interface Program {
   programme_id: string;
@@ -23,68 +24,69 @@ const PROGRAM_CLASS_OPTIONS = [
   { value: "programmes.environnement.Climatisation", label: "Climatisation" },
 ] as const;
 
+const defaultProgram: Program = {
+  programme_id: "",
+  class: "",
+  descriptif: "",
+  actif: true,
+  args: {},
+};
+
 export default function DeviceProgramsEdit() {
-  const { groupId, programId } = useParams<{
-    groupId: string;
+  const { deviceId, programId } = useParams<{
+    deviceId: string;
     programId?: string;
   }>();
 
-  // Find the group that contains the program with the given ID
-  const groupWithProgram = useDeviceGroupsStore((s) =>
-    s.groups.find((g) => g.id === groupId),
+  // Get the device and its group
+  const device = useDevicesStore((s) =>
+    s.devices.find((d) => d.id === deviceId),
   );
-  const [editProgram, setEditProgram] = useState<Program | null>(null);
+  const group = useDeviceGroupsStore((s) =>
+    s.groups.find((g) => g.id === device?.deviceGroup),
+  );
+
+  const [editProgram, setEditProgram] = useState<Program>(defaultProgram);
 
   /* --------------------------------------------------------------
-   * Load the program that matches `programId` from the store.
+   * Load the program that matches `programId` from the group.
    * If no `programId` is provided or the program cannot be found,
    * initialise a brand‑new empty program object.
    * -------------------------------------------------------------- */
   useEffect(() => {
-    if (!groupWithProgram) {
-      setEditProgram(null);
+    if (!group) {
+      setEditProgram(defaultProgram);
       return;
     }
 
-    // No programId → creating a new program
-    if (!programId) {
-      setEditProgram({
-        programme_id: crypto.randomUUID(),
-        class: "",
-        descriptif: "",
-        actif: true,
-        args: {},
-      });
-      return;
-    }
+    // If editing an existing program, load it
+    if (programId) {
+      const prog = Object.values(group.programmes ?? {}).find(
+        (p: any) => p.programme_id === programId,
+      );
 
-    if (!groupWithProgram) {
-      // Program not found → treat as a new program
-      setEditProgram({
-        programme_id: crypto.randomUUID(),
-        class: "",
-        descriptif: "",
-        actif: true,
-        args: {},
-      });
-      return;
+      if (prog) {
+        setEditProgram({
+          programme_id: prog.programme_id,
+          class: prog.class,
+          descriptif: prog.descriptif ?? "",
+          actif: prog.actif,
+          args: prog.args ?? {},
+        });
+      }
+    } else {
+      // Only set a new default if we don't already have one
+      if (!editProgram || editProgram.programme_id === "") {
+        setEditProgram({
+          programme_id: crypto.randomUUID(),
+          class: "",
+          descriptif: "",
+          actif: true,
+          args: {},
+        });
+      }
     }
-
-    // Extract the matching program object
-    const prog = Object.values(groupWithProgram.programmes).find(
-      (p: any) => p.programme_id === programId,
-    );
-
-    if (prog) {
-      setEditProgram({
-        programme_id: prog.programme_id,
-        class: prog.class,
-        descriptif: prog.descriptif ?? "",
-        actif: prog.actif,
-        args: prog.args ?? {},
-      });
-    }
-  }, [groupWithProgram, programId]);
+  }, [group, programId, editProgram]);
 
   /* --------------------------------------------------------------
    * Generic change handler for description, class and active fields
@@ -111,23 +113,15 @@ export default function DeviceProgramsEdit() {
    * Persist the edited program back to the store.
    * -------------------------------------------------------------- */
   const handleSave = () => {
-    if (!editProgram) return;
+    if (!editProgram || !group) return;
 
-    if (!groupWithProgram || !groupWithProgram.programmes) {
-      // Should never happen – fallback navigation
-      window.history.back();
-      return;
-    }
-
-    // Build the updated programmes map
     const updatedProgrammes = {
-      ...groupWithProgram.programmes,
+      ...(group.programmes ?? {}),
       [editProgram.programme_id]: editProgram,
     };
 
-    // Persist using the store's mergeGroup action
     useDeviceGroupsStore.getState().mergeGroup({
-      id: groupWithProgram.id,
+      id: group.id,
       programmes: updatedProgrammes,
     });
 
@@ -145,7 +139,9 @@ export default function DeviceProgramsEdit() {
   return (
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-2">
-        {editProgram ? "Edit Program" : "Add Program"}
+        {programId
+          ? `Edit Program for ${group?.name} / ${device?.name}`
+          : `Add Program for ${group?.name} / ${device?.name}`}
       </h2>
 
       <div className="space-y-2">
@@ -186,7 +182,7 @@ export default function DeviceProgramsEdit() {
         </label>
 
         <DeviceProgramArgsEditor
-          program={editProgram ?? { args: {} }}
+          program={editProgram}
           onChange={(newArgs) => {
             if (editProgram) {
               setEditProgram({ ...editProgram, args: newArgs });

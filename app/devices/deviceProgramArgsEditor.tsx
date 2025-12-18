@@ -124,18 +124,6 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             Activation initiale
           </label>
 
-          <label>
-            Switches (comma separated):
-            <input
-              type="text"
-              value={arrayToStringList(args.switches)}
-              onChange={(e) =>
-                update("switches", stringListToArray(e.target.value))
-              }
-              className="w-full border rounded p-1"
-            />
-          </label>
-
           <fieldset className="border p-3 rounded">
             <legend className="font-medium mb-2">Horaire</legend>
             {horaire.map((item, idx) => (
@@ -300,21 +288,6 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
           </label>
 
           <label>
-            Switches_humidificateurs (comma separated):
-            <input
-              type="text"
-              value={arrayToStringList(args.switches_humidificateurs)}
-              onChange={(e) =>
-                update(
-                  "switches_humidificateurs",
-                  stringListToArray(e.target.value),
-                )
-              }
-              className="w-full border rounded p-1"
-            />
-          </label>
-
-          <label>
             Duree_on_min:
             <input
               type="number"
@@ -374,18 +347,6 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
           </label>
 
           <label>
-            Switches (comma separated):
-            <input
-              type="text"
-              value={arrayToStringList(args.switches)}
-              onChange={(e) =>
-                update("switches", stringListToArray(e.target.value))
-              }
-              className="w-full border rounded p-1"
-            />
-          </label>
-
-          <label>
             Duree_on_min:
             <input
               type="number"
@@ -439,18 +400,6 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
               value={arrayToStringList(args.senseurs)}
               onChange={(e) =>
                 update("senseurs", stringListToArray(e.target.value))
-              }
-              className="w-full border rounded p-1"
-            />
-          </label>
-
-          <label>
-            Switches (comma separated):
-            <input
-              type="text"
-              value={arrayToStringList(args.switches)}
-              onChange={(e) =>
-                update("switches", stringListToArray(e.target.value))
               }
               className="w-full border rounded p-1"
             />
