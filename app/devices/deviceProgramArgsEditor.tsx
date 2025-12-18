@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { useDevicesStore } from "../state/devicesStore";
 import { DevicePickList } from "../components/DevicePickList";
+import { ConfirmButton } from "~/components/ConfirmButton";
 
 interface Horaire {
   etat: 0 | 1;
@@ -164,7 +165,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             {horaire.map((item, idx) => (
               <div
                 key={idx}
-                className="border rounded p-2 mb-2 flex flex-col gap-2"
+                className="border rounded p-2 4 mb-2 flex flex-col gap-2 lg:flex-row lg:flex-wrap lg:gap-4"
               >
                 <div className="flex items-center gap-2">
                   <label>
@@ -176,8 +177,8 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                       }
                       className="border rounded p-1"
                     >
-                      <option value={0}>0</option>
-                      <option value={1}>1</option>
+                      <option value={0}>OFF</option>
+                      <option value={1}>ON</option>
                     </select>
                   </label>
 
@@ -213,10 +214,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                 <div className="flex items-center gap-2">
                   <label>
                     Jour (0-6):
-                    <input
-                      type="number"
-                      min={0}
-                      max={6}
+                    <select
                       value={item.jour ?? ""}
                       onChange={(e) =>
                         updateSchedule(
@@ -228,7 +226,16 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                         )
                       }
                       className="w-20 border rounded p-1"
-                    />
+                    >
+                      <option value="">None</option>
+                      <option value="0">Sunday</option>
+                      <option value="1">Monday</option>
+                      <option value="2">Tuesday</option>
+                      <option value="3">Wednesday</option>
+                      <option value="4">Thursday</option>
+                      <option value="5">Friday</option>
+                      <option value="6">Saturday</option>
+                    </select>
                   </label>
 
                   <label>
@@ -254,13 +261,13 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                   </label>
                 </div>
 
-                <button
-                  type="button"
+                <ConfirmButton
+                  variant="secondary"
                   onClick={() => removeSchedule(idx)}
-                  className="self-start text-red-600 hover:text-red-800"
+                  className="self-start text-red-600 hover:text-red-800 hover:bg-red-500"
                 >
                   Remove
-                </button>
+                </ConfirmButton>
               </div>
             ))}
 
