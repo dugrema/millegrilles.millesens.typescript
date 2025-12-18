@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { useDevicesStore } from "../state/devicesStore";
 import { Button } from "~/components/Button";
@@ -70,12 +70,14 @@ export default function DevicePrograms() {
         }
       });
     }
-    setPrograms(allPrograms);
+    setPrograms(
+      allPrograms.sort((a, b) =>
+        (a.descriptif ?? "").localeCompare(b.descriptif ?? ""),
+      ),
+    );
   }, [group, deviceId, device]);
 
-  const deleteProgram = (programId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const deleteProgram = (programId: string) => {
     if (!group) return;
     const updatedProgrammes = group.programmes ? { ...group.programmes } : {};
     delete updatedProgrammes[programId];
@@ -104,14 +106,26 @@ export default function DevicePrograms() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Device Programs</h1>
+      <h1 className="text-2xl font-semibold mb-4">
+        Programs for device{" "}
+        <strong>
+          {group?.name ?? group?.id} / {device?.name}
+        </strong>
+      </h1>
 
-      {/* Add Program button – navigates to the dedicated add page */}
-      <Link to={`/devices/programs/${deviceId}/add`}>
-        <Button variant="primary" className="mb-4">
-          Add Program
-        </Button>
-      </Link>
+      <div className="space-x-2">
+        <NavLink to={`/devices/device/${deviceId}`}>
+          <Button variant="secondary" className="mb-4">
+            Back
+          </Button>
+        </NavLink>
+        {/* Add Program button – navigates to the dedicated add page */}
+        <Link to={`/devices/programs/${deviceId}/add`}>
+          <Button variant="primary" className="mb-4">
+            Add Program
+          </Button>
+        </Link>
+      </div>
 
       {programs.length === 0 ? (
         <p>No programs defined.</p>
@@ -143,7 +157,7 @@ export default function DevicePrograms() {
                 variant="outline"
                 confirmLabel="Confirm delete"
                 className="absolute top-2 right-2"
-                onClick={(e) => deleteProgram(p.programme_id, e)}
+                onClick={() => deleteProgram(p.programme_id)}
               >
                 Delete
               </ConfirmButton>
