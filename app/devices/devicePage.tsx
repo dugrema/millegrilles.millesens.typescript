@@ -157,6 +157,9 @@ export default function DevicePage() {
     );
   };
 
+  // Determine the human‑readable group name
+  const groupName = groupInfo?.name ?? deviceGroup;
+
   return (
     <div className="p-4">
       <DeviceCard
@@ -222,7 +225,7 @@ export default function DevicePage() {
           </dd>
 
           <dt className="font-medium">Group</dt>
-          <dd>{deviceGroup}</dd>
+          <dd>{groupName}</dd>
 
           <dt className="font-medium">Group (filter)</dt>
           <dd>

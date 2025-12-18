@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { useDevicesStore } from "../state/devicesStore";
+import { DevicePickList } from "../components/DevicePickList";
 
 interface Horaire {
   etat: 0 | 1;
@@ -310,12 +311,14 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
           </label>
 
           <label>
-            Senseurs_humidite (comma separated):
-            <input
-              type="text"
-              value={arrayToStringList(args.senseurs_humidite)}
+            Senseurs:
+            <DevicePickList
+              value={args.senseurs_humidite?.[0] ?? ""}
               onChange={(e) =>
-                update("senseurs_humidite", stringListToArray(e.target.value))
+                update(
+                  "senseurs_humidite",
+                  e.target.value ? [e.target.value] : [],
+                )
               }
               className="w-full border rounded p-1"
             />
@@ -374,12 +377,11 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
           </label>
 
           <label>
-            Senseurs (comma separated):
-            <input
-              type="text"
-              value={arrayToStringList(args.senseurs)}
+            Senseurs:
+            <DevicePickList
+              value={args.senseurs?.[0] ?? ""}
               onChange={(e) =>
-                update("senseurs", stringListToArray(e.target.value))
+                update("senseurs", e.target.value ? [e.target.value] : [])
               }
               className="w-full border rounded p-1"
             />
@@ -438,12 +440,11 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
           </label>
 
           <label>
-            Senseurs (comma separated):
-            <input
-              type="text"
-              value={arrayToStringList(args.senseurs)}
+            Senseurs:
+            <DevicePickList
+              value={args.senseurs?.[0] ?? ""}
               onChange={(e) =>
-                update("senseurs", stringListToArray(e.target.value))
+                update("senseurs", e.target.value ? [e.target.value] : [])
               }
               className="w-full border rounded p-1"
             />
