@@ -5,40 +5,42 @@ import { vi } from "vitest";
 
 /* Mock the zustand stores used by DevicePickList */
 vi.mock("../state/devicesStore", () => ({
-  useDevicesStore: () => ({
-    devices: [
-      {
-        id: "group1__001",
-        deviceGroup: "group1",
-        internalId: "001",
-        name: "Thermostat",
-        type: "Temperature",
-      },
-      {
-        id: "group1__002",
-        deviceGroup: "group1",
-        internalId: "002",
-        name: "Humidity Sensor",
-        type: "Humidity",
-      },
-      {
-        id: "group2__001",
-        deviceGroup: "group2",
-        internalId: "001",
-        name: "Pressure Sensor",
-        type: "AtmPressure",
-      },
-    ],
-  }),
+  useDevicesStore: (selector: any) =>
+    selector({
+      devices: [
+        {
+          id: "group1__001",
+          deviceGroup: "group1",
+          internalId: "001",
+          name: "Thermostat",
+          type: "Temperature",
+        },
+        {
+          id: "group1__002",
+          deviceGroup: "group1",
+          internalId: "002",
+          name: "Humidity Sensor",
+          type: "Humidity",
+        },
+        {
+          id: "group2__001",
+          deviceGroup: "group2",
+          internalId: "001",
+          name: "Pressure Sensor",
+          type: "AtmPressure",
+        },
+      ],
+    }),
 }));
 
 vi.mock("../state/deviceGroupsStore", () => ({
-  useDeviceGroupsStore: () => ({
-    groups: [
-      { id: "group1", name: "Living Room" },
-      { id: "group2", name: "Bedroom" },
-    ],
-  }),
+  useDeviceGroupsStore: (selector: any) =>
+    selector({
+      groups: [
+        { id: "group1", name: "Living Room" },
+        { id: "group2", name: "Bedroom" },
+      ],
+    }),
 }));
 
 describe("DevicePickList component", () => {

@@ -223,6 +223,15 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
           type="button"
           variant={switchVariant}
           className="mt-4 w-full flex items-center justify-center rounded-md px-4 py-2"
+          aria-label={
+            changePending
+              ? status
+                ? "Turn Off"
+                : "Turn On"
+              : status
+                ? "Turn Off"
+                : "Turn On"
+          }
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();

@@ -1,19 +1,21 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { DeviceCard, UNIT_MAP } from "./DeviceCard";
-import { TimeProvider } from "./TimeContext";
 import { vi } from "vitest";
 import { describe, it, expect, test } from "vitest";
 
-// Mock the zustand store for device groups
+// Mock the zustand store for device groups before importing DeviceCard
 vi.mock("../state/deviceGroupsStore", () => ({
-  useDeviceGroupsStore: () => ({
-    groups: [
-      { id: "group1", name: "Living Room" },
-      { id: "group2", name: "Bedroom" },
-    ],
-  }),
+  useDeviceGroupsStore: (selector: any) =>
+    selector({
+      groups: [
+        { id: "group1", name: "Living Room" },
+        { id: "group2", name: "Bedroom" },
+      ],
+    }),
 }));
+
+import { DeviceCard } from "./DeviceCard";
+import { TimeProvider } from "./TimeContext";
 
 describe("DeviceCard component", () => {
   const baseProps = {

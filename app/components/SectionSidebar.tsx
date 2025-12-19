@@ -68,3 +68,4 @@ export const SectionSidebar = ({ children }: { children: ReactNode }) => {
     </aside>
   );
 };
+export default SectionSidebar;

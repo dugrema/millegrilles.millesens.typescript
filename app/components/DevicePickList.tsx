@@ -49,9 +49,12 @@ export const DevicePickList: React.FC<DevicePickListProps> = ({
     : devices;
 
   const sortedDevices = [...filteredDevices].sort((a, b) => {
-    const labelA = `${getGroupName(a.deviceGroup)} / ${a.name}`;
-    const labelB = `${getGroupName(b.deviceGroup)} / ${b.name}`;
-    return labelA.localeCompare(labelB);
+    const indexA = groups.findIndex((g) => g.id === a.deviceGroup);
+    const indexB = groups.findIndex((g) => g.id === b.deviceGroup);
+    if (indexA !== indexB) {
+      return indexA - indexB;
+    }
+    return a.name.localeCompare(b.name);
   });
 
   return (
@@ -61,6 +64,7 @@ export const DevicePickList: React.FC<DevicePickListProps> = ({
       value={value}
       onChange={onChange}
       className={className}
+      aria-label={name}
     >
       <option value="">Select a device</option>
       {sortedDevices.map((device) => (

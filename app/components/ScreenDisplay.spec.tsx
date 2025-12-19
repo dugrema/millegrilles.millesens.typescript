@@ -70,6 +70,7 @@ describe("ScreenDisplay component", () => {
         declaration={smallDecl}
         configuration={configuration}
         values={values}
+        page={1}
       />,
     );
 
