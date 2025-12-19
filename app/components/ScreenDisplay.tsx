@@ -84,7 +84,7 @@ export function ScreenDisplay({
               : 0
             : null;
 
-    if (value === null || value === "???") return "N??";
+    if (value === null) return "N??";
 
     // The python-format library supports placeholders like `{}` or `{0}`
     // in the same way as `str.format` in Python.
@@ -140,7 +140,7 @@ export function ScreenDisplay({
       lastUpdate: 0,
       status: undefined,
       numberValue: undefined,
-      stringValue: "???",
+      stringValue: "?STRING?",
     };
   };
 
@@ -149,7 +149,15 @@ export function ScreenDisplay({
     return visibleLines.map((ln, idx) => {
       const key = ln.variable;
       const val = preview ? generateFakeValue(key) : values[key];
-      const formatted = formatMask(ln.masque, val);
+
+      let formatted = "";
+      if (ln.masque) {
+        if (ln.masque.indexOf("{") >= 0) {
+          formatted = formatMask(ln.masque, val);
+        } else {
+          formatted = ln.masque; // Just display the mask, nothing to format
+        }
+      }
 
       // Detect if the formatted line would exceed the declared screen width
       const isOverflow =
