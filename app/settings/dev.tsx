@@ -4,6 +4,7 @@ import { useDeviceValuesStore } from "~/state/deviceValueStore";
 import { useDeviceGroupsStore } from "~/state/deviceGroupsStore";
 import { useEffect } from "react";
 import { useConfigurationStore } from "~/state/configurationStore";
+import { STORAGE_KEY_LASTGROUP } from "~/utils/constants";
 
 export default function SettingsPage() {
   /* ---------------------------------------------
@@ -166,14 +167,14 @@ export default function SettingsPage() {
   const deviceValues = useDeviceValuesStore((state) => state.deviceValues);
   const groups = useDeviceGroupsStore((state) => state.groups);
   const setUserId = useConfigurationStore((s) => s.setUserId);
-  useEffect(() => {
-    setUserId("dev");
-  }, []);
 
   /* ---------------------------------------------
    * Populate button handler
    * --------------------------------------------- */
   const handlePopulate = () => {
+    setUserId("dev");
+    localStorage.removeItem(STORAGE_KEY_LASTGROUP);
+
     const devices = dummyStatic.map((d) => ({
       ...d,
       internalId: d.id,
