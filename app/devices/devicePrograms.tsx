@@ -44,7 +44,9 @@ export default function DevicePrograms() {
     const allPrograms: Program[] = [];
     if (group.programmes) {
       Object.values(group.programmes).forEach((p: any) => {
-        const targetSwitches = p.args?.switches ?? [];
+        // Include both the new and legacy switch keys
+        const targetSwitches =
+          p.args?.switches ?? p.args?.switches_humidificateurs ?? [];
         if (
           Array.isArray(targetSwitches) &&
           targetSwitches.includes(device.internalId)
