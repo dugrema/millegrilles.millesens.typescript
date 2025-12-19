@@ -48,7 +48,7 @@ export function useSyncWhenReady() {
     if (!msg) return;
     const messageType = msg.routingKey.split(".").pop();
 
-    console.debug("receivedDeviceMessage: ", msg);
+    // console.debug("receivedDeviceMessage: ", msg);
 
     // Partial update of a device group (sensor values)
     if (messageType === "lectureConfirmee") {
@@ -56,10 +56,10 @@ export function useSyncWhenReady() {
       const group = mapDeviceReadingsToDeviceGroup(msg.message);
       group.name = "";
       mergeGroup(group);
-      console.debug(
-        "receivedDeviceMessage lectureConfirmee deviceGroup",
-        group,
-      );
+      // console.debug(
+      //   "receivedDeviceMessage lectureConfirmee deviceGroup",
+      //   group,
+      // );
       const values = mapDeviceReadingsToDeviceValues(
         msg.message as DeviceReadings,
       );

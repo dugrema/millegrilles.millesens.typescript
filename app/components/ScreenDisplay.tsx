@@ -89,9 +89,7 @@ export function ScreenDisplay({
     // The python-format library supports placeholders like `{}` or `{0}`
     // in the same way as `str.format` in Python.
     try {
-      const formattedValue = python_format(mask, value);
-      console.debug("Formatted value", formattedValue);
-      return formattedValue;
+      return python_format(mask, value);
     } catch (err) {
       console.warn("Error rendering %O: %O", value, err);
       return `E?? -> ${val}`;
