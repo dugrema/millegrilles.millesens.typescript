@@ -1,11 +1,15 @@
 // File: millegrilles.millesens.typescript/app/devices/groupDisplayEdit.tsx
 
 import { useParams, NavLink } from "react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDeviceGroupsStore } from "~/state/deviceGroupsStore";
 import type { DeviceGroup } from "~/state/deviceGroupsStore";
 import { Button } from "~/components/Button";
 import { DevicePickList } from "~/components/DevicePickList";
+import { ScreenDisplay } from "~/components/ScreenDisplay";
+import { useDeviceValuesStore } from "~/state/deviceValueStore";
+import type { DeviceValue } from "~/state/deviceValueStore";
+import type { DisplayConfiguration } from "~/workers/connection.worker";
 
 /**
  * Edit a display configuration inside a device group.
@@ -66,12 +70,13 @@ export default function GroupDisplayEdit() {
   >(initialConfig.lignes ?? []);
 
   const updateGroup = useDeviceGroupsStore((s) => s.updateGroup);
+  const screenConfig: DisplayConfiguration =
+    group.displayConfiguration?.[displayName] ?? {};
 
   // Pagination
   const pageSize = display.height ?? 1;
-  const [pageIndex, setPageIndex] = useState(0);
+  const [pageIndex, setPageIndex] = useState<number>(0);
   const totalPages = Math.ceil(lines.length / pageSize);
-
   const startIdx = pageIndex * pageSize;
   const visibleLines = lines.slice(startIdx, startIdx + pageSize);
 
@@ -132,6 +137,16 @@ export default function GroupDisplayEdit() {
     };
     updateGroup(updatedGroup);
   };
+
+  /* ---------- Build values map ---------- */
+  const deviceValues = useDeviceValuesStore((s) => s.deviceValues);
+  const valuesMap = useMemo(() => {
+    const map: Record<string, DeviceValue> = {};
+    deviceValues.forEach((v) => {
+      map[v.id] = v;
+    });
+    return map;
+  }, [deviceValues]);
 
   return (
     <div className="p-4">
@@ -234,6 +249,7 @@ export default function GroupDisplayEdit() {
                       )
                     }
                     className="w-full border rounded p-1"
+                    disabled={!line.variable}
                   />
                 </div>
               </div>
@@ -272,6 +288,18 @@ export default function GroupDisplayEdit() {
             Next
           </Button>
         </div>
+      </div>
+
+      {/* Screen preview */}
+      <div className="mb-4">
+        <ScreenDisplay
+          declaration={display}
+          configuration={{ lignes: lines }}
+          values={valuesMap}
+          page={pageIndex}
+          onPageChange={setPageIndex}
+          preview={true}
+        />
       </div>
 
       {/* Actions */}

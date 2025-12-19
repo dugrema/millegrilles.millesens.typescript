@@ -17,6 +17,7 @@
     "luxon": "^3.7.2",
     "millegrilles_cryptography": "github:dugrema/millegrilles.cryptography.ts#noforge",
     "millegrilles.reactdeps.typescript": "github:dugrema/millegrilles.reactdeps.typescript#noforge",
+    "python-format-js": "^1.4.3",
     "react": "^19.2.2",
     "react-dom": "^19.2.2",
     "react-router": "7.10.1",
