@@ -70,7 +70,8 @@ export function useSyncWhenReady() {
     else if (messageType === "presenceAppareil") {
       const uuid = msg.message.uuid_appareil;
       // Update the store in bulk: keep other properties unchanged
-      touchDeviceGroupPresence(uuid);
+      const connected = !!msg.message.connecte;
+      touchDeviceGroupPresence(uuid, connected);
     }
   });
 

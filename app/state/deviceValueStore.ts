@@ -27,7 +27,7 @@ export interface DeviceValuesState {
     changePending?: boolean,
   ) => void;
   /** Update all values belonging to a device group by setting them as connected and refreshing their timestamp. */
-  touchDeviceGroupPresence: (deviceGroup: string) => void;
+  touchDeviceGroupPresence: (deviceGroup: string, connected?: boolean) => void;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -114,7 +114,7 @@ export const useDeviceValuesStore = create<DeviceValuesState>((set) => ({
   },
 
   /** Update all values of a specific device group to be connected and refresh timestamp */
-  touchDeviceGroupPresence: (deviceGroup) => {
+  touchDeviceGroupPresence: (deviceGroup, connected?: boolean) => {
     const now = Math.floor(Date.now() / 1000);
     const prefix = `${deviceGroup}__`;
     set((s) => {
@@ -122,8 +122,8 @@ export const useDeviceValuesStore = create<DeviceValuesState>((set) => ({
         if (!dv.id.startsWith(prefix)) return dv;
         const updated: DeviceValue = {
           ...dv,
-          connected: true,
-          lastUpdate: now,
+          connected,
+          // lastUpdate: now,
         };
         idb.setItem(updated.id, updated);
         return updated;
