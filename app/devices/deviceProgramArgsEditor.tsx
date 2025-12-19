@@ -105,6 +105,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
   );
   const deviceInternalId = device?.internalId ?? "";
 
+  // Create default values for the program class - include the switch device.
   const defaultForClass = (): ProgramArgs => {
     switch (program.class) {
       case "programmes.horaire.HoraireHebdomadaire":
@@ -123,6 +124,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
         return {} as ProgramArgs;
     }
   };
+
   const [localArgs, setLocalArgs] = useState<ProgramArgs>(() => {
     const defaults = defaultForClass();
     return { ...defaults, ...program.args };
@@ -329,38 +331,8 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
       const args = localArgs as HumidificateurArgs;
       return (
         <div className="space-y-3">
-          <label>
-            Humidité target:
-            <input
-              type="number"
-              value={args.humidite ?? 40}
-              onChange={(e) => update("humidite", Number(e.target.value))}
-              className="w-full border rounded p-1"
-            />
-          </label>
-
-          <label>
-            Precision:
-            <input
-              type="number"
-              value={args.precision ?? 2}
-              onChange={(e) => update("precision", Number(e.target.value))}
-              className="w-full border rounded p-1"
-            />
-          </label>
-
-          <label>
-            Duree_off_min:
-            <input
-              type="number"
-              value={args.duree_off_min ?? 30}
-              onChange={(e) => update("duree_off_min", Number(e.target.value))}
-              className="w-full border rounded p-1"
-            />
-          </label>
-
-          <label>
-            Senseurs:
+          <label className="flex flex-col lg:flex-row lg:items-center lg:gap-4 w-full">
+            <span className="lg:w-1/5">Senseurs:</span>
             <DevicePickList
               value={args.senseurs_humidite?.[0] ?? ""}
               onChange={(e) =>
@@ -369,21 +341,56 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                   e.target.value ? [e.target.value] : [],
                 )
               }
-              className="w-full border rounded p-1"
+              className="flex-1 border rounded p-1"
               deviceType="Humidity"
               currentDeviceGroup={device?.deviceGroup}
             />
           </label>
 
-          <label>
-            Duree_on_min:
-            <input
-              type="number"
-              value={args.duree_on_min ?? 30}
-              onChange={(e) => update("duree_on_min", Number(e.target.value))}
-              className="w-full border rounded p-1"
-            />
-          </label>
+          <div className="flex flex-col lg:flex-row lg:gap-4 w-full">
+            <label className="flex-1">
+              Humidité target:
+              <input
+                type="number"
+                value={args.humidite ?? 40}
+                onChange={(e) => update("humidite", Number(e.target.value))}
+                className="w-full border rounded p-1"
+              />
+            </label>
+
+            <label className="flex-1">
+              Precision:
+              <input
+                type="number"
+                value={args.precision ?? 2}
+                onChange={(e) => update("precision", Number(e.target.value))}
+                className="w-full border rounded p-1"
+              />
+            </label>
+
+            <label className="flex-1">
+              Duree_off_min:
+              <input
+                type="number"
+                value={args.duree_off_min ?? 30}
+                onChange={(e) =>
+                  update("duree_off_min", Number(e.target.value))
+                }
+                className="w-full border rounded p-1"
+              />
+            </label>
+
+            <label className="flex-1">
+              Duree_on_min:
+              <input
+                type="number"
+                value={args.duree_on_min ?? 30}
+                onChange={(e) => update("duree_on_min", Number(e.target.value))}
+                className="w-full border rounded p-1"
+              />
+            </label>
+          </div>
+
           <input
             type="hidden"
             name="switches_humidificateurs"
@@ -397,58 +404,62 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
       const args = localArgs as ChauffageArgs;
       return (
         <div className="space-y-3">
-          <label>
-            Temperature:
-            <input
-              type="number"
-              value={args.temperature ?? 20}
-              onChange={(e) => update("temperature", Number(e.target.value))}
-              className="w-full border rounded p-1"
-            />
-          </label>
-
-          <label>
-            Precision:
-            <input
-              type="number"
-              value={args.precision ?? 1}
-              onChange={(e) => update("precision", Number(e.target.value))}
-              className="w-full border rounded p-1"
-            />
-          </label>
-
-          <label>
-            Duree_off_min:
-            <input
-              type="number"
-              value={args.duree_off_min ?? 30}
-              onChange={(e) => update("duree_off_min", Number(e.target.value))}
-              className="w-full border rounded p-1"
-            />
-          </label>
-
-          <label>
-            Senseurs:
+          <label className="flex flex-col lg:flex-row lg:items-center lg:gap-4 w-full">
+            <span className="lg:w-1/5">Senseurs:</span>
             <DevicePickList
               value={args.senseurs?.[0] ?? ""}
               onChange={(e) =>
                 update("senseurs", e.target.value ? [e.target.value] : [])
               }
-              className="w-full border rounded p-1"
+              className="flex-1 border rounded p-1"
               deviceType="Temperature"
               currentDeviceGroup={device?.deviceGroup}
             />
           </label>
 
-          <label>
-            Duree_on_min:
-            <input
-              type="number"
-              value={args.duree_on_min ?? 10}
-              onChange={(e) => update("duree_on_min", Number(e.target.value))}
-              className="w-full border rounded p-1"
-            />
-          </label>
+          <div className="flex flex-col lg:flex-row lg:gap-4 w-full">
+            <label className="flex-1">
+              Temperature:
+              <input
+                type="number"
+                value={args.temperature ?? 20}
+                onChange={(e) => update("temperature", Number(e.target.value))}
+                className="w-full border rounded p-1"
+              />
+            </label>
+
+            <label className="flex-1">
+              Precision:
+              <input
+                type="number"
+                value={args.precision ?? 1}
+                onChange={(e) => update("precision", Number(e.target.value))}
+                className="w-full border rounded p-1"
+              />
+            </label>
+
+            <label className="flex-1">
+              Duree_off_min:
+              <input
+                type="number"
+                value={args.duree_off_min ?? 30}
+                onChange={(e) =>
+                  update("duree_off_min", Number(e.target.value))
+                }
+                className="w-full border rounded p-1"
+              />
+            </label>
+
+            <label className="flex-1">
+              Duree_on_min:
+              <input
+                type="number"
+                value={args.duree_on_min ?? 10}
+                onChange={(e) => update("duree_on_min", Number(e.target.value))}
+                className="w-full border rounded p-1"
+              />
+            </label>
+          </div>
           <input
             type="hidden"
             name="switches"
@@ -462,58 +473,62 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
       const args = localArgs as ClimatisationArgs;
       return (
         <div className="space-y-3">
-          <label>
-            Temperature:
-            <input
-              type="number"
-              value={args.temperature ?? 20}
-              onChange={(e) => update("temperature", Number(e.target.value))}
-              className="w-full border rounded p-1"
-            />
-          </label>
-
-          <label>
-            Precision:
-            <input
-              type="number"
-              value={args.precision ?? 1}
-              onChange={(e) => update("precision", Number(e.target.value))}
-              className="w-full border rounded p-1"
-            />
-          </label>
-
-          <label>
-            Duree_off_min:
-            <input
-              type="number"
-              value={args.duree_off_min ?? 60}
-              onChange={(e) => update("duree_off_min", Number(e.target.value))}
-              className="w-full border rounded p-1"
-            />
-          </label>
-
-          <label>
-            Senseurs:
+          <label className="flex flex-col lg:flex-row lg:items-center lg:gap-4 w-full">
+            <span className="lg:w-1/5">Senseurs:</span>
             <DevicePickList
               currentDeviceGroup={device?.deviceGroup}
               value={args.senseurs?.[0] ?? ""}
               onChange={(e) =>
                 update("senseurs", e.target.value ? [e.target.value] : [])
               }
-              className="w-full border rounded p-1"
+              className="flex-1 border rounded p-1"
               deviceType="Temperature"
             />
           </label>
 
-          <label>
-            Duree_on_min:
-            <input
-              type="number"
-              value={args.duree_on_min ?? 10}
-              onChange={(e) => update("duree_on_min", Number(e.target.value))}
-              className="w-full border rounded p-1"
-            />
-          </label>
+          <div className="flex flex-col lg:flex-row lg:gap-4 w-full">
+            <label className="flex-1">
+              Temperature:
+              <input
+                type="number"
+                value={args.temperature ?? 20}
+                onChange={(e) => update("temperature", Number(e.target.value))}
+                className="w-full border rounded p-1"
+              />
+            </label>
+
+            <label className="flex-1">
+              Precision:
+              <input
+                type="number"
+                value={args.precision ?? 1}
+                onChange={(e) => update("precision", Number(e.target.value))}
+                className="w-full border rounded p-1"
+              />
+            </label>
+
+            <label className="flex-1">
+              Duree_off_min:
+              <input
+                type="number"
+                value={args.duree_off_min ?? 60}
+                onChange={(e) =>
+                  update("duree_off_min", Number(e.target.value))
+                }
+                className="w-full border rounded p-1"
+              />
+            </label>
+
+            <label className="flex-1">
+              Duree_on_min:
+              <input
+                type="number"
+                value={args.duree_on_min ?? 10}
+                onChange={(e) => update("duree_on_min", Number(e.target.value))}
+                className="w-full border rounded p-1"
+              />
+            </label>
+          </div>
           <input
             type="hidden"
             name="switches"
