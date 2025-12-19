@@ -80,6 +80,8 @@ export function ScreenDisplay({
           ? val.stringValue
           : val.status !== undefined
             ? val.status
+              ? 1
+              : 0
             : null;
 
     if (value === null || value === "???") return "N??";

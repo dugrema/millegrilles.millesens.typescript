@@ -114,10 +114,7 @@ export default function DeviceGroup() {
             </div>
             <RegistrationButton onRegister={handleRegister} className="ml-2" />
             {group.displays && group.displays.length > 0 && (
-              <NavLink
-                to={`/devices/displays/${groupId}/${group.displays[0].name}`}
-                className="ml-2"
-              >
+              <NavLink to={`/devices/displays/${groupId}`} className="ml-2">
                 <Button variant="secondary">Displays</Button>
               </NavLink>
             )}

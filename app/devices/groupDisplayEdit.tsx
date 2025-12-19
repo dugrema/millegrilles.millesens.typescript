@@ -10,6 +10,7 @@ import { ScreenDisplay } from "~/components/ScreenDisplay";
 import { useDeviceValuesStore } from "~/state/deviceValueStore";
 import type { DeviceValue } from "~/state/deviceValueStore";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
+import { useNavigate } from "react-router";
 
 /**
  * Edit a display configuration inside a device group.
@@ -31,6 +32,7 @@ export default function GroupDisplayEdit() {
   }>();
 
   const workers = useMilleGrillesWorkers();
+  const navigate = useNavigate();
 
   // Guard against missing params
   if (!groupId || !displayName) {
@@ -138,14 +140,13 @@ export default function GroupDisplayEdit() {
     updateGroup(updatedGroup);
 
     const updateCommand = { displays: updatedDisplayConfiguration };
-    console.debug("handleSave updateCommand ", updateCommand);
     workers?.connection
       ?.updateDeviceConfiguration(updatedGroup.id, updateCommand)
       .then((response) => {
         if (!response.persiste)
           throw new Error(`Error updating device: ${response.err}`);
         // Return to the list view
-        window.history.back();
+        navigate(`/devices/displays/${group.id}`);
         // editLock.current = false;
       })
       .catch((err) =>
@@ -298,7 +299,7 @@ export default function GroupDisplayEdit() {
         <Button onClick={handleSave} variant="primary">
           Save
         </Button>
-        <NavLink to={`/devices/group/${groupId}`}>
+        <NavLink to={`/devices/displays/${groupId}`}>
           <Button variant="outline">Cancel</Button>
         </NavLink>
       </div>

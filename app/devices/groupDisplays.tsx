@@ -1,4 +1,5 @@
 import { useParams, NavLink } from "react-router";
+import { Button } from "~/components/Button";
 import { useDeviceGroupsStore } from "~/state/deviceGroupsStore";
 import type { DeviceGroup } from "~/state/deviceGroupsStore";
 
@@ -32,6 +33,12 @@ export default function GroupDisplays() {
       <h1 className="text-2xl font-semibold mb-4">
         Displays for Group: {group.name ?? group.id}
       </h1>
+
+      <div className="mb-2 space-x-2">
+        <Button variant="secondary">
+          <NavLink to={`/devices/deviceGroup/${group.id}`}>Group</NavLink>
+        </Button>
+      </div>
 
       {displays.length === 0 ? (
         <p>No displays configured for this group.</p>
