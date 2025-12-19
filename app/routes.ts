@@ -21,6 +21,7 @@ export default [
         "programs/:deviceId/:programId",
         "./devices/deviceProgramsEdit.tsx",
       ),
+      route("programs", "./devices/programs.tsx"),
     ]),
   ]),
   ...prefix("settings", [

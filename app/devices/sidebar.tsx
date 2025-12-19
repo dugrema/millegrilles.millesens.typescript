@@ -39,6 +39,13 @@ export default function DevicesSidebar() {
         </NavLink>
 
         <NavLink
+          to="devices/programs"
+          className="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+        >
+          Programs
+        </NavLink>
+
+        <NavLink
           to="#"
           className="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
         >
