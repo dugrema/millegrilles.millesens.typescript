@@ -2,6 +2,7 @@ import { NavLink } from "react-router";
 import { Badge } from "~/components/Badge";
 import { SectionSidebar } from "~/components/SectionSidebar";
 import { useDevicesStore } from "~/state/devicesStore";
+import { useDeviceGroupsStore } from "~/state/deviceGroupsStore";
 
 export default function DevicesSidebar() {
   const devices = useDevicesStore((state) => state.devices);
@@ -18,6 +19,9 @@ export default function DevicesSidebar() {
   });
 
   const groupList = Array.from(groupSet).sort((a, b) => a.localeCompare(b));
+  const pendingCount = useDeviceGroupsStore(
+    (state) => state.groups.filter((g) => g.registrationPending).length,
+  );
 
   return (
     <SectionSidebar>
@@ -46,10 +50,10 @@ export default function DevicesSidebar() {
         </NavLink>
 
         <NavLink
-          to="#"
+          to="devices/notices"
           className="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
         >
-          Notices <Badge count={2} />
+          Notices <Badge count={pendingCount} />
         </NavLink>
       </nav>
 
