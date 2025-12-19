@@ -1,6 +1,10 @@
 import type { DeviceGroup } from "../state/deviceGroupsStore";
 import type { DeviceValue } from "../state/deviceValueStore";
 import type { DeviceReadings } from "../workers/connection.worker";
+import type {
+  DisplayInformation,
+  DisplayConfiguration,
+} from "../workers/connection.worker";
 import type { Device } from "../state/devicesStore";
 
 /**
@@ -25,6 +29,8 @@ export function mapDeviceReadingsToDeviceGroup(
     latitude: readings.configuration?.geoposition?.latitude ?? undefined,
     longitude: readings.configuration?.geoposition?.longitude ?? undefined,
     programmes: readings.configuration?.programmes,
+    displays: readings.displays ?? undefined,
+    displayConfiguration: readings.configuration?.displays ?? undefined,
     registrationPending: !!readings.csr_present,
     registrationRequested: false,
   };

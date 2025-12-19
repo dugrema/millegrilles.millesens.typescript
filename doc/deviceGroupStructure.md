@@ -41,7 +41,48 @@ This corresponds to what is received on synchronization per device group (appare
             "switch_p17/etat": "1. Lumiere fond",
             "switch_p16/etat": "2. Lumieres côtés"
         },
-        "displays": {},
+        "displays": {
+          "Ssd1306": {
+            "lignes": [
+              {
+                "masque": "Temp     {: 5.1f}C",
+                "variable": "DHT11_p28/temperature",
+                "duree": 20
+              },
+              {
+                "masque": "DEV1 Hum  {:4.1f}%",
+                "variable": "rpi-pico-e6614103e79a8521:DHT22_p28/humidite",
+                "duree": 5
+              },
+              {
+                "masque": "Press   {:4d}hPa",
+                "variable": "bmp180/pression",
+                "duree": 5
+              },
+              {
+                "masque": "{}",
+                "variable": "rp2picow/wifi",
+                "duree": 5
+              }
+            ],
+            "afficher_date_duree": 6
+          },
+          "LCD1602": {
+            "lignes": [
+              {
+                "masque": "Temp     {: 5.1f}C",
+                "variable": "bmp180/temperature",
+                "duree": 25
+              },
+              {
+                "masque": "Humidity  {:4.1f}%",
+                "variable": "DHT11_p28/humidite",
+                "duree": 5
+              }
+            ],
+            "afficher_date_duree": 17
+          }
+        },
         "programmes": {
             "c0234a80-ccc4-11f0-999c-81c852c1e962": {
                 "programme_id": "c0234a80-ccc4-11f0-999c-81c852c1e962",
@@ -147,6 +188,20 @@ This corresponds to what is received on synchronization per device group (appare
             ]
         }
     },
+    "displays": [
+      {
+        "name": "LCD1602",
+        "format": "text",
+        "height": 2,
+        "width": 16
+      },
+      {
+        "name": "Ssd1306",
+        "format": "text",
+        "height": 4,
+        "width": 16
+      }
+    ],  
     "types_donnees": {
         "switch_p16/etat": "switch",
         "switch_p17/etat": "switch",

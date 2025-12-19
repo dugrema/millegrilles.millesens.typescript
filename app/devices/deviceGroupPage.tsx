@@ -113,6 +113,14 @@ export default function DeviceGroup() {
               <strong>ID:</strong> {group.id}
             </div>
             <RegistrationButton onRegister={handleRegister} className="ml-2" />
+            {group.displays && group.displays.length > 0 && (
+              <NavLink
+                to={`/devices/displays/${groupId}/${group.displays[0].name}`}
+                className="ml-2"
+              >
+                <Button variant="secondary">Displays</Button>
+              </NavLink>
+            )}
             {group.microcode && (
               <div>
                 <strong>Microcode:</strong> {group.microcode}

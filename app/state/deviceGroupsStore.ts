@@ -2,6 +2,10 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { createIDBStorage } from "../utils/idbStorage";
 import type { ProgramsConfiguration } from "../workers/connection.worker";
+import type {
+  DisplayInformation,
+  DisplayConfiguration,
+} from "../workers/connection.worker";
 
 /** Representation of a device group (physical platform). */
 export interface DeviceGroup {
@@ -18,6 +22,10 @@ export interface DeviceGroup {
   longitude?: number;
   /** Programme configuration for the device group. */
   programmes?: ProgramsConfiguration;
+  /** Displays configured for the device group. */
+  displays?: DisplayInformation[];
+  /** Mapping of display names to configuration. */
+  displayConfiguration?: { [key: string]: DisplayConfiguration };
   /** Instance identifier (from backend). */
   instance_id: string;
   registrationPending?: boolean;
@@ -79,6 +87,8 @@ export const useDeviceGroupsStore = create<DeviceGroupsState>()(
             }
             if (!g.timezone) delete g.timezone;
             if (!g.programmes) delete g.programmes;
+            if (!g.displays) delete g.displays;
+            if (!g.displayConfiguration) delete g.displayConfiguration;
             const updated: DeviceGroup = { ...x, ...g };
             // Persist the merged group.
             idb.setItem(updated.id, updated);

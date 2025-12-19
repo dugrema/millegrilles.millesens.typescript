@@ -22,6 +22,8 @@ export default [
         "./devices/deviceProgramsEdit.tsx",
       ),
       route("programs", "./devices/programs.tsx"),
+      route("displays/:groupId", "./devices/groupDisplays.tsx"),
+      route("displays/:groupId/:displayName", "./devices/groupDisplayEdit.tsx"),
     ]),
   ]),
   ...prefix("settings", [

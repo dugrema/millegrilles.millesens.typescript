@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { useDevicesStore } from "../state/devicesStore";
-import { Button } from "~/components/Button";
 import { ConfirmButton } from "~/components/ConfirmButton";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
 
