@@ -1,7 +1,7 @@
 // File: millegrilles.millesens.typescript/app/devices/groupDisplayEdit.tsx
 
 import { useParams, NavLink } from "react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDeviceGroupsStore } from "~/state/deviceGroupsStore";
 import type { DeviceGroup } from "~/state/deviceGroupsStore";
 import { Button } from "~/components/Button";
@@ -75,13 +75,33 @@ export default function GroupDisplayEdit() {
   const startIdx = pageIndex * pageSize;
   const visibleLines = lines.slice(startIdx, startIdx + pageSize);
 
+  /* ---------- Page‑level duration ---------- */
+  const [pageDuree, setPageDuree] = useState<number>(0);
+
+  // Sync pageDuree with the first line of the current page
+  useEffect(() => {
+    const first = visibleLines[0];
+    setPageDuree(first?.duree ?? 0);
+  }, [visibleLines]);
+
+  // When the pageDuree changes, propagate to all lines on the page
+  const handlePageDureeChange = (value: number) => {
+    setPageDuree(value);
+    setLines((prev) =>
+      prev.map((l, i) =>
+        i >= startIdx && i < startIdx + pageSize ? { ...l, duree: value } : l,
+      ),
+    );
+  };
+
+  /* ---------- Page add/remove ---------- */
   const handleAddPage = () => {
     setLines((prev) => [
       ...prev,
       ...Array.from({ length: pageSize }, () => ({
         variable: "",
         masque: "",
-        duree: 0,
+        duree: pageDuree,
       })),
     ]);
   };
@@ -96,6 +116,7 @@ export default function GroupDisplayEdit() {
     });
   };
 
+  /* ---------- Save ---------- */
   const handleSave = () => {
     const updatedConfig = {
       afficher_date_duree: afficherDateDuree,
@@ -155,14 +176,32 @@ export default function GroupDisplayEdit() {
         </div>
 
         {/* Lines, paginated */}
-        <h4 className="font-medium mb-1">
-          Lines (page {pageIndex + 1} of {totalPages})
+        <h4 className="font-medium mb-1 mt-6">
+          Page {pageIndex + 1} of {totalPages}
         </h4>
+
+        {/* Page‑level duration input */}
+        {visibleLines.length > 0 && (
+          <div className="mb-2">
+            <label className="block font-medium mb-1">Duration</label>
+            <input
+              type="number"
+              value={pageDuree}
+              onChange={(e) =>
+                handlePageDureeChange(parseInt(e.target.value, 10))
+              }
+              className="w-full border rounded p-1"
+            />
+          </div>
+        )}
+
+        <div className="mb-1">Lines</div>
+
         {visibleLines.map((line, idx) => {
           const globalIdx = startIdx + idx;
           return (
             <div key={globalIdx} className="border rounded p-2 mb-2">
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div>
                   <label className="block font-medium mb-1">Variable</label>
                   <DevicePickList
@@ -197,23 +236,6 @@ export default function GroupDisplayEdit() {
                     className="w-full border rounded p-1"
                   />
                 </div>
-                <div>
-                  <label className="block font-medium mb-1">Duree</label>
-                  <input
-                    type="number"
-                    value={line.duree}
-                    onChange={(e) =>
-                      setLines((prev) =>
-                        prev.map((l, i) =>
-                          i === globalIdx
-                            ? { ...l, duree: parseInt(e.target.value, 10) }
-                            : l,
-                        ),
-                      )
-                    }
-                    className="w-full border rounded p-1"
-                  />
-                </div>
               </div>
             </div>
           );
@@ -221,7 +243,7 @@ export default function GroupDisplayEdit() {
 
         {/* Page level controls */}
         <div className="flex space-x-2 mt-2">
-          <Button variant="outline" onClick={handleAddPage} disabled={false}>
+          <Button variant="outline" onClick={handleAddPage}>
             Add page
           </Button>
           <Button
@@ -234,7 +256,7 @@ export default function GroupDisplayEdit() {
         </div>
 
         {/* Page navigation */}
-        <div className="flex space-x-2 mt-2">
+        <div className="flex space-x-2 mt-4">
           <Button
             variant="outline"
             onClick={() => setPageIndex((p) => Math.max(p - 1, 0))}
