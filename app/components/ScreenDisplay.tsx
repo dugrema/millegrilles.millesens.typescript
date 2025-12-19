@@ -51,11 +51,20 @@ export function ScreenDisplay({
   // If a specific page is requested we render all pages, otherwise we keep an
   // internal page index for navigation.
   const [pageIndex, setPageIndex] = useState<number>(page ?? 0);
+  const [tick, setTick] = useState(0);
 
   // Update page index when page prop changes (for external control).
   useEffect(() => {
     if (page !== undefined) setPageIndex(page);
   }, [page]);
+
+  useEffect(() => {
+    if (!preview) return;
+    const interval = setInterval(() => {
+      setTick((t) => t + 1);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [preview]);
 
   const startIdx = pageIndex * pageSize;
   const visibleLines = lines.slice(startIdx, startIdx + pageSize);
@@ -102,7 +111,7 @@ export function ScreenDisplay({
     if (/humidite/i.test(key)) {
       return {
         id: key,
-        numberValue: Math.floor(Math.random() * 100),
+        numberValue: 30 + Math.floor(Math.random() * 40),
         lastUpdate: 0,
         status: undefined,
         stringValue: undefined,
@@ -111,7 +120,7 @@ export function ScreenDisplay({
     if (/pression/i.test(key)) {
       return {
         id: key,
-        numberValue: 950 + Math.floor(Math.random() * 20),
+        numberValue: 950 + Math.floor(Math.random() * 70),
         lastUpdate: 0,
         status: undefined,
         stringValue: undefined,
@@ -149,16 +158,14 @@ export function ScreenDisplay({
       return (
         <pre
           key={idx}
-          className="font-mono"
+          className="font-mono overflow-x-clip"
           style={{
-            width: `${declaration.width ?? 0}ch`,
+            width: `${declaration.width ?? 16}ch`,
             whiteSpace: "pre-wrap",
             // Visual cue for overflowed lines
             border: isOverflow ? "1px solid red" : "none",
             color: isOverflow ? "black" : "",
             background: isOverflow ? "#ffefef" : "transparent",
-            // Ensure the line stays within the container; overflow is visible
-            overflowWrap: "anywhere",
           }}
           title={isOverflow ? "Text exceeds screen width" : undefined}
         >
@@ -166,7 +173,7 @@ export function ScreenDisplay({
         </pre>
       );
     });
-  }, [visibleLines, values, preview, configuration, declaration]);
+  }, [visibleLines, values, preview, configuration, declaration, tick]);
 
   const handlePrev = () => {
     setPageIndex((p) => Math.max(p - 1, 0));
@@ -179,8 +186,16 @@ export function ScreenDisplay({
   };
 
   return (
-    <div className="border rounded p-2">
-      {renderedLines}
+    <div>
+      <div
+        className="border border-gray-300 p-1 bg-white dark:bg-gray-500 overflow-x-clip overscroll-none"
+        style={{
+          width: `${2 + (declaration.width ?? 16)}ch`,
+          height: `${2 + 2.3 * (declaration.height ?? 4)}ch`,
+        }}
+      >
+        {renderedLines}
+      </div>
 
       {totalPages > 1 && (
         <div className="mt-2 flex justify-between">

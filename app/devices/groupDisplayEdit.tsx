@@ -9,7 +9,7 @@ import { DevicePickList } from "~/components/DevicePickList";
 import { ScreenDisplay } from "~/components/ScreenDisplay";
 import { useDeviceValuesStore } from "~/state/deviceValueStore";
 import type { DeviceValue } from "~/state/deviceValueStore";
-import type { DisplayConfiguration } from "~/workers/connection.worker";
+import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
 
 /**
  * Edit a display configuration inside a device group.
@@ -29,6 +29,8 @@ export default function GroupDisplayEdit() {
     groupId: string;
     displayName: string;
   }>();
+
+  const workers = useMilleGrillesWorkers();
 
   // Guard against missing params
   if (!groupId || !displayName) {
@@ -70,8 +72,6 @@ export default function GroupDisplayEdit() {
   >(initialConfig.lignes ?? []);
 
   const updateGroup = useDeviceGroupsStore((s) => s.updateGroup);
-  const screenConfig: DisplayConfiguration =
-    group.displayConfiguration?.[displayName] ?? {};
 
   // Pagination
   const pageSize = display.height ?? 1;
@@ -136,6 +136,21 @@ export default function GroupDisplayEdit() {
       displayConfiguration: updatedDisplayConfiguration,
     };
     updateGroup(updatedGroup);
+
+    const updateCommand = { displays: updatedDisplayConfiguration };
+    console.debug("handleSave updateCommand ", updateCommand);
+    workers?.connection
+      ?.updateDeviceConfiguration(updatedGroup.id, updateCommand)
+      .then((response) => {
+        if (!response.persiste)
+          throw new Error(`Error updating device: ${response.err}`);
+        // Return to the list view
+        window.history.back();
+        // editLock.current = false;
+      })
+      .catch((err) =>
+        console.error("handleSave Error updating device group", err),
+      );
   };
 
   /* ---------- Build values map ---------- */
@@ -214,64 +229,68 @@ export default function GroupDisplayEdit() {
           </div>
         )}
 
-        <div className="mb-1">Lines</div>
+        <div className="md:flex md:items-center md:justify-between md:space-x-2">
+          <div>
+            <div className="mb-1">Lines</div>
 
-        {visibleLines.map((line, idx) => {
-          const globalIdx = startIdx + idx;
-          return (
-            <div key={globalIdx} className="border rounded p-2 mb-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <div>
-                  <label className="block font-medium mb-1">Variable</label>
-                  <DevicePickList
-                    currentDeviceGroup={group.id}
-                    value={line.variable}
-                    onChange={(e) =>
-                      setLines((prev) =>
-                        prev.map((l, i) =>
-                          i === globalIdx
-                            ? { ...l, variable: e.target.value }
-                            : l,
-                        ),
-                      )
-                    }
-                    className="w-full border rounded p-1"
-                  />
+            {visibleLines.map((line, idx) => {
+              const globalIdx = startIdx + idx;
+              return (
+                <div key={globalIdx} className="border rounded p-2 mb-2">
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
+                    <div>
+                      <label className="block font-medium mb-1">Variable</label>
+                      <DevicePickList
+                        currentDeviceGroup={group.id}
+                        value={line.variable}
+                        onChange={(e) =>
+                          setLines((prev) =>
+                            prev.map((l, i) =>
+                              i === globalIdx
+                                ? { ...l, variable: e.target.value }
+                                : l,
+                            ),
+                          )
+                        }
+                        className="w-full border rounded p-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-medium mb-1">Masque</label>
+                      <input
+                        type="text"
+                        value={line.masque}
+                        onChange={(e) =>
+                          setLines((prev) =>
+                            prev.map((l, i) =>
+                              i === globalIdx
+                                ? { ...l, masque: e.target.value }
+                                : l,
+                            ),
+                          )
+                        }
+                        className="w-full border rounded p-1"
+                        disabled={!line.variable}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="block font-medium mb-1">Masque</label>
-                  <input
-                    type="text"
-                    value={line.masque}
-                    onChange={(e) =>
-                      setLines((prev) =>
-                        prev.map((l, i) =>
-                          i === globalIdx
-                            ? { ...l, masque: e.target.value }
-                            : l,
-                        ),
-                      )
-                    }
-                    className="w-full border rounded p-1"
-                    disabled={!line.variable}
-                  />
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Screen preview */}
-      <div className="mb-4">
-        <ScreenDisplay
-          declaration={display}
-          configuration={{ lignes: lines }}
-          values={valuesMap}
-          page={pageIndex}
-          onPageChange={setPageIndex}
-          preview={true}
-        />
+              );
+            })}
+          </div>
+          {/* Screen preview */}
+          <div className="mt-1">
+            <p>Sample page</p>
+            <ScreenDisplay
+              declaration={display}
+              configuration={{ lignes: lines }}
+              values={valuesMap}
+              page={pageIndex}
+              onPageChange={setPageIndex}
+              preview={true}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Actions */}
