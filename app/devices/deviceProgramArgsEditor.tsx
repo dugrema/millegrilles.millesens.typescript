@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import { useDevicesStore } from "../state/devicesStore";
 import { DevicePickList } from "../components/DevicePickList";
@@ -51,6 +51,39 @@ type ProgramArgs =
   | ChauffageArgs
   | ClimatisationArgs;
 
+const DEFAULT_HORAIRE_ARGS: HoraireHebdomadaireArgs = {
+  activationInitiale: false,
+  switches: [],
+  horaire: [],
+};
+
+const DEFAULT_HUMIDITE_ARGS: HumidificateurArgs = {
+  humidite: 40,
+  precision: 2,
+  duree_off_min: 30,
+  senseurs_humidite: [],
+  switches_humidificateurs: [],
+  duree_on_min: 30,
+};
+
+const DEFAULT_CHAUFFAGE_ARGS: ChauffageArgs = {
+  temperature: 20,
+  precision: 1,
+  duree_off_min: 30,
+  senseurs: [],
+  switches: [],
+  duree_on_min: 10,
+};
+
+const DEFAULT_CLIMA_ARGS: ClimatisationArgs = {
+  temperature: 20,
+  precision: 1,
+  duree_off_min: 60,
+  senseurs: [],
+  switches: [],
+  duree_on_min: 10,
+};
+
 interface Program {
   programme_id: string;
   class: string;
@@ -65,8 +98,6 @@ interface Props {
 }
 
 export function DeviceProgramArgsEditor({ program, onChange }: Props) {
-  const [localArgs, setLocalArgs] = useState<ProgramArgs>(program.args);
-
   // Retrieve the current device id from the route and get its internal id
   const { deviceId } = useParams<{ deviceId: string }>();
   const device = useDevicesStore((s) =>
@@ -74,29 +105,39 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
   );
   const deviceInternalId = device?.internalId ?? "";
 
+  const defaultForClass = (): ProgramArgs => {
+    switch (program.class) {
+      case "programmes.horaire.HoraireHebdomadaire":
+        return { ...DEFAULT_HORAIRE_ARGS, switches: [deviceInternalId] };
+      case "programmes.environnement.Humidificateur":
+        return {
+          ...DEFAULT_HUMIDITE_ARGS,
+          switches: [deviceInternalId],
+          switches_humidificateurs: [deviceInternalId],
+        };
+      case "programmes.environnement.Chauffage":
+        return { ...DEFAULT_CHAUFFAGE_ARGS, switches: [deviceInternalId] };
+      case "programmes.environnement.Climatisation":
+        return { ...DEFAULT_CLIMA_ARGS, switches: [deviceInternalId] };
+      default:
+        return {} as ProgramArgs;
+    }
+  };
+  const [localArgs, setLocalArgs] = useState<ProgramArgs>(() => {
+    const defaults = defaultForClass();
+    return { ...defaults, ...program.args };
+  });
+
+  const initLoadingDone = useRef(false);
   // Keep local copy in sync with prop changes only when the program itself changes
   useEffect(() => {
-    console.debug("Loading program args: %O", program.args);
-    let changed = false;
-    if (deviceInternalId && program.class) {
-      const newArgs = { ...program.args } as any;
-      switch (program.class) {
-        case "programmes.environnement.Humidificateur":
-          if (!newArgs["switches_humidificateurs"]) {
-            changed = true;
-            newArgs["switches_humidificateurs"] = [deviceInternalId];
-          }
-        default:
-          if (!newArgs.switches) {
-            changed = true;
-            newArgs.switches = [deviceInternalId];
-          }
-      }
-      setLocalArgs(newArgs);
-      if (changed) onChange(newArgs);
-    } else {
-      setLocalArgs(program.args);
-    }
+    if (!program.class || initLoadingDone.current) return; // Prevent looping
+
+    const defaults = defaultForClass();
+    const merged = { ...defaults, ...program.args } as any;
+    setLocalArgs(merged);
+    onChange(merged);
+    initLoadingDone.current = true; // Prevent infinite looping
   }, [program.args, program.class, deviceInternalId]);
 
   // Notify parent of any arg changes
