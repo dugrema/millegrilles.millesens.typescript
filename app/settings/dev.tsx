@@ -174,9 +174,31 @@ export default function SettingsPage() {
    * Populate button handler
    * --------------------------------------------- */
   const handlePopulate = () => {
-    setDevices(dummyStatic as any);
-    setDeviceValues(dummyValues as any);
-    setGroups(dummyGroups as any);
+    const devices = dummyStatic.map((d) => ({
+      ...d,
+      internalId: d.id,
+      id: `${d.deviceGroup}__${d.id}`,
+      group: d.group ? [d.group] : undefined,
+    })) as any;
+
+    const groups = dummyGroups.map((g) => ({
+      ...g,
+      instance_id: `dev_${g.id}`,
+    })) as any;
+
+    const values = dummyValues.map((v) => {
+      const device = dummyStatic.find((d) => d.id === v.id);
+      if (!device) return v;
+      const newId = `${device.deviceGroup}__${device.id}`;
+      return {
+        ...v,
+        id: newId,
+      };
+    }) as any;
+
+    setDevices(devices);
+    setDeviceValues(values);
+    setGroups(groups);
   };
 
   /* ---------------------------------------------
