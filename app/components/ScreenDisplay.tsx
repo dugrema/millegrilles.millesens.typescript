@@ -1,5 +1,3 @@
-// File: millegrilles.millesens.typescript/app/components/ScreenDisplay.tsx
-
 import { useMemo, useState, useEffect } from "react";
 import python_format from "python-format-js";
 import type {
@@ -36,6 +34,7 @@ export interface ScreenDisplayProps {
  *  • Formats each line with the mask and the corresponding device value.
  *  • Supports an optional page navigation UI.
  *  • Can operate in preview mode (random data instead of real values).
+ *  • Highlights lines that exceed the declared screen width.
  */
 export function ScreenDisplay({
   declaration,
@@ -143,14 +142,25 @@ export function ScreenDisplay({
       const val = preview ? generateFakeValue(key) : values[key];
       const formatted = formatMask(ln.masque, val);
 
+      // Detect if the formatted line would exceed the declared screen width
+      const isOverflow =
+        declaration.width !== undefined && formatted.length > declaration.width;
+
       return (
         <pre
           key={idx}
           className="font-mono"
           style={{
-            width: `${declaration.width}ch`,
+            width: `${declaration.width ?? 0}ch`,
             whiteSpace: "pre-wrap",
+            // Visual cue for overflowed lines
+            border: isOverflow ? "1px solid red" : "none",
+            color: isOverflow ? "black" : "",
+            background: isOverflow ? "#ffefef" : "transparent",
+            // Ensure the line stays within the container; overflow is visible
+            overflowWrap: "anywhere",
           }}
+          title={isOverflow ? "Text exceeds screen width" : undefined}
         >
           {formatted}
         </pre>

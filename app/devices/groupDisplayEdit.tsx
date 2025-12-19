@@ -154,18 +154,6 @@ export default function GroupDisplayEdit() {
         Edit Display: {displayName}
       </h1>
 
-      {/* Group displays list */}
-      <div className="mb-4">
-        <h3 className="font-medium mb-1">Group Displays</h3>
-        <ul className="list-disc pl-4">
-          {group.displays?.map((d) => (
-            <li key={d.name}>
-              {d.name} – {d.format} – {d.width}×{d.height}
-            </li>
-          ))}
-        </ul>
-      </div>
-
       {/* Display information */}
       <div className="mb-4">
         <h3 className="font-medium mb-1">Display Information</h3>
@@ -190,10 +178,26 @@ export default function GroupDisplayEdit() {
           />
         </div>
 
-        {/* Lines, paginated */}
-        <h4 className="font-medium mb-1 mt-6">
-          Page {pageIndex + 1} of {totalPages}
-        </h4>
+        <div className="flex items-center justify-between mt-6">
+          {/* Lines, paginated */}
+          <h4 className="font-medium mb-1">
+            Page {pageIndex + 1} of {totalPages}
+          </h4>
+
+          {/* Page level controls */}
+          <div className="flex space-x-2">
+            <Button variant="outline" onClick={handleAddPage}>
+              Add page
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleRemovePage}
+              disabled={lines.length === 0}
+            >
+              Remove page
+            </Button>
+          </div>
+        </div>
 
         {/* Page‑level duration input */}
         {visibleLines.length > 0 && (
@@ -256,38 +260,6 @@ export default function GroupDisplayEdit() {
             </div>
           );
         })}
-
-        {/* Page level controls */}
-        <div className="flex space-x-2 mt-2">
-          <Button variant="outline" onClick={handleAddPage}>
-            Add page
-          </Button>
-          <Button
-            variant="outline"
-            onClick={handleRemovePage}
-            disabled={lines.length === 0}
-          >
-            Remove page
-          </Button>
-        </div>
-
-        {/* Page navigation */}
-        <div className="flex space-x-2 mt-4">
-          <Button
-            variant="outline"
-            onClick={() => setPageIndex((p) => Math.max(p - 1, 0))}
-            disabled={pageIndex === 0}
-          >
-            Prev
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => setPageIndex((p) => Math.min(p + 1, totalPages - 1))}
-            disabled={pageIndex >= totalPages - 1}
-          >
-            Next
-          </Button>
-        </div>
       </div>
 
       {/* Screen preview */}
