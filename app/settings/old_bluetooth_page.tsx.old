@@ -1,12 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import type { ChangeEvent, Dispatch } from "react";
+// This is a Bluetooth react page from a previous application.
+
+import { ChangeEvent, Dispatch, useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 import { Formatters } from "millegrilles.reactdeps.typescript";
 
-import { useBluetoothStore } from "~/state/bluetoothStore";
-import { useConnectionStore } from "../state/connectionStore";
-import { useMilleGrillesWorkers } from "../workers/MilleGrillesWorkerContext";
-
-import type { SwitchState } from "../utils/bluetooth/commands";
 import {
   chargerEtatAppareil,
   checkBluetoothAvailable,
@@ -19,50 +17,99 @@ import {
   decoderWifi as bleDecoderWifi,
   addEventListener as bleAddEventListener,
   removeEventListener as bleRemoveEventListener,
-} from "../utils/bluetooth/commands";
-import CONST_BLUETOOTH_SERVICES from "../utils/bluetooth/services.json";
+  SwitchState,
+} from "./bluetoothCommandes";
+import useWorkers from "../../workers/workers";
+import useBluetoothStore from "./bluetoothStore";
 
-declare global {
-  interface BluetoothDevice {
-    gatt?: BluetoothRemoteGATTServer;
-    addEventListener(
-      event: string,
-      handler: EventListenerOrEventListenerObject,
-    ): void;
-  }
-  interface BluetoothRemoteGATTServer {
-    connected: boolean;
-    disconnect(): void;
-    connect(): Promise<BluetoothRemoteGATTServer>;
-  }
+import CONST_BLUETOOTH_SERVICES from "./services.json";
+import useConnectionStore from "../../connectionStore";
+
+export default function BluetoothConfiguration() {
+  let bluetoothAvailable = useBluetoothStore(
+    (state) => state.bluetoothAvailable,
+  );
+
+  return (
+    <>
+      <h1>Bluetooth configuration</h1>
+
+      <BluetoothAvailableCheck />
+
+      {bluetoothAvailable ? <BluetoothDevicesSection /> : <></>}
+
+      <div>
+        <nav>
+          <Link
+            to="/apps/senseurspassifs/devices"
+            className="btn inline-block text-center bg-slate-700 hover:bg-slate-600 active:bg-slate-500"
+          >
+            Back
+          </Link>
+        </nav>
+      </div>
+    </>
+  );
 }
 
-/* ---------- Devices section ---------- */
-export function BluetoothDevicesSection() {
-  const clearDeviceState = useBluetoothStore((state) => state.reset);
+export function BluetoothAvailableCheck(props: { hide?: boolean }) {
+  let [done, setDone] = useState(false);
+  // let setAvailable = props.setAvailable;
+  let available = useBluetoothStore((state) => state.bluetoothAvailable);
+  let setBluetoothAvailable = useBluetoothStore(
+    (state) => state.setBluetoothAvailable,
+  );
 
-  const [wifi, setWifi] = useState("");
-  const [wifiPassword, setWifiPassword] = useState("");
-  const [relayUrl, setRelayUrl] = useState("");
+  useEffect(() => {
+    if (done) return;
+    if (available) {
+      setDone(true);
+      return; // Check already done
+    }
+    checkBluetoothAvailable()
+      .then((result) => {
+        setBluetoothAvailable(result);
+      })
+      .catch((err) =>
+        console.error("Error checking if Bluetooth is avaiable", err),
+      )
+      .finally(() => setDone(true));
+  }, [available, done, setDone, setBluetoothAvailable]);
 
-  const wifiChangeHandler = useCallback(
+  if (props.hide) return <></>;
+
+  if (!done) return <div>Checking if Bluetooth is available</div>;
+  if (!available) {
+    return <div>Bluetooth is not available.</div>;
+  }
+
+  return <></>;
+}
+
+function BluetoothDevicesSection() {
+  let [wifi, setWifi] = useState("");
+  let [wifiPassword, setWifiPassword] = useState("");
+  let [relayUrl, setRelayUrl] = useState("");
+
+  let wifiChangeHandler = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setWifi(e.currentTarget.value),
     [setWifi],
   );
-  const wifiPasswordChangeHandler = useCallback(
+  let wifiPasswordChangeHandler = useCallback(
     (e: ChangeEvent<HTMLInputElement>) =>
       setWifiPassword(e.currentTarget.value),
     [setWifiPassword],
   );
-  const relayUrlChangeHandler = useCallback(
+  let relayUrlChangeHandler = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setRelayUrl(e.currentTarget.value),
     [setRelayUrl],
   );
 
-  const [selectedDevice, setSelectedDevice] = useState<
-    BluetoothDevice | undefined
-  >(undefined);
+  let [selectedDevice, setSelectedDevice] = useState(
+    undefined as BluetoothDevice | undefined,
+  );
 
+  // Initialize default relay url with current window
   useEffect(() => {
     const relayUrl = new URL(window.location.href);
     relayUrl.pathname = "";
@@ -75,13 +122,7 @@ export function BluetoothDevicesSection() {
       console.warn("GATT server disconnected");
       setSelectedDevice(undefined);
     });
-  }, [selectedDevice]);
-
-  useEffect(() => {
-    return () => {
-      clearDeviceState();
-    };
-  }, [clearDeviceState]);
+  }, [selectedDevice, setSelectedDevice]);
 
   return (
     <>
@@ -145,14 +186,13 @@ export function BluetoothDevicesSection() {
   );
 }
 
-/* ---------- Device scan component ---------- */
 type DeviceScanProps = {
   selectedDevice?: BluetoothDevice;
   setSelectedDevice: Dispatch<BluetoothDevice | undefined>;
 };
 
-export function DeviceScan(props: DeviceScanProps) {
-  const { setSelectedDevice } = props;
+function DeviceScan(props: DeviceScanProps) {
+  let { setSelectedDevice } = props;
   const scanCb = useCallback(() => {
     requestDevice()
       .then((device) => {
@@ -162,7 +202,7 @@ export function DeviceScan(props: DeviceScanProps) {
       .catch((err) => console.error("Erreur chargement device ", err));
   }, [setSelectedDevice]);
 
-  const disconnectHandler = useCallback(
+  let disconnectHandler = useCallback(
     () => setSelectedDevice(undefined),
     [setSelectedDevice],
   );
@@ -194,7 +234,6 @@ export function DeviceScan(props: DeviceScanProps) {
   );
 }
 
-/* ---------- Device connection component ---------- */
 type DeviceConnectionProps = {
   selectedDevice?: BluetoothDevice;
   wifi: string;
@@ -202,37 +241,36 @@ type DeviceConnectionProps = {
   relayUrl: string;
 };
 
-export function DeviceConnection(props: DeviceConnectionProps) {
-  const { selectedDevice, wifi, wifiPassword, relayUrl } = props;
+function DeviceConnection(props: DeviceConnectionProps) {
+  let { selectedDevice, wifi, wifiPassword, relayUrl } = props;
 
-  const [bluetoothGattServer, setBluetoothGattServer] = useState<
-    BluetoothRemoteGATTServer | undefined
-  >(undefined);
+  let [bluetoothGattServer, setBluetoothGattServer] = useState(
+    undefined as BluetoothRemoteGATTServer | undefined,
+  );
 
   useEffect(() => {
     let server: BluetoothRemoteGATTServer;
     if (selectedDevice?.gatt) {
-      console.debug("Connecting server");
+      // Se connecter
       selectedDevice.gatt
         .connect()
         .then((gattServer) => {
-          console.debug("GATT connected", gattServer);
           setBluetoothGattServer(gattServer);
           server = gattServer;
         })
         .catch((err) => console.error("Erreur connexion bluetooth", err));
 
+      // Connection cleanup
       return () => {
         if (server) {
-          console.warn(" ... Disconnect GATT server ... ");
           setBluetoothGattServer(undefined);
           server.disconnect();
         }
       };
     }
-  }, [selectedDevice]);
+  }, [selectedDevice, setBluetoothGattServer]);
 
-  if (!bluetoothGattServer) return <></>;
+  if (!bluetoothGattServer) return <></>; // Hide
 
   return (
     <>
@@ -247,25 +285,26 @@ export function DeviceConnection(props: DeviceConnectionProps) {
   );
 }
 
-/* ---------- Device detail component ---------- */
 type DeviceDetailProps = {
   server: BluetoothRemoteGATTServer;
 };
 
-export function DeviceDetail(props: DeviceDetailProps) {
-  const { server } = props;
-  const workers = useMilleGrillesWorkers();
+function DeviceDetail(props: DeviceDetailProps) {
+  let { server } = props;
+  let workers = useWorkers();
 
-  const [listenersRegistered, setListenersRegistered] = useState(false);
-  const [sharedSecret, setAuthSharedSecret] = useState<Uint8Array | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
+  let [listenersRegistered, setListenersRegistered] = useState(false);
+  let [sharedSecret, setAuthSharedSecret] = useState(null as Uint8Array | null);
+  let [refreshing, setRefreshing] = useState(false);
 
-  const mergeDeviceState = useBluetoothStore((state) => state.mergeDeviceState);
-  const stateLoaded = useBluetoothStore((state) => state.stateLoaded);
+  let mergeDeviceState = useBluetoothStore((state) => state.mergeDeviceState);
+  let stateLoaded = useBluetoothStore((state) => state.stateLoaded);
+  let clearDeviceState = useBluetoothStore((state) => state.clear);
 
   const refreshDevice = useCallback(() => {
     if (!server.connected) {
       console.warn("Connexion bluetooth coupee");
+      // fermer()
       return;
     }
     setRefreshing(true);
@@ -279,7 +318,7 @@ export function DeviceDetail(props: DeviceDetailProps) {
       .finally(() => {
         setRefreshing(false);
       });
-  }, [server, mergeDeviceState]);
+  }, [server, setRefreshing, mergeDeviceState]);
 
   const updateLecturesHandler = useCallback(
     (e: any) => {
@@ -308,10 +347,18 @@ export function DeviceDetail(props: DeviceDetailProps) {
   );
 
   useEffect(() => {
-    if (listenersRegistered) return;
+    // Cleanup when changing device
+    return () => {
+      clearDeviceState();
+    };
+  }, [clearDeviceState]);
 
+  useEffect(() => {
+    if (listenersRegistered) return; // Using listeners instead of polling
+
+    // Refresh and start polling
     refreshDevice();
-    const intervalRefresh = setInterval(refreshDevice, 7_500);
+    let intervalRefresh = setInterval(refreshDevice, 7_500);
     return () => {
       if (intervalRefresh) clearInterval(intervalRefresh);
     };
@@ -363,7 +410,7 @@ export function DeviceDetail(props: DeviceDetailProps) {
 
   const authentifierHandler = useCallback(() => {
     if (!workers) throw new Error("Workers not initialized");
-    if (!listenersRegistered || refreshing) return;
+    if (!listenersRegistered || refreshing) return; // Wait for listener registration
 
     setAuthSharedSecret(null);
     bleAuthentifier(workers, server)
@@ -378,7 +425,7 @@ export function DeviceDetail(props: DeviceDetailProps) {
         console.error("Erreur BLE authentifier ", err);
         setAuthSharedSecret(null);
       });
-  }, [workers, server, refreshing, listenersRegistered]);
+  }, [workers, server, refreshing, listenersRegistered, setAuthSharedSecret]);
 
   useEffect(() => {
     if (server && server.connected) authentifierHandler();
@@ -394,9 +441,8 @@ export function DeviceDetail(props: DeviceDetailProps) {
   );
 }
 
-/* ---------- Device state display ---------- */
-export function ShowDeviceState() {
-  const deviceState = useBluetoothStore((state) => state.deviceState);
+function ShowDeviceState() {
+  let deviceState = useBluetoothStore((state) => state.deviceState);
   if (!deviceState.userId) return <></>;
 
   return (
@@ -425,16 +471,15 @@ export function ShowDeviceState() {
   );
 }
 
-/* ---------- Device readings display ---------- */
 type DeviceReadingsProps = {
   server: BluetoothRemoteGATTServer;
   authSharedSecret: Uint8Array | null;
 };
 
-export function ShowDeviceReadings(props: DeviceReadingsProps) {
+function ShowDeviceReadings(props: DeviceReadingsProps) {
   const { server, authSharedSecret } = props;
 
-  const deviceState = useBluetoothStore((state) => state.deviceState);
+  let deviceState = useBluetoothStore((state) => state.deviceState);
   if (!deviceState?.userId) return <></>;
 
   return (
@@ -488,10 +533,9 @@ export function ShowDeviceReadings(props: DeviceReadingsProps) {
   );
 }
 
-/* ---------- Helper components ---------- */
 type ReadingProps = { value?: number; label?: string };
 
-export function Temperature(props: ReadingProps) {
+function Temperature(props: ReadingProps) {
   const { value, label } = props;
 
   if (!value) return <></>;
@@ -504,7 +548,7 @@ export function Temperature(props: ReadingProps) {
   );
 }
 
-export function Humidity(props: ReadingProps) {
+function Humidity(props: ReadingProps) {
   const { value, label } = props;
 
   if (!value) return <></>;
@@ -525,10 +569,10 @@ type SwitchReadingProps = {
   authSharedSecret?: Uint8Array | null;
 };
 
-export function SwitchBluetooth(props: SwitchReadingProps) {
+function SwitchBluetooth(props: SwitchReadingProps) {
   const { value, label, idx, server, authSharedSecret } = props;
 
-  const workers = useMilleGrillesWorkers();
+  const workers = useWorkers();
 
   const commandeSwitchCb = useCallback(
     (e: any) => {
@@ -577,7 +621,6 @@ export function SwitchBluetooth(props: SwitchReadingProps) {
   );
 }
 
-/* ---------- Configuration submission ---------- */
 type SubmitConfigurationProps = {
   server: BluetoothRemoteGATTServer;
   ssid: string;
@@ -585,25 +628,26 @@ type SubmitConfigurationProps = {
   relayUrl: string;
 };
 
-export function SubmitConfiguration(props: SubmitConfigurationProps) {
-  const { server, ssid, wifiPassword, relayUrl } = props;
+function SubmitConfiguration(props: SubmitConfigurationProps) {
+  let { server, ssid, wifiPassword, relayUrl } = props;
 
-  const workers = useMilleGrillesWorkers();
+  let workers = useWorkers();
 
-  const idmg = useConnectionStore((state) => state.idmg);
+  let idmg = useConnectionStore((state) => state.idmg);
 
-  const [userId, setUserId] = useState("");
+  // Load userId from ceritificate
+  let [userId, setUserId] = useState("");
   useEffect(() => {
     workers?.connection
       .getMessageFactoryCertificate()
       .then((certificate) => {
-        const userId = certificate.extensions?.userId;
+        let userId = certificate.extensions?.userId;
         if (userId) setUserId(userId);
       })
       .catch((err) =>
         console.error("Error loading userId from certificate", err),
       );
-  }, [workers]);
+  }, [workers, setUserId]);
 
   const submitConfigurationServer = useCallback(
     (e: any) => {
@@ -613,23 +657,28 @@ export function SubmitConfiguration(props: SubmitConfigurationProps) {
       bleSubmitConfiguration(server, relayUrl, idmg, userId)
         .then(() => {
           console.debug("Params configuration envoyes");
+          // messageSuccesCb('Les parametres serveur ont ete transmis correctement.')
         })
         .catch((err) => {
           console.error("Erreur sauvegarde parametres serveur", err);
+          // setMessageErreur({err, message: 'Les parametres serveur n\'ont pas ete recus par l\'appareil.'})
         });
     },
     [server, idmg, userId, relayUrl],
   );
 
-  const submitWifi = useCallback(
+  let submitWifi = useCallback(
     (e: any) => {
       e.stopPropagation();
       e.preventDefault();
 
       bleSubmitWifi(server, ssid, wifiPassword)
-        .then(() => {})
+        .then(() => {
+          // messageSuccesCb('Les parametres wifi ont ete transmis correctement.')
+        })
         .catch((err) => {
           console.error("Erreur submit wifi ", err);
+          // setMessageErreur({err, message: 'Les parametres wifi n\'ont pas ete recus par l\'appareil.'})
         });
     },
     [server, ssid, wifiPassword],
@@ -661,16 +710,15 @@ export function SubmitConfiguration(props: SubmitConfigurationProps) {
   );
 }
 
-/* ---------- Reboot button ---------- */
 type RebootButtonProps = {
   server: BluetoothRemoteGATTServer;
   authSharedSecret: Uint8Array | null;
 };
 
-export function RebootButton(props: RebootButtonProps) {
-  const { server, authSharedSecret } = props;
+function RebootButton(props: RebootButtonProps) {
+  let { server, authSharedSecret } = props;
 
-  const workers = useMilleGrillesWorkers();
+  let workers = useWorkers();
 
   const rebootCb = useCallback(() => {
     if (!workers) throw new Error("Workers not initialized");

@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router";
-import { useBluetoothStore } from "../state/bluetoothStore";
-import { DeviceConnection } from "../components/Bluetooth";
+import { useBluetoothStore } from "~/state/bluetoothStore";
+import { DeviceConnection } from "~/components/Bluetooth";
 
 /**
  * Page that displays the selected Bluetooth device and allows configuration.
@@ -14,12 +14,8 @@ export default function BluetoothDevicePage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Retrieve the device passed from the previous page
-  const selectedDevice = location.state as unknown as
-    | BluetoothDevice
-    | undefined;
-
-  const { wifiSSID, wifiPassword, serviceUrl } = useBluetoothStore();
+  const { wifiSSID, wifiPassword, serviceUrl, selectedDevice } =
+    useBluetoothStore();
 
   if (!selectedDevice) {
     return (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { useBluetoothStore } from "../state/bluetoothStore";
+import { useBluetoothStore } from "~/state/bluetoothStore";
 import {
   checkBluetoothAvailable,
   requestDevice,
@@ -17,14 +17,12 @@ export default function SettingsBluetooth() {
     setWifiSSID,
     setWifiPassword,
     setServiceUrl,
+    selectedDevice,
+    setSelectedDevice,
   } = useBluetoothStore();
 
   const navigate = useNavigate();
   console.log({ wifiSSID, wifiPassword, serviceUrl });
-
-  let [selectedDevice, setSelectedDevice] = useState(
-    undefined as BluetoothDevice | undefined,
-  );
 
   // Lifecycle handling for the GATT server of a device.
   useEffect(() => {
@@ -40,7 +38,7 @@ export default function SettingsBluetooth() {
     // Scan Bluetooth BLE devices and select one
     try {
       const selectedDevice = await requestDevice();
-      setSelectedDevice(selectedDevice);
+      setSelectedDevice(selectedDevice || undefined);
       if (selectedDevice) {
         // Navigate to device detail page after selection
         navigate("/settings/bluetoothDevice");
