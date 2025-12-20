@@ -1,6 +1,5 @@
 import { NavLink } from "react-router";
 import { SectionSidebar } from "~/components/SectionSidebar";
-import { useDevicesStore } from "../state/devicesStore";
 
 export default function SettingsSidebar() {
   return (

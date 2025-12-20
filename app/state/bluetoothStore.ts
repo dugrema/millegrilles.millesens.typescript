@@ -1,11 +1,15 @@
+// Old store from legacy application
+
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { createIDBStorage } from "../utils/idbStorage";
 
 export interface BluetoothState {
+  available: boolean;
   wifiSSID: string;
   serviceUrl: string;
   wifiPassword: string;
+  setAvailable: (available: boolean) => void;
   setWifiSSID: (ssid: string) => void;
   setServiceUrl: (url: string) => void;
   setWifiPassword: (pw: string) => void;
@@ -30,9 +34,11 @@ const idbStringStorage = {
 export const useBluetoothStore = create<BluetoothState>()(
   persist(
     (set) => ({
+      available: false,
       wifiSSID: "",
       serviceUrl: window.location.origin,
       wifiPassword: sessionStorage.getItem("millesens.wifiPassword") ?? "",
+      setAvailable: (available: boolean) => set({ available }),
       setWifiSSID: (ssid) => set({ wifiSSID: ssid }),
       setServiceUrl: (url) => set({ serviceUrl: url }),
       setWifiPassword: (pw) => {

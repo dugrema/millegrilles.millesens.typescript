@@ -1,27 +1,75 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { useBluetoothStore } from "../state/bluetoothStore";
+import {
+  checkBluetoothAvailable,
+  requestDevice,
+} from "~/utils/bluetooth/commands";
 
 export default function SettingsBluetooth() {
   const [scanning, setScanning] = useState(false);
   const {
+    available,
     wifiSSID,
     wifiPassword,
     serviceUrl,
+    setAvailable,
     setWifiSSID,
     setWifiPassword,
     setServiceUrl,
   } = useBluetoothStore();
+
+  const navigate = useNavigate();
   console.log({ wifiSSID, wifiPassword, serviceUrl });
-  const [devices, setDevices] = useState<string[]>([]);
+
+  let [selectedDevice, setSelectedDevice] = useState(
+    undefined as BluetoothDevice | undefined,
+  );
+
+  // Lifecycle handling for the GATT server of a device.
+  useEffect(() => {
+    if (!selectedDevice?.gatt) return;
+    selectedDevice.addEventListener("gattserverdisconnected", () => {
+      console.warn("GATT server disconnected");
+      setSelectedDevice(undefined);
+    });
+  }, [selectedDevice, setSelectedDevice]);
 
   const handleScan = async () => {
     setScanning(true);
-    // Placeholder: simulate scanning delay
-    setTimeout(() => {
-      setDevices(["Device A", "Device B"]);
+    // Scan Bluetooth BLE devices and select one
+    try {
+      const selectedDevice = await requestDevice();
+      setSelectedDevice(selectedDevice);
+      if (selectedDevice) {
+        // Navigate to device detail page after selection
+        navigate("/settings/bluetoothDevice");
+      }
+    } catch (err) {
+      console.error("Error selecting device", err);
+    } finally {
       setScanning(false);
-    }, 2000);
+    }
   };
+  const handleDisconnect = () => {
+    if (selectedDevice?.gatt?.connected) {
+      selectedDevice.gatt.disconnect();
+    }
+    setSelectedDevice(undefined);
+  };
+
+  useEffect(() => {
+    const check = async () => {
+      const available = await checkBluetoothAvailable();
+      console.debug("Bluetooth available?", available);
+      setAvailable(available);
+    };
+    check();
+  }, [setAvailable]);
+
+  if (!available) {
+    return <p>Bluetooth is not available</p>;
+  }
 
   return (
     <div className="p-4">
@@ -67,15 +115,14 @@ export default function SettingsBluetooth() {
       >
         {scanning ? "Scanning..." : "Scan"}
       </button>
-      {devices.length > 0 && (
-        <ul className="mt-4 space-y-2">
-          {devices.map((d, i) => (
-            <li key={i} className="p-2 border rounded">
-              {d}
-            </li>
-          ))}
-        </ul>
-      )}
+      <button
+        onClick={handleDisconnect}
+        disabled={!selectedDevice}
+        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 ml-2"
+      >
+        Disconnect
+      </button>
+      {selectedDevice && <p>Device is selected - TODO</p>}
     </div>
   );
 }

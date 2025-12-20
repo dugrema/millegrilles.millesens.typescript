@@ -31,6 +31,7 @@ export default [
     layout("./settings/layout.tsx", [
       index("./settings/index.tsx"),
       route("bluetooth", "./settings/bluetooth.tsx"),
+      route("bluetoothDevice", "./settings/bluetoothDevice.tsx"),
       route("dev", "./settings/dev.tsx"),
     ]),
   ]),
