@@ -201,7 +201,7 @@ export default function DeviceProgramsEdit() {
             disabled={programId !== "add"}
             value={editProgram?.class ?? ""}
             onChange={handleChange("class")}
-            className="w-full border rounded p-1"
+            className="w-full border rounded p-1 dark:bg-gray-800"
           >
             <option value="">Select class</option>
             {PROGRAM_CLASS_OPTIONS.map((opt) => (

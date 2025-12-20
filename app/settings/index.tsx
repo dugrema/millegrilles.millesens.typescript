@@ -46,7 +46,7 @@ export default function SettingsPage() {
         <label className="block mb-2 font-medium">
           Time zone
           <select
-            className="mt-1 block w-full rounded border px-2 py-1"
+            className="mt-1 block w-full rounded border px-2 py-1 dark:bg-gray-800"
             value={timezone}
             onChange={handleChange}
           >

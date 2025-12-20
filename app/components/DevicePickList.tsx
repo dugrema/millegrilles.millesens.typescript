@@ -63,7 +63,7 @@ export const DevicePickList: React.FC<DevicePickListProps> = ({
       id={id}
       value={value}
       onChange={onChange}
-      className={className}
+      className={`${className ?? ""} bg-white dark:bg-gray-800`}
       aria-label={name}
     >
       <option value="">Select a device</option>

@@ -136,8 +136,10 @@ export default function DeviceChart() {
 
   if (!device) {
     return (
-      <div className="p-4">
-        <p className="text-red-600">Device not found.</p>
+      <div className="p-4 bg-white dark:bg-gray-800">
+        <p className="text-red-600 bg-white dark:bg-gray-800">
+          Device not found.
+        </p>
         <NavLink
           to="/devices"
           className="mt-4 inline-block text-blue-600 hover:underline"
@@ -186,7 +188,7 @@ export default function DeviceChart() {
           id="dataset-select"
           value={selectedDataset}
           onChange={handleDatasetChange}
-          className="border rounded px-2 py-1"
+          className="border rounded px-2 py-1  dark:bg-gray-800"
         >
           <option value="3days">3‑day (hourly)</option>
           <option value="month">Month (daily)</option>
@@ -247,7 +249,7 @@ export default function DeviceChart() {
           </p>
         )
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto bg-white dark:bg-gray-800">
           <table className="min-w-full text-sm text-left">
             <thead>
               <tr className="bg-gray-100 dark:bg-gray-800 dark:text-gray-200">

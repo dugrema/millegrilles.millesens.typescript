@@ -218,7 +218,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                       onChange={(e) =>
                         updateSchedule(idx, "etat", Number(e.target.value))
                       }
-                      className="border rounded p-1"
+                      className="border rounded p-1 dark:bg-gray-800"
                     >
                       <option value={0}>OFF</option>
                       <option value={1}>ON</option>
@@ -269,7 +269,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                             : Number(e.target.value),
                         )
                       }
-                      className="w-28 border rounded p-1"
+                      className="w-28 border rounded p-1 dark:bg-gray-800"
                     >
                       <option value="">None</option>
                       <option value="6">Sunday</option>
@@ -293,7 +293,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                           e.target.value === "" ? undefined : e.target.value,
                         )
                       }
-                      className="border rounded p-1"
+                      className="border rounded p-1 dark:bg-gray-800"
                     >
                       <option value="">None</option>
                       <option value="sunset">Sunset</option>
