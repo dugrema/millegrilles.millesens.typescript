@@ -39,7 +39,7 @@ export default function Devices() {
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mt-2">
           {sortedDevices.map((device: Device) => {
             const value = deviceValues.find((v) => v.id === device.id);
-
+            const group = groups.find((g) => g.id === device.deviceGroup);
             return (
               <NavLink key={device.id} to={`/devices/device/${device.id}`}>
                 <DeviceCard
@@ -60,7 +60,11 @@ export default function Devices() {
                       : undefined
                   }
                   connected={value?.connected}
-                  notification={value?.notification}
+                  notification={
+                    (value?.notification ?? group?.registrationPending)
+                      ? true
+                      : undefined
+                  }
                   lastUpdate={value?.lastUpdate ?? 0}
                 />
               </NavLink>

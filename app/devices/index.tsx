@@ -44,6 +44,7 @@ export default function Devices() {
             const value: DeviceValue | undefined = deviceValues.find(
               (v) => v.id === device.id,
             );
+            const group = groups.find((g) => g.id === device.deviceGroup);
 
             return (
               <NavLink key={device.id} to={`/devices/device/${device.id}`}>
@@ -60,16 +61,17 @@ export default function Devices() {
                     device.type === "Switch" && value?.status !== undefined
                       ? () => {
                           if (!value) return;
-                          const group = groups.find(
-                            (g) => g.id === device.deviceGroup,
-                          );
                           if (!group) return;
                           toggleSwitch(group, device, !value.status);
                         }
                       : undefined
                   }
                   connected={value?.connected}
-                  notification={value?.notification}
+                  notification={
+                    (value?.notification ?? group?.registrationPending)
+                      ? true
+                      : undefined
+                  }
                   lastUpdate={value?.lastUpdate ?? 0}
                 />
               </NavLink>

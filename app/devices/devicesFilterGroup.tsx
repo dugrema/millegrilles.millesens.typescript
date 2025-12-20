@@ -65,6 +65,7 @@ export default function DevicesGroupFilter() {
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mt-2">
           {sortedDevices.map((device) => {
             const value = deviceValues.find((v) => v.id === device.id);
+            const group = groups.find((g) => g.id === device.deviceGroup);
             return (
               <NavLink
                 key={device.id}
@@ -84,16 +85,17 @@ export default function DevicesGroupFilter() {
                     device.type === "Switch" && value?.status !== undefined
                       ? () => {
                           if (!value) return;
-                          const group = groups.find(
-                            (g) => g.id === device.deviceGroup,
-                          );
                           if (!group) return;
                           toggleSwitch(group, device, !value.status);
                         }
                       : undefined
                   }
                   connected={value?.connected}
-                  notification={value?.notification}
+                  notification={
+                    (value?.notification ?? group?.registrationPending)
+                      ? true
+                      : undefined
+                  }
                   lastUpdate={value?.lastUpdate ?? 0}
                 />
               </NavLink>

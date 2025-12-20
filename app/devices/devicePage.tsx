@@ -172,7 +172,11 @@ export default function DevicePage() {
         stringValue={deviceValue?.stringValue}
         status={deviceValue?.status}
         connected={deviceValue?.connected}
-        notification={deviceValue?.notification}
+        notification={
+          (deviceValue?.notification ?? groupInfo?.registrationPending)
+            ? true
+            : undefined
+        }
         lastUpdate={deviceValue?.lastUpdate ?? 0}
         changePending={changePending}
         onToggle={
@@ -208,6 +212,14 @@ export default function DevicePage() {
             className="mt-4 inline-block text-blue-600 hover:underline"
           >
             <Button variant="secondary">Programs</Button>
+          </NavLink>
+        )}
+        {groupInfo?.registrationPending && (
+          <NavLink
+            to={`/devices/notices`}
+            className="mt-4 inline-block text-blue-600 hover:underline"
+          >
+            <Button variant="secondary">Notices</Button>
           </NavLink>
         )}
         <h2 className="text-xl font-semibold">Device details</h2>
