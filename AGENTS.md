@@ -21,7 +21,7 @@ Each section (Devices, Settings) will feature a left sidebar whose options depen
 - **Source code**: Use `app/` instead of `src/`.
 - **State Management** – notes on context, Redux, Zustand, or other patterns.
 - **Routing** – recommended route structure for React Router v7.10, use file app/route.ts in declarative mode.
-- **Styling** – guidance on using Tailwind 4, Sass/SCSS, and placing global styles in `public/styles.css`.
+- **Styling** – guidance on using Tailwind 4, Sass/SCSS, and placing global styles in `public/styles.css`. The application supports a dark mode with the `dark:` selector.
 - **Libraries**: 
   - The MilleGrilles connection API and utilities are described in file millegrilles.api.md.
   - luxon 3.7 for dates
