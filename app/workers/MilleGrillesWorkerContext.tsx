@@ -66,9 +66,10 @@ export const MilleGrillesWorkerProvider: React.FC<{
       console.log("[Worker] callback received:", params);
       setConnected(params.connected);
       setAuthenticated(params.authenticated ?? false);
-      setIdmg(params.idmg ?? "");
-      setUserId(params.userId ?? "");
-      if (params.username) setUsername(params.username ?? "");
+      // The following parameters are not provided on every callback
+      if (params.idmg) setIdmg(params.idmg);
+      if (params.userId) setUserId(params.userId);
+      if (params.username) setUsername(params.username);
     };
     const setConnectionProxy = Comlink.proxy(setConnectionCallbackParams);
 

@@ -610,6 +610,8 @@ export function SubmitConfiguration(props: SubmitConfigurationProps) {
       e.stopPropagation();
       e.preventDefault();
 
+      if (!idmg) throw new Error("IDMG missing");
+
       bleSubmitConfiguration(server, relayUrl, idmg, userId)
         .then(() => {
           console.debug("Params configuration envoyes");
