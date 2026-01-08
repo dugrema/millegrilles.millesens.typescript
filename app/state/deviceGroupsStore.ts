@@ -30,6 +30,7 @@ export interface DeviceGroup {
   instance_id: string;
   registrationPending?: boolean;
   registrationRequested?: boolean;
+  version?: string;
 }
 
 /** Zustand store shape for device groups. */
@@ -89,7 +90,11 @@ export const useDeviceGroupsStore = create<DeviceGroupsState>()(
             if (!g.programmes) delete g.programmes;
             if (!g.displays) delete g.displays;
             if (!g.displayConfiguration) delete g.displayConfiguration;
-            const updated: DeviceGroup = { ...x, ...g };
+            const updated: DeviceGroup = {
+              ...x,
+              ...g,
+              version: x.version || g.version,
+            };
             // Persist the merged group.
             idb.setItem(updated.id, updated);
             return updated;

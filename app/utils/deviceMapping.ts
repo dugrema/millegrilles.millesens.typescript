@@ -33,6 +33,7 @@ export function mapDeviceReadingsToDeviceGroup(
     displayConfiguration: readings.configuration?.displays ?? undefined,
     registrationPending: !!readings.csr_present,
     registrationRequested: false,
+    version: readings.version ?? undefined,
   };
 }
 

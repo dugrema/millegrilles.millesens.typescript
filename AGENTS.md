@@ -5,6 +5,7 @@ This is the development repository for the MilleSens home-assistant style applic
 ## Development environment
 + Basic technology stack: React 19, vite, React Router 7.10 declarative, tailwind 4, sass/scss.
 + Use typescript whenever possible.
++ The API to the MilleGrilles back-end is used through the web service loaded from `app/workers/connection.worker.ts`.
 
 ## Project description
 

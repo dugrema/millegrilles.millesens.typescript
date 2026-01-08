@@ -63,7 +63,7 @@ export const MilleGrillesWorkerProvider: React.FC<{
     ) => {
       // Example: update some local state or trigger a UI refresh
       // You can also forward the params to other contexts or services
-      console.log("[Worker] callback received:", params);
+      // console.log("[Worker] callback received:", params);
       setConnected(params.connected);
       setAuthenticated(params.authenticated ?? false);
       // The following parameters are not provided on every callback
@@ -102,10 +102,10 @@ export const MilleGrillesWorkerProvider: React.FC<{
       setTimeout(() => setAuthenticating(false), 5_000); // retry every 5 seconds
 
       // Authenticate
-      console.debug("Authenticating");
+      // console.debug("Authenticating");
       authenticateConnectionWorker(workers, username, true, false)
         .then((result) => {
-          console.debug("Authenticated ", result);
+          // console.debug("Authenticated ", result);
         })
         .catch((err) => console.error("Authentication error: ", err));
     }
@@ -179,7 +179,7 @@ export async function initializeWorkers(
   const fiche = await loadFiche();
 
   const username = await verifyAuthentication();
-  console.debug("Username %s", username);
+  // console.debug("Username %s", username);
   if (!username) {
     throw new Error("User is not authenticated");
   }
@@ -209,7 +209,7 @@ export async function initializeWorkers(
   );
 
   if (response) {
-    console.debug("Connection initialized %s, connecting", response);
+    // console.debug("Connection initialized %s, connecting", response);
     await connectionWrapper.connect();
   } else {
     throw new Error("Error initializing workers");

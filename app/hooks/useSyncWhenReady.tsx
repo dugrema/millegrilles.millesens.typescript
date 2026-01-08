@@ -48,7 +48,7 @@ export function useSyncWhenReady() {
     if (!msg) return;
     const messageType = msg.routingKey.split(".").pop();
 
-    console.debug("receivedDeviceMessage: ", msg);
+    // console.debug("receivedDeviceMessage: ", msg);
 
     // Partial update of a device group (sensor values)
     if (messageType === "lectureConfirmee") {
@@ -146,7 +146,7 @@ async function fetchDevices(workers: AppWorkers) {
     return;
   }
 
-  console.debug("fetchDevices Response", resp);
+  // console.debug("fetchDevices Response", resp);
 
   const deviceReadings = resp.appareils ?? [];
   const groups = mapDeviceReadingsArrayToDeviceGroups(deviceReadings);

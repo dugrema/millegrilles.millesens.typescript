@@ -52,13 +52,13 @@ export const useConfigurationStore = create<ConfigurationState>()(
       setUserId: (id: string) => {
         const currentId = get().userId;
         if (currentId !== id) {
-          console.log("Changing userId to ", id);
+          console.info("Changing userId to ", id);
           useDeviceValuesStore.getState().setDeviceValues([]);
           useDevicesStore.getState().setDevices([]);
           useDeviceGroupsStore.getState().setGroups([]);
           set({ userId: id });
         } else {
-          console.log("Keeping userId ", currentId);
+          // console.log("Keeping userId ", currentId);
         }
       },
     }),
