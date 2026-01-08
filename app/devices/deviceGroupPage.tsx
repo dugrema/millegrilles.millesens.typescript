@@ -30,14 +30,7 @@ export default function DeviceGroup() {
   const [localLongitude, setLocalLongitude] = useState<
     number | string | undefined
   >(group?.longitude ?? undefined);
-  useEffect(() => {
-    if (group) {
-      setLocalTimezone(group.timezone ?? "");
-      setLocalName(group.name ?? "");
-      setLocalLatitude(group.latitude ?? undefined);
-      setLocalLongitude(group.longitude ?? undefined);
-    }
-  }, [group]);
+
   const updateGroup = useDeviceGroupsStore((state) => state.updateGroup);
   const { preferences } = useConfigurationStore();
   const tz =
@@ -118,11 +111,12 @@ export default function DeviceGroup() {
                 <Button variant="secondary">Displays</Button>
               </NavLink>
             )}
-            {group.microcode && (
+            {group.version && (
               <div>
-                <strong>Microcode:</strong> {group.microcode}
+                <strong>Microcode version:</strong> {group.version}
               </div>
             )}
+
             <div>
               <strong>Timezone:</strong>{" "}
               <input
