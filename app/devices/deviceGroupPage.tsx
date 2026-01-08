@@ -70,6 +70,7 @@ export default function DeviceGroup() {
     }
   };
 
+  // Updated: set local latitude/longitude rather than store
   const handleUseLocation = () => {
     if (!group) return;
     if (!navigator.geolocation) {
@@ -79,18 +80,14 @@ export default function DeviceGroup() {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        updateGroup({ ...group, latitude, longitude });
+        setLocalLatitude(latitude);
+        setLocalLongitude(longitude);
       },
       (err) => {
         console.error(err);
         alert("Unable to retrieve location.");
       },
     );
-  };
-
-  const handleClearLocation = () => {
-    if (!group) return;
-    updateGroup({ ...group, latitude: undefined, longitude: undefined });
   };
 
   return (
@@ -137,9 +134,15 @@ export default function DeviceGroup() {
             </div>
             <div className="flex items-center gap-2">
               <strong>Location:</strong>{" "}
-              {(group.latitude ?? group.longitude) ? (
+              {(localLatitude ?? localLongitude) ? (
                 <span>
-                  {group.latitude?.toFixed(4)}, {group.longitude?.toFixed(4)}
+                  {typeof localLatitude === "number"
+                    ? localLatitude.toFixed(4)
+                    : localLatitude}
+                  ,{" "}
+                  {typeof localLongitude === "number"
+                    ? localLongitude.toFixed(4)
+                    : localLongitude}
                 </span>
               ) : (
                 <span className="italic text-gray-500">Not set</span>
@@ -150,13 +153,6 @@ export default function DeviceGroup() {
                 className="ml-2"
               >
                 Use my location
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleClearLocation}
-                className="ml-1"
-              >
-                Clear
               </Button>
               <input
                 type="number"
