@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 export const SectionSidebar = ({ children }: { children: ReactNode }) => {
   const { isOpen, close } = useSidebar();
   const sidebarRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (
@@ -42,7 +43,10 @@ export const SectionSidebar = ({ children }: { children: ReactNode }) => {
         <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
           MilleSens
         </h1>
-        <a href="/" className="flex items-center p-1">
+        <a
+          href="/"
+          className="flex items-center p-1 bg-gray-800 rounded-full dark:bg-transparent"
+        >
           <img
             src="/millesens/icons/logout-svgrepo-com.svg"
             alt="Logout"
