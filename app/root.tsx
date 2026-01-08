@@ -122,7 +122,7 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
         </nav>
         <a
           href="/"
-          className="flex items-center p-1 hidden lg:inline-flex bg-gray-800 rounded-full dark:bg-transparent"
+          className="items-center p-1 hidden lg:inline-flex bg-gray-800 rounded-full dark:bg-transparent"
         >
           <img
             src="/millesens/icons/logout-svgrepo-com.svg"
