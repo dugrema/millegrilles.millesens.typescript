@@ -135,6 +135,27 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
     s.groups.find((g) => g.id === deviceGroup),
   );
 
+  // --------------------------------------------------------------------
+  // Switch button class handling
+  // --------------------------------------------------------------------
+  const isOn = status === true;
+  const isDisabled = !connected || !!changePending;
+
+  const baseSwitchClasses =
+    "mt-4 w-full flex items-center justify-center rounded-md px-4 py-2";
+
+  const stateClasses = isDisabled
+    ? // Disabled: medium gray background, subdued text, no hover
+      "bg-gray-400 text-gray-500 hover:bg-gray-400 cursor-not-allowed dark:bg-gray-600 dark:text-gray-400 hover:dark:bg-gray-600"
+    : isOn
+      ? // ON: light gray → medium gray on hover
+        "bg-gray-200 text-gray-700 hover:bg-gray-400"
+      : // OFF: dark gray → medium gray on hover
+        "bg-gray-600 text-gray-200 hover:bg-gray-400";
+
+  const switchButtonClasses = `${baseSwitchClasses} ${stateClasses}`;
+  // --------------------------------------------------------------------
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 flex flex-col justify-between h-full">
       <div>
@@ -219,10 +240,10 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
 
       {type === "Switch" && onToggle && (
         <Button
-          disabled={!connected || !!changePending}
+          disabled={isDisabled}
           type="button"
           variant={switchVariant}
-          className="mt-4 w-full flex items-center justify-center rounded-md px-4 py-2"
+          className={switchButtonClasses}
           aria-label={
             changePending
               ? status
