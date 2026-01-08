@@ -149,9 +149,9 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
       "bg-gray-400 text-gray-500 hover:bg-gray-400 cursor-not-allowed dark:bg-gray-600 dark:text-gray-400 hover:dark:bg-gray-600"
     : isOn
       ? // ON: light gray → medium gray on hover
-        "bg-gray-200 text-gray-700 hover:bg-gray-400"
+        "bg-gray-200 text-gray-700 hover:bg-gray-400 cursor-pointer"
       : // OFF: dark gray → medium gray on hover
-        "bg-gray-600 text-gray-200 hover:bg-gray-400";
+        "bg-gray-600 text-gray-200 hover:bg-gray-400 cursor-pointer";
 
   const switchButtonClasses = `${baseSwitchClasses} ${stateClasses}`;
   // --------------------------------------------------------------------
@@ -244,15 +244,7 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
           type="button"
           variant={switchVariant}
           className={switchButtonClasses}
-          aria-label={
-            changePending
-              ? status
-                ? "Turn Off"
-                : "Turn On"
-              : status
-                ? "Turn Off"
-                : "Turn On"
-          }
+          aria-label={changePending ? "Toggling" : status ? "On" : "Off"}
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
@@ -264,9 +256,9 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
           ) : status === undefined ? (
             "Toggle"
           ) : status ? (
-            "Turn Off"
+            "On"
           ) : (
-            "Turn On"
+            "Off"
           )}
         </Button>
       )}
