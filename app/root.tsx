@@ -9,6 +9,9 @@ import {
   ScrollRestoration,
   NavLink,
 } from "react-router";
+import { I18nextProvider } from "react-i18next";
+import i18n from "./i18n";
+import { useTranslation } from "react-i18next";
 
 import type { Route } from "./+types/root";
 import { SidebarProvider, useSidebar } from "./components/SidebarContext";
@@ -81,6 +84,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 function LayoutBody({ children }: { children: React.ReactNode }) {
   const { toggle } = useSidebar();
   const ready = useConnectionStore((state) => state.ready);
+  const { t } = useTranslation();
+
   return (
     <>
       <header
@@ -108,7 +113,7 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
               (isActive ? " font-semibold underline" : "")
             }
           >
-            Devices
+            {t("nav.devices")}
           </NavLink>
           <NavLink
             to="/settings"
@@ -117,7 +122,7 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
               (isActive ? " font-semibold underline" : "")
             }
           >
-            Settings
+            {t("nav.settings")}
           </NavLink>
         </nav>
         <a
@@ -126,7 +131,7 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
         >
           <img
             src="/millesens/icons/logout-svgrepo-com.svg"
-            alt="Logout"
+            alt={t("header.logout")}
             className="h-6 w-6"
           />
         </a>
@@ -135,8 +140,10 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
       {children}
 
       <footer className="py-4 bg-gray-200 dark:bg-gray-800 text-center">
-        MilleGrilles: MilleSens{" "}
-        <span className="text-sm">{__APP_VERSION__}</span>
+        {t("footer.text")}{" "}
+        <span className="text-sm">
+          {t("footer.version", { version: __APP_VERSION__ })}
+        </span>
       </footer>
     </>
   );
@@ -162,13 +169,15 @@ export default function App() {
   // }, []);
 
   return (
-    <TimeProvider>
-      <MilleGrillesWorkerProvider>
-        <SyncLayer>
-          <Outlet />
-        </SyncLayer>
-      </MilleGrillesWorkerProvider>
-    </TimeProvider>
+    <I18nextProvider i18n={i18n}>
+      <TimeProvider>
+        <MilleGrillesWorkerProvider>
+          <SyncLayer>
+            <Outlet />
+          </SyncLayer>
+        </MilleGrillesWorkerProvider>
+      </TimeProvider>
+    </I18nextProvider>
   );
 }
 

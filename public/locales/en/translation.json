@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "devices": "Devices",
+    "settings": "Settings"
+  },
+  "footer": {
+    "text": "MilleGrilles: MilleSens",
+    "version": "{{version}}"
+  },
+  "header": {
+    "logout": "Logout"
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "An unexpected error occurred."
+  }
+}

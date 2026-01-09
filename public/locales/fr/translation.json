@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "devices": "Appareils",
+    "settings": "Paramètres"
+  },
+  "footer": {
+    "text": "MilleGrilles: MilleSens",
+    "version": "{{version}}"
+  },
+  "header": {
+    "logout": "Déconnexion"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "error": "Une erreur inattendue s'est produite."
+  }
+}
