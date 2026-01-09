@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import type { ChangeEvent, Dispatch } from "react";
 import { Formatters } from "millegrilles.reactdeps.typescript";
+import { useTranslation } from "react-i18next";
 
 import { useBluetoothStore } from "~/state/bluetoothStore";
 import { useConnectionStore } from "../state/connectionStore";
@@ -39,6 +40,7 @@ declare global {
 
 /* ---------- Devices section ---------- */
 export function BluetoothDevicesSection() {
+  const { t } = useTranslation();
   const clearDeviceState = useBluetoothStore((state) => state.reset);
 
   const [wifi, setWifi] = useState("");
@@ -85,12 +87,12 @@ export function BluetoothDevicesSection() {
 
   return (
     <>
-      <h1>Device configuration</h1>
+      <h1>{t("bluetooth.title")}</h1>
       <section>
-        <h2>Connection</h2>
+        <h2>{t("bluetooth.connectionHeader")}</h2>
         <div className="grid grid-cols-12">
           <label htmlFor="wifissid" className="col-span-3">
-            WIFI
+            {t("bluetooth.wifiLabel")}
           </label>
           <input
             id="wifissid"
@@ -101,7 +103,7 @@ export function BluetoothDevicesSection() {
           />
           <div className="col-span-3"></div>
           <label htmlFor="wifipassword" className="col-span-3">
-            WIFI Password
+            {t("bluetooth.wifiPasswordLabel")}
           </label>
           <input
             id="wifipassword"
@@ -111,9 +113,11 @@ export function BluetoothDevicesSection() {
             className="col-span-6 text-black"
           />
           <div className="col-span-3"></div>
-          <p className="col-span-12">Server connection URL.</p>
+          <p className="col-span-12">
+            {t("bluetooth.serverConnectionUrlLabel")}
+          </p>
           <label htmlFor="serverurl" className="col-span-3">
-            Server URL
+            {t("bluetooth.serverUrlLabel")}
           </label>
           <input
             id="serverurl"
@@ -127,7 +131,7 @@ export function BluetoothDevicesSection() {
       </section>
 
       <section>
-        <h2>Device</h2>
+        <h2>{t("bluetooth.deviceHeader")}</h2>
 
         <DeviceScan
           selectedDevice={selectedDevice}
@@ -152,6 +156,7 @@ type DeviceScanProps = {
 };
 
 export function DeviceScan(props: DeviceScanProps) {
+  const { t } = useTranslation();
   const { setSelectedDevice } = props;
   const scanCb = useCallback(() => {
     requestDevice()
@@ -174,20 +179,20 @@ export function DeviceScan(props: DeviceScanProps) {
           onClick={disconnectHandler}
           className="btn bg-indigo-800 hover:bg-indigo-600 active:bg-indigo-500"
         >
-          Disconnect
+          {t("bluetooth.deviceScan.disconnect")}
         </button>
       </>
     );
 
   return (
     <>
-      <p>Le boutons suivant permet de trouver un appareil avec bluetooth.</p>
+      <p>{t("bluetooth.deviceScan.foundDeviceText")}</p>
       <div>
         <button
           onClick={scanCb}
           className="btn bg-indigo-800 hover:bg-indigo-600 active:bg-indigo-500"
         >
-          Scan
+          {t("bluetooth.deviceScan.scan")}
         </button>
       </div>
     </>
@@ -432,6 +437,7 @@ type DeviceReadingsProps = {
 };
 
 export function ShowDeviceReadings(props: DeviceReadingsProps) {
+  const { t } = useTranslation();
   const { server, authSharedSecret } = props;
 
   const deviceState = useBluetoothStore((state) => state.deviceState);
@@ -441,9 +447,9 @@ export function ShowDeviceReadings(props: DeviceReadingsProps) {
     <div>
       <p></p>
 
-      <div>Ntp sync</div>
+      <div>{t("bluetooth.showDeviceReadings.ntpSyncLabel")}</div>
       <div>{deviceState.ntp ? "Oui" : "Non"}</div>
-      <div>Heure</div>
+      <div>{t("bluetooth.showDeviceReadings.timeLabel")}</div>
       <div>
         <Formatters.FormatterDate value={deviceState.time} />
       </div>
@@ -526,6 +532,7 @@ type SwitchReadingProps = {
 };
 
 export function SwitchBluetooth(props: SwitchReadingProps) {
+  const { t } = useTranslation();
   const { value, label, idx, server, authSharedSecret } = props;
 
   const workers = useMilleGrillesWorkers();
@@ -552,7 +559,11 @@ export function SwitchBluetooth(props: SwitchReadingProps) {
   return (
     <>
       <div>{label || "Switch"}</div>
-      <div>{value.valeur ? "ON" : "OFF"}</div>
+      <div>
+        {value.valeur
+          ? t("bluetooth.switchBluetooth.on")
+          : t("bluetooth.switchBluetooth.off")}
+      </div>
       <div>
         <button
           name={"" + idx}
@@ -561,7 +572,7 @@ export function SwitchBluetooth(props: SwitchReadingProps) {
           disabled={!authSharedSecret}
           className="btn inline-block text-center bg-slate-700 hover:bg-slate-600 active:bg-slate-500"
         >
-          ON
+          {t("bluetooth.switchBluetooth.on")}
         </button>
         <button
           name={"" + idx}
@@ -570,7 +581,7 @@ export function SwitchBluetooth(props: SwitchReadingProps) {
           disabled={!authSharedSecret}
           className="btn inline-block text-center bg-slate-700 hover:bg-slate-600 active:bg-slate-500"
         >
-          OFF
+          {t("bluetooth.switchBluetooth.off")}
         </button>
       </div>
     </>
@@ -586,6 +597,7 @@ type SubmitConfigurationProps = {
 };
 
 export function SubmitConfiguration(props: SubmitConfigurationProps) {
+  const { t } = useTranslation();
   const { server, ssid, wifiPassword, relayUrl } = props;
 
   const workers = useMilleGrillesWorkers();
@@ -640,23 +652,20 @@ export function SubmitConfiguration(props: SubmitConfigurationProps) {
   return (
     <div>
       <br />
-      <p>
-        Utilisez les boutons suivants pour modifier la configuration de
-        l'appareil.
-      </p>
+      <p>{t("bluetooth.submitConfiguration.description")}</p>
       <button
         onClick={submitWifi}
         disabled={!ssid || !wifiPassword}
         className="btn inline-block text-center bg-slate-700 hover:bg-slate-600 active:bg-slate-500"
       >
-        Changer wifi
+        {t("bluetooth.submitConfiguration.changeWifi")}
       </button>
       <button
         onClick={submitConfigurationServer}
         disabled={!relayUrl}
         className="btn inline-block text-center bg-slate-700 hover:bg-slate-600 active:bg-slate-500"
       >
-        Configurer serveur
+        {t("bluetooth.submitConfiguration.configureServer")}
       </button>
       <p></p>
     </div>
@@ -670,6 +679,7 @@ type RebootButtonProps = {
 };
 
 export function RebootButton(props: RebootButtonProps) {
+  const { t } = useTranslation();
   const { server, authSharedSecret } = props;
 
   const workers = useMilleGrillesWorkers();
@@ -692,7 +702,7 @@ export function RebootButton(props: RebootButtonProps) {
       disabled={!authSharedSecret}
       className="btn inline-block text-center bg-red-700 hover:bg-red-600 active:bg-red-500"
     >
-      Reboot
+      {t("bluetooth.rebootButton")}
     </button>
   );
 }

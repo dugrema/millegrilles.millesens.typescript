@@ -234,5 +234,46 @@
     "tableAvg": "Avg",
     "tableMax": "Max",
     "backToDevice": "Back to Device"
+  },
+  "bluetooth": {
+    "title": "Device configuration",
+    "connectionHeader": "Connection",
+    "wifiLabel": "WIFI",
+    "wifiPasswordLabel": "WIFI Password",
+    "serverConnectionUrlLabel": "Server connection URL.",
+    "serverUrlLabel": "Server URL",
+    "deviceHeader": "Device",
+    "deviceScan": {
+      "foundDeviceText": "The following button will find a device with bluetooth.",
+      "disconnect": "Disconnect",
+      "scan": "Scan"
+    },
+    "submitConfiguration": {
+      "description": "Use the following buttons to modify the device configuration.",
+      "changeWifi": "Change wifi",
+      "configureServer": "Configure server"
+    },
+    "rebootButton": "Reboot",
+    "showDeviceState": {
+      "idmgLabel": "Idmg",
+      "userIdLabel": "User id",
+      "wifiLabel": "WIFI",
+      "ipAddressLabel": "Ip address",
+      "subnetLabel": "Subnet",
+      "gatewayLabel": "Gateway",
+      "dnsLabel": "DNS"
+    },
+    "showDeviceReadings": {
+      "ntpSyncLabel": "Ntp sync",
+      "timeLabel": "Time",
+      "temperature1Label": "Temperature 1",
+      "temperature2Label": "Temperature 2",
+      "humidityLabel": "Humidity"
+    },
+    "switchBluetooth": {
+      "label": "Switch",
+      "on": "ON",
+      "off": "OFF"
+    }
   }
 }
