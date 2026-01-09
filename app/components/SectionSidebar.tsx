@@ -1,6 +1,7 @@
 import { useSidebar } from "./SidebarContext";
 import { useRef, useEffect } from "react";
 import type { ReactNode } from "react";
+import { Button } from "./Button";
 
 export const SectionSidebar = ({ children }: { children: ReactNode }) => {
   const { isOpen, close } = useSidebar();
@@ -58,13 +59,13 @@ export const SectionSidebar = ({ children }: { children: ReactNode }) => {
         <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
           Menu
         </span>
-        <button
+        <Button
           onClick={close}
           className="p-2 rounded hover:bg-gray-300 dark:hover:bg-gray-700"
           aria-label="Close sidebar"
         >
           ×
-        </button>
+        </Button>
       </div>
       <div className="flex-1 overflow-y-auto" onClick={close}>
         {children}

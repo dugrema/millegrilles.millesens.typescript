@@ -5,6 +5,7 @@ import type {
   DisplayConfiguration,
 } from "~/workers/connection.worker";
 import type { DeviceValue } from "~/state/deviceValueStore";
+import { Button } from "./Button";
 
 /**
  * Props for the ScreenDisplay component.
@@ -207,23 +208,23 @@ export function ScreenDisplay({
 
       {totalPages > 1 && (
         <div className="mt-2 flex justify-between">
-          <button
+          <Button
             onClick={handlePrev}
             disabled={pageIndex === 0}
             className="px-2 py-1 rounded border"
           >
             Prev
-          </button>
+          </Button>
           <span>
             Page {pageIndex + 1} / {totalPages}
           </span>
-          <button
+          <Button
             onClick={handleNext}
             disabled={pageIndex >= totalPages - 1}
             className="px-2 py-1 rounded border"
           >
             Next
-          </button>
+          </Button>
         </div>
       )}
     </div>
