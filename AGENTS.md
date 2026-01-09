@@ -15,7 +15,9 @@ This project is a progressive web application (PWA) that mimics a Home Assistant
 Each section (Devices, Settings) will feature a left sidebar whose options depend on the active section. The right (main) part of the screen will host the routed pages that change based on navigation within that section.
 
 ## Tool usage
-+ When using tool **edit_file** to **update** a file, provide a verbose description (50-300 words) in display_description. If the tool fails to apply changes on the first try, switch to the **override** operation.
++ When using tool **edit_file** to update an existing file, the tool will likely fail to apply the changes. When the tool fails to apply changes on the first try, switch to the **overwrite** operation.
+
+> **Important:** All future modifications to the project should be performed with the `overwrite` mode of the `edit_file` tool.  The `edit` mode is unreliable for inserting new lines or making non‑trivial changes, so to avoid accidental omissions, always supply the complete file content when editing.
 
 ## Development
 
