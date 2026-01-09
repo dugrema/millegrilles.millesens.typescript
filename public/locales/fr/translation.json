@@ -274,7 +274,16 @@
       "label": "Interrupteur",
       "on": "ON",
       "off": "OFF"
-    }
+    },
+    "scanning": "En cours de recherche…",
+    "selectedDevice": "Appareil sélectionné : {{device}}",
+    "unknownDevice": "Appareil inconnu",
+    "notAvailable": "Bluetooth n'est pas disponible"
+  },
+  "bluetoothDevice": {
+    "title": "Appareil Bluetooth",
+    "noDevice": "Aucun appareil sélectionné. Veuillez revenir et scanner un appareil d'abord.",
+    "back": "Retour aux appareils"
   },
   "settingsPage": {
     "title": "Paramètres généraux",

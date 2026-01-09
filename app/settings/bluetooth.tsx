@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useBluetoothStore } from "~/state/bluetoothStore";
 import {
   checkBluetoothAvailable,
   requestDevice,
 } from "~/utils/bluetooth/commands";
+import { useTranslation } from "react-i18next";
 
 export default function SettingsBluetooth() {
+  const { t } = useTranslation();
   const [scanning, setScanning] = useState(false);
+
   const {
     available,
     wifiSSID,
@@ -22,105 +25,123 @@ export default function SettingsBluetooth() {
   } = useBluetoothStore();
 
   const navigate = useNavigate();
-  console.log({ wifiSSID, wifiPassword, serviceUrl });
 
-  // Lifecycle handling for the GATT server of a device.
+  /* Handle GATT server disconnect and cleanup */
   useEffect(() => {
     if (!selectedDevice?.gatt) return;
-    selectedDevice.addEventListener("gattserverdisconnected", () => {
+    const handler = () => {
       console.warn("GATT server disconnected");
       setSelectedDevice(undefined);
-    });
+    };
+    // @ts-ignore: addEventListener is not typed on BluetoothDevice
+    selectedDevice.addEventListener("gattserverdisconnected", handler);
+    return () => {
+      // @ts-ignore: removeEventListener is not typed on BluetoothDevice
+      selectedDevice.removeEventListener("gattserverdisconnected", handler);
+    };
   }, [selectedDevice, setSelectedDevice]);
 
   const handleScan = async () => {
     setScanning(true);
-    // Scan Bluetooth BLE devices and select one
     try {
-      const selectedDevice = await requestDevice();
-      setSelectedDevice(selectedDevice || undefined);
-      if (selectedDevice) {
-        // Navigate to device detail page after selection
-        navigate("/settings/bluetoothDevice");
-      }
+      const device = await requestDevice();
+      setSelectedDevice(device ?? undefined);
+      if (device) navigate("/settings/bluetoothDevice");
     } catch (err) {
       console.error("Error selecting device", err);
     } finally {
       setScanning(false);
     }
   };
+
   const handleDisconnect = () => {
-    if (selectedDevice?.gatt?.connected) {
-      selectedDevice.gatt.disconnect();
-    }
+    if (selectedDevice?.gatt?.connected) selectedDevice.gatt.disconnect();
     setSelectedDevice(undefined);
   };
 
+  /* Check Bluetooth availability on mount */
   useEffect(() => {
     const check = async () => {
-      const available = await checkBluetoothAvailable();
-      console.debug("Bluetooth available?", available);
-      setAvailable(available);
+      const avail = await checkBluetoothAvailable();
+      console.debug("Bluetooth available?", avail);
+      setAvailable(avail);
     };
     check();
   }, [setAvailable]);
 
   if (!available) {
-    return <p>Bluetooth is not available</p>;
+    return <p>{t("bluetooth.notAvailable")}</p>;
   }
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Bluetooth</h1>
+      <h1 className="text-2xl font-semibold mb-4">{t("bluetooth.title")}</h1>
+
       <form className="mb-4 space-y-2">
         <div>
-          <label className="block mb-1 font-medium">Wi‑Fi SSID</label>
+          <label className="block mb-1 font-medium">
+            {t("bluetooth.wifiLabel")}
+          </label>
           <input
             type="text"
             value={wifiSSID}
             onChange={(e) => setWifiSSID(e.target.value)}
             className="w-full rounded border px-2 py-1"
-            placeholder="Enter SSID"
+            placeholder={t("bluetooth.wifiLabel")}
           />
         </div>
+
         <div>
-          <label className="block mb-1 font-medium">Wi‑Fi Password</label>
+          <label className="block mb-1 font-medium">
+            {t("bluetooth.wifiPasswordLabel")}
+          </label>
           <input
             type="password"
             value={wifiPassword}
             onChange={(e) => setWifiPassword(e.target.value)}
             className="w-full rounded border px-2 py-1"
-            placeholder="Enter Password"
+            placeholder={t("bluetooth.wifiPasswordLabel")}
           />
         </div>
+
         <div>
           <label className="block mb-1 font-medium">
-            Service Connection URL
+            {t("bluetooth.serverConnectionUrlLabel")}
           </label>
           <input
             type="url"
             value={serviceUrl}
             onChange={(e) => setServiceUrl(e.target.value)}
             className="w-full rounded border px-2 py-1"
-            placeholder="https://example.com/"
+            placeholder={t("bluetooth.serverConnectionUrlLabel")}
           />
         </div>
       </form>
+
       <button
         onClick={handleScan}
         disabled={scanning}
         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
       >
-        {scanning ? "Scanning..." : "Scan"}
+        {scanning ? t("bluetooth.scanning") : t("bluetooth.deviceScan.scan")}
       </button>
+
       <button
         onClick={handleDisconnect}
         disabled={!selectedDevice}
         className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 ml-2"
       >
-        Disconnect
+        {t("bluetooth.deviceScan.disconnect")}
       </button>
-      {selectedDevice && <p>Device is selected - TODO</p>}
+
+      {selectedDevice && (
+        <p className="mt-2 text-sm text-gray-500">
+          {t("bluetooth.selectedDevice", {
+            device:
+              (selectedDevice as any).name ?? t("bluetooth.unknownDevice"),
+          })}
+        </p>
+      )}
     </div>
   );
 }

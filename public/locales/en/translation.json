@@ -204,7 +204,7 @@
     "durationLabel": "Duration",
     "linesLabel": "Lines",
     "variableLabel": "Variable",
-    "masqueLabel": "Masque",
+    "masqueLabel": "Mask",
     "samplePage": "Sample page",
     "save": "Save",
     "cancel": "Cancel"
@@ -274,7 +274,16 @@
       "label": "Switch",
       "on": "ON",
       "off": "OFF"
-    }
+    },
+    "scanning": "Scanning…",
+    "selectedDevice": "Selected device: {{device}}",
+    "unknownDevice": "Unknown device",
+    "notAvailable": "Bluetooth is not available"
+  },
+  "bluetoothDevice": {
+    "title": "Bluetooth Device",
+    "noDevice": "No device selected. Please go back and scan a device first.",
+    "back": "Back to Devices"
   },
   "settingsPage": {
     "title": "General settings",
