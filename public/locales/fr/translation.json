@@ -141,27 +141,43 @@
     "temperature": "Température",
     "unsupportedClass": "Classe de programme non prise en charge"
   },
-  "programsPage": {
-    "title": "Tous les programmes",
-    "note": "Note:",
-    "noteText": "pour ajouter un nouveau programme, allez sur un appareil interrupteur et cliquez sur le bouton Programmes.",
-    "noPrograms": "Aucun programme défini.",
-    "untitled": "Sans titre",
+  "deviceProgramsEdit": {
+    "editHeader": "Éditer le programme pour {{group}} / {{device}}",
+    "addHeader": "Ajouter un programme pour {{group}} / {{device}}",
+    "descriptionLabel": "Description",
     "classLabel": "Classe",
+    "selectClass": "Sélectionner la classe",
+    "classOptions": {
+      "horaireHebdomadaire": "Horaire Hebdomadaire",
+      "humidificateur": "Humidificateur",
+      "chauffage": "Chauffage",
+      "climatisation": "Climatisation"
+    },
     "activeLabel": "Actif",
-    "yes": "Oui",
-    "no": "Non",
-    "groupLabel": "Groupe",
-    "confirmDelete": "Confirmer la suppression",
-    "delete": "Supprimer"
+    "save": "Enregistrer",
+    "cancel": "Annuler"
+  },
+  "programsPage": {
+    "title": "All Programs",
+    "note": "Note:",
+    "noteText": "to add a new program, go to a switch device and click the Programs button.",
+    "noPrograms": "No programs defined.",
+    "untitled": "Untitled",
+    "classLabel": "Class",
+    "activeLabel": "Active",
+    "yes": "Yes",
+    "no": "No",
+    "groupLabel": "Group",
+    "confirmDelete": "Confirm delete",
+    "delete": "Delete"
   },
   "noticesPage": {
-    "noPendingRegistrations": "Aucun enregistrement en attente.",
+    "noPendingRegistrations": "No pending registrations.",
     "microcode": "Microcode",
-    "pendingRegistration": "Enregistrement en attente",
+    "pendingRegistration": "Pending registration",
     "code": "Code",
-    "confirm": "Confirmer",
-    "register": "Enregistrer"
+    "confirm": "Confirm",
+    "register": "Register"
   },
   "groupDisplays": {
     "title": "Écrans pour le groupe : {{groupName}}",
@@ -202,5 +218,21 @@
     "unassignedHeading": "Appareils non assignés",
     "noDevicesInGroup": "Aucun appareil n'est dans le groupe « {{group}} ».",
     "noUnassignedDevices": "Aucun appareil n'est non assigné."
+  },
+  "deviceChart": {
+    "deviceNotFound": "Appareil non trouvé.",
+    "backToDevices": "Retour aux appareils",
+    "datasetLabel": "Dataset:",
+    "dataset3days": "3‑jours (horaire)",
+    "datasetMonth": "Mois (quotidien)",
+    "datasetCustom": "Personnalisé",
+    "showTable": "Afficher le tableau",
+    "showChart": "Afficher le graphique",
+    "customNotImplemented": "Ensemble de données personnalisé non encore implémenté.",
+    "tableTimestamp": "Horodatage",
+    "tableMin": "Min",
+    "tableAvg": "Moyenne",
+    "tableMax": "Max",
+    "backToDevice": "Retour à l'appareil"
   }
 }

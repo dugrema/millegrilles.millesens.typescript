@@ -6,6 +6,7 @@ import { Button } from "~/components/Button";
 import { DateTime } from "luxon";
 import { useConfigurationStore } from "~/state/configurationStore";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
+import { useTranslation } from "react-i18next";
 import {
   LineChart,
   Line,
@@ -79,6 +80,7 @@ const monthData = [
 type DatasetType = "3days" | "month" | "custom";
 
 export default function DeviceChart() {
+  const { t } = useTranslation();
   const { deviceId } = useParams<{ deviceId: string }>();
   const device = useDevicesStore((s) =>
     s.devices.find((d) => d.id === deviceId),
@@ -138,13 +140,13 @@ export default function DeviceChart() {
     return (
       <div className="p-4 bg-white dark:bg-gray-800">
         <p className="text-red-600 bg-white dark:bg-gray-800">
-          Device not found.
+          {t("deviceChart.deviceNotFound")}
         </p>
         <NavLink
           to="/devices"
           className="mt-4 inline-block text-blue-600 hover:underline"
         >
-          Back to devices
+          {t("deviceChart.backToDevices")}
         </NavLink>
       </div>
     );
@@ -182,7 +184,7 @@ export default function DeviceChart() {
       {/* Dataset selector */}
       <div className="flex items-center space-x-4 mb-4">
         <label htmlFor="dataset-select" className="text-sm font-medium">
-          Dataset:
+          {t("deviceChart.datasetLabel")}
         </label>
         <select
           id="dataset-select"
@@ -190,15 +192,15 @@ export default function DeviceChart() {
           onChange={handleDatasetChange}
           className="border rounded px-2 py-1  dark:bg-gray-800"
         >
-          <option value="3days">3‑day (hourly)</option>
-          <option value="month">Month (daily)</option>
-          <option value="custom">Custom</option>
+          <option value="3days">{t("deviceChart.dataset3days")}</option>
+          <option value="month">{t("deviceChart.datasetMonth")}</option>
+          <option value="custom">{t("deviceChart.datasetCustom")}</option>
         </select>
       </div>
 
       <div className="flex justify-end mb-2">
         <Button variant="secondary" onClick={toggleView}>
-          {showChart ? "Show Table" : "Show Chart"}
+          {showChart ? t("deviceChart.showTable") : t("deviceChart.showChart")}
         </Button>
       </div>
 
@@ -245,7 +247,7 @@ export default function DeviceChart() {
           </ResponsiveContainer>
         ) : (
           <p className="text-center py-8 text-gray-500">
-            Custom dataset not yet implemented.
+            {t("deviceChart.customNotImplemented")}
           </p>
         )
       ) : (
@@ -253,10 +255,18 @@ export default function DeviceChart() {
           <table className="min-w-full text-sm text-left">
             <thead>
               <tr className="bg-gray-100 dark:bg-gray-800 dark:text-gray-200">
-                <th className="px-4 py-2 dark:text-gray-200">Timestamp</th>
-                <th className="px-4 py-2 dark:text-gray-200">Min</th>
-                <th className="px-4 py-2 dark:text-gray-200">Avg</th>
-                <th className="px-4 py-2 dark:text-gray-200">Max</th>
+                <th className="px-4 py-2 dark:text-gray-200">
+                  {t("deviceChart.tableTimestamp")}
+                </th>
+                <th className="px-4 py-2 dark:text-gray-200">
+                  {t("deviceChart.tableMin")}
+                </th>
+                <th className="px-4 py-2 dark:text-gray-200">
+                  {t("deviceChart.tableAvg")}
+                </th>
+                <th className="px-4 py-2 dark:text-gray-200">
+                  {t("deviceChart.tableMax")}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -285,7 +295,7 @@ export default function DeviceChart() {
       )}
 
       <NavLink to={`/devices/device/${device.id}`}>
-        <Button variant="secondary">Back to Device</Button>
+        <Button variant="secondary">{t("deviceChart.backToDevice")}</Button>
       </NavLink>
     </div>
   );

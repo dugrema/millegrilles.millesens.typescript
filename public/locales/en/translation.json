@@ -218,5 +218,21 @@
     "unassignedHeading": "Unassigned Devices",
     "noDevicesInGroup": "No devices are in the \"{{group}}\" group.",
     "noUnassignedDevices": "No devices are unassigned."
+  },
+  "deviceChart": {
+    "deviceNotFound": "Device not found.",
+    "backToDevices": "Back to devices",
+    "datasetLabel": "Dataset:",
+    "dataset3days": "3‑day (hourly)",
+    "datasetMonth": "Month (daily)",
+    "datasetCustom": "Custom",
+    "showTable": "Show Table",
+    "showChart": "Show Chart",
+    "customNotImplemented": "Custom dataset not yet implemented.",
+    "tableTimestamp": "Timestamp",
+    "tableMin": "Min",
+    "tableAvg": "Avg",
+    "tableMax": "Max",
+    "backToDevice": "Back to Device"
   }
 }
