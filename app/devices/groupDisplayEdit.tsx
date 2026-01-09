@@ -1,6 +1,4 @@
-// File: millegrilles.millesens.typescript/app/devices/groupDisplayEdit.tsx
-
-import { useParams, NavLink } from "react-router";
+import { useParams, NavLink, useNavigate } from "react-router";
 import { useState, useEffect, useMemo } from "react";
 import { useDeviceGroupsStore } from "~/state/deviceGroupsStore";
 import type { DeviceGroup } from "~/state/deviceGroupsStore";
@@ -10,7 +8,7 @@ import { ScreenDisplay } from "~/components/ScreenDisplay";
 import { useDeviceValuesStore } from "~/state/deviceValueStore";
 import type { DeviceValue } from "~/state/deviceValueStore";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
-import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 
 /**
  * Edit a display configuration inside a device group.
@@ -33,12 +31,15 @@ export default function GroupDisplayEdit() {
 
   const workers = useMilleGrillesWorkers();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Guard against missing params
   if (!groupId || !displayName) {
     return (
       <div className="p-4">
-        <p className="text-red-600">Missing group or display name.</p>
+        <p className="text-red-600">
+          {t("groupDisplayEdit.missingGroupOrDisplay")}
+        </p>
       </div>
     );
   }
@@ -50,7 +51,7 @@ export default function GroupDisplayEdit() {
   if (!group) {
     return (
       <div className="p-4">
-        <p className="text-red-600">Group not found.</p>
+        <p className="text-red-600">{t("groupDisplayEdit.groupNotFound")}</p>
       </div>
     );
   }
@@ -59,7 +60,7 @@ export default function GroupDisplayEdit() {
   if (!display) {
     return (
       <div className="p-4">
-        <p className="text-red-600">Display not found.</p>
+        <p className="text-red-600">{t("groupDisplayEdit.displayNotFound")}</p>
       </div>
     );
   }
@@ -147,7 +148,6 @@ export default function GroupDisplayEdit() {
           throw new Error(`Error updating device: ${response.err}`);
         // Return to the list view
         navigate(`/devices/displays/${group.id}`);
-        // editLock.current = false;
       })
       .catch((err) =>
         console.error("handleSave Error updating device group", err),
@@ -167,25 +167,35 @@ export default function GroupDisplayEdit() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">
-        Edit Display: {displayName}
+        {t("groupDisplayEdit.title", { displayName })}
       </h1>
 
       {/* Display information */}
       <div className="mb-4">
-        <h3 className="font-medium mb-1">Display Information</h3>
-        <p>Name: {displayName}</p>
-        <p>Format: {display.format}</p>
+        <h3 className="font-medium mb-1">
+          {t("groupDisplayEdit.displayInfoHeader")}
+        </h3>
         <p>
-          Size: {display.width} × {display.height}
+          {t("groupDisplayEdit.nameLabel")}: {displayName}
+        </p>
+        <p>
+          {t("groupDisplayEdit.formatLabel")}: {display.format}
+        </p>
+        <p>
+          {t("groupDisplayEdit.sizeLabel")}: {display.width} × {display.height}
         </p>
       </div>
 
       {/* Display configuration */}
       <div className="mb-4">
-        <h3 className="font-medium mb-1">Display Configuration</h3>
+        <h3 className="font-medium mb-1">
+          {t("groupDisplayEdit.displayConfigHeader")}
+        </h3>
 
         <div className="mb-2">
-          <label className="block font-medium mb-1">Afficher date durée</label>
+          <label className="block font-medium mb-1">
+            {t("groupDisplayEdit.afficherDateDureeLabel")}
+          </label>
           <input
             type="number"
             value={afficherDateDuree}
@@ -197,20 +207,23 @@ export default function GroupDisplayEdit() {
         <div className="flex items-center justify-between mt-6">
           {/* Lines, paginated */}
           <h4 className="font-medium mb-1">
-            Page {pageIndex + 1} of {totalPages}
+            {t("groupDisplayEdit.page", {
+              current: pageIndex + 1,
+              total: totalPages,
+            })}
           </h4>
 
           {/* Page level controls */}
           <div className="flex space-x-2">
             <Button variant="outline" onClick={handleAddPage}>
-              Add page
+              {t("groupDisplayEdit.addPage")}
             </Button>
             <Button
               variant="outline"
               onClick={handleRemovePage}
               disabled={lines.length === 0}
             >
-              Remove page
+              {t("groupDisplayEdit.removePage")}
             </Button>
           </div>
         </div>
@@ -218,7 +231,9 @@ export default function GroupDisplayEdit() {
         {/* Page‑level duration input */}
         {visibleLines.length > 0 && (
           <div className="mb-2">
-            <label className="block font-medium mb-1">Duration</label>
+            <label className="block font-medium mb-1">
+              {t("groupDisplayEdit.durationLabel")}
+            </label>
             <input
               type="number"
               value={pageDuree}
@@ -232,7 +247,7 @@ export default function GroupDisplayEdit() {
 
         <div className="md:flex md:items-center md:justify-between md:space-x-2">
           <div>
-            <div className="mb-1">Lines</div>
+            <div className="mb-1">{t("groupDisplayEdit.linesLabel")}</div>
 
             {visibleLines.map((line, idx) => {
               const globalIdx = startIdx + idx;
@@ -240,7 +255,9 @@ export default function GroupDisplayEdit() {
                 <div key={globalIdx} className="border rounded p-2 mb-2">
                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
                     <div>
-                      <label className="block font-medium mb-1">Variable</label>
+                      <label className="block font-medium mb-1">
+                        {t("groupDisplayEdit.variableLabel")}
+                      </label>
                       <DevicePickList
                         currentDeviceGroup={group.id}
                         value={line.variable}
@@ -257,7 +274,9 @@ export default function GroupDisplayEdit() {
                       />
                     </div>
                     <div>
-                      <label className="block font-medium mb-1">Masque</label>
+                      <label className="block font-medium mb-1">
+                        {t("groupDisplayEdit.masqueLabel")}
+                      </label>
                       <input
                         type="text"
                         value={line.masque}
@@ -281,7 +300,7 @@ export default function GroupDisplayEdit() {
           </div>
           {/* Screen preview */}
           <div className="mt-1">
-            <p>Sample page</p>
+            <p>{t("groupDisplayEdit.samplePage")}</p>
             <ScreenDisplay
               declaration={display}
               configuration={{ lignes: lines }}
@@ -297,10 +316,10 @@ export default function GroupDisplayEdit() {
       {/* Actions */}
       <div className="flex space-x-2">
         <Button onClick={handleSave} variant="primary">
-          Save
+          {t("groupDisplayEdit.save")}
         </Button>
         <NavLink to={`/devices/displays/${groupId}`}>
-          <Button variant="outline">Cancel</Button>
+          <Button variant="outline">{t("groupDisplayEdit.cancel")}</Button>
         </NavLink>
       </div>
     </div>

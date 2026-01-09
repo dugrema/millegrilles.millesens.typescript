@@ -178,5 +178,35 @@
     "code": "Code",
     "confirm": "Confirm",
     "register": "Register"
+  },
+  "groupDisplays": {
+    "title": "Displays for Group: {{groupName}}",
+    "groupButton": "Group",
+    "noDisplays": "No displays configured for this group.",
+    "format": "Format:",
+    "size": "Size:",
+    "description": "This display is configured to show information on the {{name}} screen."
+  },
+  "groupDisplayEdit": {
+    "missingGroupOrDisplay": "Missing group or display name.",
+    "groupNotFound": "Group not found.",
+    "displayNotFound": "Display not found.",
+    "title": "Edit Display: {{displayName}}",
+    "displayInfoHeader": "Display Information",
+    "nameLabel": "Name",
+    "formatLabel": "Format",
+    "sizeLabel": "Size",
+    "displayConfigHeader": "Display Configuration",
+    "afficherDateDureeLabel": "Afficher date durée",
+    "page": "Page {{current}} of {{total}}",
+    "addPage": "Add page",
+    "removePage": "Remove page",
+    "durationLabel": "Duration",
+    "linesLabel": "Lines",
+    "variableLabel": "Variable",
+    "masqueLabel": "Masque",
+    "samplePage": "Sample page",
+    "save": "Save",
+    "cancel": "Cancel"
   }
 }

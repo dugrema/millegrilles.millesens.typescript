@@ -162,5 +162,35 @@
     "code": "Code",
     "confirm": "Confirmer",
     "register": "Enregistrer"
+  },
+  "groupDisplays": {
+    "title": "Écrans pour le groupe : {{groupName}}",
+    "groupButton": "Groupe",
+    "noDisplays": "Aucun écran configuré pour ce groupe.",
+    "format": "Format :",
+    "size": "Taille :",
+    "description": "Cet écran est configuré pour afficher des informations sur l'écran {{name}}."
+  },
+  "groupDisplayEdit": {
+    "missingGroupOrDisplay": "Nom de groupe ou d’affichage manquant.",
+    "groupNotFound": "Groupe introuvable.",
+    "displayNotFound": "Affichage introuvable.",
+    "title": "Éditer l’affichage : {{displayName}}",
+    "displayInfoHeader": "Informations sur l’affichage",
+    "nameLabel": "Nom",
+    "formatLabel": "Format",
+    "sizeLabel": "Taille",
+    "displayConfigHeader": "Configuration de l’affichage",
+    "afficherDateDureeLabel": "Afficher date durée",
+    "page": "Page {{current}} sur {{total}}",
+    "addPage": "Ajouter une page",
+    "removePage": "Supprimer une page",
+    "durationLabel": "Durée",
+    "linesLabel": "Lignes",
+    "variableLabel": "Variable",
+    "masqueLabel": "Masque",
+    "samplePage": "Page d’exemple",
+    "save": "Enregistrer",
+    "cancel": "Annuler"
   }
 }
