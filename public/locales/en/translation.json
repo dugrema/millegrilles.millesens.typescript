@@ -197,7 +197,7 @@
     "formatLabel": "Format",
     "sizeLabel": "Size",
     "displayConfigHeader": "Display Configuration",
-    "afficherDateDureeLabel": "Afficher date durée",
+    "afficherDateDureeLabel": "Display date duration",
     "page": "Page {{current}} of {{total}}",
     "addPage": "Add page",
     "removePage": "Remove page",
