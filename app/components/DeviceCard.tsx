@@ -159,26 +159,30 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 flex flex-col justify-between h-full">
       <div>
-        <div className="flex items-center gap-2">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+        <div className="grid grid-cols-4 items-start gap-2">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 col-span-3">
             {name}
           </h3>
-          {connected !== undefined && (
-            <WifiIcon
-              className={
-                connected ? "size-6 text-green-500" : "size-6 text-red-500"
-              }
-            />
-          )}
-          {notification !== undefined && (
-            <BellIcon
-              className={
-                notification
-                  ? "size-6 text-yellow-500"
-                  : "size-6 text-green-500"
-              }
-            />
-          )}
+          <div className="flex justify-end gap-2">
+            {connected !== undefined && (
+              <WifiIcon
+                className={
+                  connected
+                    ? "size-6 text-green-500 shrink-0"
+                    : "size-6 text-red-500 shrink-0"
+                }
+              />
+            )}
+            {notification !== undefined && (
+              <BellIcon
+                className={
+                  notification
+                    ? "size-6 text-yellow-500 shrink-0"
+                    : "size-6 text-green-500 shrink-0"
+                }
+              />
+            )}
+          </div>
         </div>
         {type && (
           <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
@@ -231,8 +235,8 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
       )}
 
       {type === "String" && stringValue !== undefined && (
-        <div className="mt-4 text-center">
-          <span className={`text-2xl font-semibold ${valueColor}`}>
+        <div className="mt-4 text-center truncate">
+          <span className={`text-xl font-semibold ${valueColor}`}>
             {stringValue}
           </span>
         </div>
