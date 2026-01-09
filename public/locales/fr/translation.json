@@ -158,26 +158,26 @@
     "cancel": "Annuler"
   },
   "programsPage": {
-    "title": "All Programs",
-    "note": "Note:",
-    "noteText": "to add a new program, go to a switch device and click the Programs button.",
-    "noPrograms": "No programs defined.",
-    "untitled": "Untitled",
-    "classLabel": "Class",
-    "activeLabel": "Active",
-    "yes": "Yes",
-    "no": "No",
-    "groupLabel": "Group",
-    "confirmDelete": "Confirm delete",
-    "delete": "Delete"
+    "title": "Tous les programmes",
+    "note": "Remarque :",
+    "noteText": "Pour ajouter un nouveau programme, allez sur un appareil à commutateur et cliquez sur le bouton Programmes.",
+    "noPrograms": "Aucun programme défini.",
+    "untitled": "Sans titre",
+    "classLabel": "Classe",
+    "activeLabel": "Actif",
+    "yes": "Oui",
+    "no": "Non",
+    "groupLabel": "Groupe",
+    "confirmDelete": "Confirmer la suppression",
+    "delete": "Supprimer"
   },
   "noticesPage": {
-    "noPendingRegistrations": "No pending registrations.",
+    "noPendingRegistrations": "Aucune inscription en attente.",
     "microcode": "Microcode",
-    "pendingRegistration": "Pending registration",
+    "pendingRegistration": "En attente d'enregistrement",
     "code": "Code",
-    "confirm": "Confirm",
-    "register": "Register"
+    "confirm": "Confirmer",
+    "register": "S'inscrire"
   },
   "groupDisplays": {
     "title": "Écrans pour le groupe : {{groupName}}",
