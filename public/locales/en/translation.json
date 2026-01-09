@@ -212,5 +212,11 @@
   "devicesFilterHidden": {
     "title": "Hidden and deleted devices",
     "noHiddenDevices": "No devices are hidden."
+  },
+  "devicesGroupFilter": {
+    "heading": "Devices in group: {{group}}",
+    "unassignedHeading": "Unassigned Devices",
+    "noDevicesInGroup": "No devices are in the \"{{group}}\" group.",
+    "noUnassignedDevices": "No devices are unassigned."
   }
 }

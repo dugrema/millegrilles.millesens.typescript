@@ -7,11 +7,13 @@ import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { useToggleSwitch } from "../hooks/useToggleSwitch";
 import { useEffect } from "react";
 import { STORAGE_KEY_LASTGROUP } from "~/utils/constants";
+import { useTranslation } from "react-i18next";
 
 export default function DevicesGroupFilter() {
   // The group name comes from the route parameter; it is `undefined` if the
   // link was rendered for an unassigned group (no `group` in the URL).
   const { group } = useParams<{ group?: string }>();
+  const { t } = useTranslation();
 
   /* 1️⃣ Persist the current group to localStorage */
   useEffect(() => {
@@ -50,7 +52,9 @@ export default function DevicesGroupFilter() {
     return a.name.localeCompare(b.name) || a.id.localeCompare(b.id);
   });
 
-  const heading = group ? `Devices in group: ${group}` : "Unassigned Devices";
+  const heading = group
+    ? t("devicesGroupFilter.heading", { group })
+    : t("devicesGroupFilter.unassignedHeading");
 
   return (
     <>
@@ -58,8 +62,8 @@ export default function DevicesGroupFilter() {
       {sortedDevices.length === 0 ? (
         <p className="text-center text-gray-500 mt-4">
           {group
-            ? `No devices are in the "${group}" group.`
-            : "No devices are unassigned."}
+            ? t("devicesGroupFilter.noDevicesInGroup", { group })
+            : t("devicesGroupFilter.noUnassignedDevices")}
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mt-2">

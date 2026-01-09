@@ -196,5 +196,11 @@
   "devicesFilterHidden": {
     "title": "Appareils cachés et supprimés",
     "noHiddenDevices": "Aucun appareil n'est caché."
+  },
+  "devicesGroupFilter": {
+    "heading": "Appareils dans le groupe : {{group}}",
+    "unassignedHeading": "Appareils non assignés",
+    "noDevicesInGroup": "Aucun appareil n'est dans le groupe « {{group}} ».",
+    "noUnassignedDevices": "Aucun appareil n'est non assigné."
   }
 }
