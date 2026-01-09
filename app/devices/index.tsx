@@ -8,8 +8,10 @@ import type { Device } from "../state/devicesStore";
 import type { DeviceValue } from "../state/deviceValueStore";
 import { useEffect } from "react";
 import { STORAGE_KEY_LASTGROUP } from "~/utils/constants";
+import { useTranslation } from "react-i18next";
 
 export default function Devices() {
+  const { t } = useTranslation();
   const devices = useDevicesStore((state) => state.devices);
   const groups = useDeviceGroupsStore((state) => state.groups);
   const toggleSwitch = useToggleSwitch();
@@ -35,9 +37,9 @@ export default function Devices() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold">All devices</h1>
+      <h1 className="text-2xl font-semibold">{t("devices.title")}</h1>
       {sortedDevices.length === 0 ? (
-        <p className="text-center text-gray-500 mt-4">No devices available</p>
+        <p className="text-center text-gray-500 mt-4">{t("devices.none")}</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mt-2">
           {sortedDevices.map((device) => {

@@ -12,8 +12,10 @@ import { useToggleSwitch } from "~/hooks/useToggleSwitch";
 import { DateTime } from "luxon";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
 import type { MessageResponse } from "millegrilles.reactdeps.typescript";
+import { useTranslation } from "react-i18next";
 
 export default function DevicePage() {
+  const { t } = useTranslation();
   const { deviceId } = useParams<{ deviceId: string }>();
 
   const device = useDevicesStore((state) =>
@@ -29,12 +31,12 @@ export default function DevicePage() {
   if (!device) {
     return (
       <div className="p-4">
-        <p className="text-red-600">Device not found.</p>
+        <p className="text-red-600">{t("devicePage.notFound")}</p>
         <NavLink
           to="/devices"
           className="mt-4 inline-block text-blue-600 hover:underline"
         >
-          Back to devices
+          {t("devicePage.back")}
         </NavLink>
       </div>
     );
@@ -193,14 +195,14 @@ export default function DevicePage() {
           to={`/devices/deviceGroup/${deviceGroup}`}
           className="mt-4 inline-block text-blue-600 hover:underline"
         >
-          <Button variant="secondary">View Group</Button>
+          <Button variant="secondary">{t("devicePage.viewGroup")}</Button>
         </NavLink>
         {deviceValue?.numberValue !== undefined && (
           <NavLink
             to={`/devices/chart/${id}`}
             className="mt-4 inline-block text-blue-600 hover:underline"
           >
-            <Button variant="secondary">View Chart</Button>
+            <Button variant="secondary">{t("devicePage.viewChart")}</Button>
           </NavLink>
         )}
         {groupInfo?.registrationRequested && (
@@ -211,7 +213,7 @@ export default function DevicePage() {
             to={`/devices/programs/${deviceId}`}
             className="mt-4 inline-block text-blue-600 hover:underline"
           >
-            <Button variant="secondary">Programs</Button>
+            <Button variant="secondary">{t("devicePage.programs")}</Button>
           </NavLink>
         )}
         {groupInfo?.registrationPending && (
@@ -219,15 +221,15 @@ export default function DevicePage() {
             to={`/devices/notices`}
             className="mt-4 inline-block text-blue-600 hover:underline"
           >
-            <Button variant="secondary">Notices</Button>
+            <Button variant="secondary">{t("devicePage.notices")}</Button>
           </NavLink>
         )}
-        <h2 className="text-xl font-semibold">Device details</h2>
+        <h2 className="text-xl font-semibold">{t("devicePage.details")}</h2>
         <dl className="grid grid-cols-2 gap-4">
-          <dt className="font-medium">ID</dt>
+          <dt className="font-medium">{t("devicePage.id")}</dt>
           <dd>{id}</dd>
 
-          <dt className="font-medium">Name</dt>
+          <dt className="font-medium">{t("devicePage.name")}</dt>
           <dd>
             <input
               className="border rounded p-1"
@@ -236,10 +238,10 @@ export default function DevicePage() {
             />
           </dd>
 
-          <dt className="font-medium">Group</dt>
+          <dt className="font-medium">{t("devicePage.group")}</dt>
           <dd>{groupName}</dd>
 
-          <dt className="font-medium">Group (filter)</dt>
+          <dt className="font-medium">{t("devicePage.groupFilter")}</dt>
           <dd>
             <input
               className="border rounded p-1"
@@ -248,12 +250,12 @@ export default function DevicePage() {
             />
           </dd>
 
-          <dt className="font-medium">Type</dt>
+          <dt className="font-medium">{t("devicePage.type")}</dt>
           <dd>{type}</dd>
 
           {deviceValue?.numberValue !== undefined && (
             <>
-              <dt className="font-medium">Value</dt>
+              <dt className="font-medium">{t("devicePage.value")}</dt>
               <dd>
                 {deviceValue.numberValue}
                 {UNIT_MAP[type]}
@@ -263,19 +265,23 @@ export default function DevicePage() {
 
           {deviceValue?.stringValue !== undefined && (
             <>
-              <dt className="font-medium">Value</dt>
+              <dt className="font-medium">{t("devicePage.value")}</dt>
               <dd>{deviceValue.stringValue}</dd>
             </>
           )}
 
           {deviceValue?.status !== undefined && (
             <>
-              <dt className="font-medium">Status</dt>
-              <dd>{deviceValue.status ? "On" : "Off"}</dd>
+              <dt className="font-medium">{t("devicePage.status")}</dt>
+              <dd>
+                {deviceValue.status
+                  ? t("devicePage.statusOn")
+                  : t("devicePage.statusOff")}
+              </dd>
             </>
           )}
 
-          <dt className="font-medium">Last Update</dt>
+          <dt className="font-medium">{t("devicePage.lastUpdate")}</dt>
           <dd>
             {DateTime.fromSeconds(deviceValue?.lastUpdate ?? 0)
               .setZone(tz)
@@ -294,7 +300,7 @@ export default function DevicePage() {
               localGroup === (deviceGroupFilter ?? "")
             }
           >
-            Save
+            {t("devicePage.save")}
           </Button>
           <Button
             type="button"
@@ -305,7 +311,7 @@ export default function DevicePage() {
               localGroup === (deviceGroupFilter ?? "")
             }
           >
-            Cancel
+            {t("devicePage.cancel")}
           </Button>
         </div>
 
@@ -315,7 +321,7 @@ export default function DevicePage() {
           className="mt-4 w-full"
           onClick={toggleDelete}
         >
-          {deleted ? "Restore" : "Hide"}
+          {deleted ? t("devicePage.restore") : t("devicePage.hide")}
         </Button>
       </div>
     </div>

@@ -43,5 +43,41 @@
     "logout": "Logout",
     "menu": "Menu",
     "close": "Close sidebar"
+  },
+  "sidebar": {
+    "title": "Devices",
+    "all": "All Devices",
+    "hidden": "Hidden devices",
+    "programs": "Programs",
+    "notices": "Notices",
+    "filters": "Filters",
+    "unassigned": "Unassigned"
+  },
+  "devices": {
+    "title": "All Devices",
+    "none": "No devices found"
+  },
+  "devicePage": {
+    "notFound": "Device not found.",
+    "back": "Back to devices",
+    "viewGroup": "View Group",
+    "viewChart": "View Chart",
+    "programs": "Programs",
+    "notices": "Notices",
+    "details": "Device details",
+    "id": "ID",
+    "name": "Name",
+    "group": "Group",
+    "groupFilter": "Group (filter)",
+    "type": "Type",
+    "value": "Value",
+    "status": "Status",
+    "statusOn": "On",
+    "statusOff": "Off",
+    "lastUpdate": "Last Update",
+    "save": "Save",
+    "cancel": "Cancel",
+    "restore": "Restore",
+    "hide": "Hide"
   }
 }

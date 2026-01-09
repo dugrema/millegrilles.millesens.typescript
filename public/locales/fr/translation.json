@@ -14,11 +14,70 @@
     "loading": "Chargement…",
     "error": "Une erreur inattendue s'est produite."
   },
+  "badge": {
+    "ariaLabel": "Vous avez {{count}} nouvelles {{type}}"
+  },
+  "confirmButton": {
+    "confirm": "Confirmer"
+  },
+  "deviceCard": {
+    "celsius": "Celsius",
+    "toggling": "En cours de basculement",
+    "on": "Allumé",
+    "off": "Éteint",
+    "toggle": "Basculer"
+  },
+  "registrationButton": {
+    "label": "S’inscrire",
+    "codePrefix": "Code",
+    "confirmPrompt": "Cliquez à nouveau pour confirmer",
+    "waiting": "En attente…",
+    "processing": "Traitement en cours, veuillez patienter",
+    "registered": "Inscrit",
+    "error": "Erreur",
+    "tryAgain": "Réessayer"
+  },
   "sectionSidebar": {
     "navigation": "Navigation de la section",
     "title": "MilleSens",
     "logout": "Déconnexion",
     "menu": "Menu",
     "close": "Fermer la barre latérale"
+  },
+  "sidebar": {
+    "title": "Appareils",
+    "all": "Tous les appareils",
+    "hidden": "Appareils cachés",
+    "programs": "Programmes",
+    "notices": "Avis",
+    "filters": "Filtres",
+    "unassigned": "Non assigné"
+  },
+  "devices": {
+    "none": "Aucun appareil disponible",
+    "title": "Appareils"
+  },
+  "devicePage": {
+    "notFound": "Appareil non trouvé.",
+    "back": "Retour aux appareils",
+    "viewGroup": "Voir le groupe",
+    "viewChart": "Voir le graphique",
+    "programs": "Programmes",
+    "notices": "Avis",
+    "details": "Détails de l’appareil",
+    "id": "ID",
+    "name": "Nom",
+    "group": "Groupe",
+    "groupFilter": "Groupe (filtre)",
+    "type": "Type",
+    "value": "Valeur",
+    "status": "Statut",
+    "statusOn": "Allumé",
+    "statusOff": "Éteint",
+    "lastUpdate": "Dernière mise à jour",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "restore": "Restaurer",
+    "hide": "Masquer"
   }
 }
