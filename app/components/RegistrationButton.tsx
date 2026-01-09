@@ -1,6 +1,6 @@
-// react-view5/app/components/RegistrationButton.tsx
 import { useState, useEffect, useRef } from "react";
 import { Button } from "./Button";
+import { useTranslation } from "react-i18next";
 
 export interface RegistrationButtonProps {
   /** Function that initiates the registration request. */
@@ -13,9 +13,14 @@ export interface RegistrationButtonProps {
 
 export const RegistrationButton: React.FC<RegistrationButtonProps> = ({
   onRegister,
-  label = "Register",
+  label,
   className = "",
 }) => {
+  const { t } = useTranslation();
+  const defaultLabel = t("registrationButton.label", {
+    defaultValue: "Register",
+  });
+
   enum State {
     Idle,
     CodeShown,
@@ -70,32 +75,34 @@ export const RegistrationButton: React.FC<RegistrationButtonProps> = ({
   const renderContent = () => {
     switch (state) {
       case State.Idle:
-        return label;
+        return label ?? defaultLabel;
       case State.CodeShown:
         return (
           <>
-            <span className="mr-2">Code: {registrationCode}</span>
-            <span>Click again to confirm</span>
+            <span className="mr-2">
+              {t("registrationButton.codePrefix")}: {registrationCode}
+            </span>
+            <span>{t("registrationButton.confirmPrompt")}</span>
           </>
         );
       case State.Waiting:
         return (
           <>
-            <span className="mr-2">Waiting...</span>
-            <span>Processing, please wait</span>
+            <span className="mr-2">{t("registrationButton.waiting")}</span>
+            <span>{t("registrationButton.processing")}</span>
           </>
         );
       case State.Done:
-        return <span>✅ Registered</span>;
+        return <span>✅ {t("registrationButton.registered")}</span>;
       case State.Error:
         return (
           <>
-            <span className="mr-2">❌ Error</span>
-            <span>Try again</span>
+            <span className="mr-2">❌ {t("registrationButton.error")}</span>
+            <span>{t("registrationButton.tryAgain")}</span>
           </>
         );
       default:
-        return label;
+        return label ?? defaultLabel;
     }
   };
 

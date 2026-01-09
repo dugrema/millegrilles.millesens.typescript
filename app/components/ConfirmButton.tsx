@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import type { FC, MouseEvent } from "react";
 import { Button } from "./Button";
 import type { ButtonProps } from "./Button";
+import { useTranslation } from "react-i18next";
 
 export interface ConfirmButtonProps extends ButtonProps {
   /** Action performed after the second click. */
@@ -16,9 +17,10 @@ export interface ConfirmButtonProps extends ButtonProps {
  * A button that requires two clicks to trigger the real action.
  *
  * The first click activates a confirmation state. The button label
- * changes to `confirmLabel` (defaults to “Confirm”). If the user
- * clicks again within the timeout, the `onClick` handler is called;
- * otherwise the state resets automatically.
+ * changes to `confirmLabel` (defaults to the translation of
+ * `confirmButton.confirm`). If the user clicks again within the
+ * timeout, the `onClick` handler is called; otherwise the state
+ * resets automatically.
  *
  * The outline variant is styled with higher contrast:
  * - In light mode: a thicker border, darker text, and a subtle
@@ -28,13 +30,14 @@ export interface ConfirmButtonProps extends ButtonProps {
  */
 export const ConfirmButton: FC<ConfirmButtonProps> = ({
   onClick,
-  confirmLabel = "Confirm",
+  confirmLabel,
   timeoutMs = 3000,
   children,
   variant = "primary",
   className = "",
   ...rest
 }) => {
+  const { t } = useTranslation();
   const [confirmed, setConfirmed] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -75,7 +78,7 @@ export const ConfirmButton: FC<ConfirmButtonProps> = ({
       onClick={handleClick}
       {...rest}
     >
-      {confirmed ? confirmLabel : children}
+      {confirmed ? (confirmLabel ?? t("confirmButton.confirm")) : children}
     </Button>
   );
 };

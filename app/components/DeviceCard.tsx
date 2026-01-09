@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "./Button";
 import { useTime } from "./TimeContext";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
+import { useTranslation } from "react-i18next";
 
 /** Map of unit suffixes for device types. */
 export const UNIT_MAP: Record<string, string> = {
@@ -120,6 +121,7 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
   children,
   changePending,
 }) => {
+  const { t } = useTranslation();
   const now = useTime(); // seconds
   const delta = now - lastUpdate;
 
@@ -198,7 +200,7 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
             {Number(numberValue).toFixed(1)}°
           </span>
           <span className="block text-sm text-gray-600 dark:text-gray-300">
-            Celsius
+            {t("deviceCard.celsius")}
           </span>
         </div>
       )}
@@ -248,7 +250,13 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
           type="button"
           variant={switchVariant}
           className={switchButtonClasses}
-          aria-label={changePending ? "Toggling" : status ? "On" : "Off"}
+          aria-label={
+            changePending
+              ? t("deviceCard.toggling")
+              : status
+                ? t("deviceCard.on")
+                : t("deviceCard.off")
+          }
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
@@ -258,11 +266,11 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
           {changePending ? (
             <SpinnerIcon className="animate-spin size-6" />
           ) : status === undefined ? (
-            "Toggle"
+            t("deviceCard.toggle")
           ) : status ? (
-            "On"
+            t("deviceCard.on")
           ) : (
-            "Off"
+            t("deviceCard.off")
           )}
         </Button>
       )}

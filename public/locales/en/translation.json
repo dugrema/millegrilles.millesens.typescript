@@ -13,5 +13,35 @@
   "common": {
     "loading": "Loading…",
     "error": "An unexpected error occurred."
+  },
+  "badge": {
+    "ariaLabel": "You have {{count}} new {{type}}"
+  },
+  "confirmButton": {
+    "confirm": "Confirm"
+  },
+  "deviceCard": {
+    "celsius": "Celsius",
+    "toggling": "Toggling",
+    "on": "On",
+    "off": "Off",
+    "toggle": "Toggle"
+  },
+  "registrationButton": {
+    "label": "Register",
+    "codePrefix": "Code",
+    "confirmPrompt": "Click again to confirm",
+    "waiting": "Waiting…",
+    "processing": "Processing, please wait",
+    "registered": "Registered",
+    "error": "Error",
+    "tryAgain": "Try again"
+  },
+  "sectionSidebar": {
+    "navigation": "Section navigation",
+    "title": "MilleSens",
+    "logout": "Logout",
+    "menu": "Menu",
+    "close": "Close sidebar"
   }
 }

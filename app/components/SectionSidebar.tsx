@@ -2,10 +2,12 @@ import { useSidebar } from "./SidebarContext";
 import { useRef, useEffect } from "react";
 import type { ReactNode } from "react";
 import { Button } from "./Button";
+import { useTranslation } from "react-i18next";
 
 export const SectionSidebar = ({ children }: { children: ReactNode }) => {
   const { isOpen, close } = useSidebar();
   const sidebarRef = useRef<HTMLElement | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -38,11 +40,11 @@ export const SectionSidebar = ({ children }: { children: ReactNode }) => {
         z-50
         flex flex-col h-full
       `}
-      aria-label="Section navigation"
+      aria-label={t("sectionSidebar.navigation")}
     >
       <div className="flex items-center justify-between mb-4 lg:hidden">
         <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
-          MilleSens
+          {t("sectionSidebar.title")}
         </h1>
         <a
           href="/"
@@ -50,19 +52,19 @@ export const SectionSidebar = ({ children }: { children: ReactNode }) => {
         >
           <img
             src="/millesens/icons/logout-svgrepo-com.svg"
-            alt="Logout"
+            alt={t("sectionSidebar.logout")}
             className="h-6 w-6"
           />
         </a>
       </div>
       <div className="flex items-center justify-between mb-4 lg:hidden">
         <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-          Menu
+          {t("sectionSidebar.menu")}
         </span>
         <Button
           onClick={close}
           className="p-2 rounded hover:bg-gray-300 dark:hover:bg-gray-700"
-          aria-label="Close sidebar"
+          aria-label={t("sectionSidebar.close")}
         >
           ×
         </Button>

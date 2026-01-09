@@ -13,5 +13,12 @@
   "common": {
     "loading": "Chargement…",
     "error": "Une erreur inattendue s'est produite."
+  },
+  "sectionSidebar": {
+    "navigation": "Navigation de la section",
+    "title": "MilleSens",
+    "logout": "Déconnexion",
+    "menu": "Menu",
+    "close": "Fermer la barre latérale"
   }
 }

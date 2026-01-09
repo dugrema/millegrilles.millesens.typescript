@@ -1,5 +1,5 @@
-// react-view5/app/components/Badge.tsx
-import { FC } from "react";
+import type { FC } from "react";
+import { useTranslation } from "react-i18next";
 
 interface BadgeProps {
   /** The numeric value to display. The badge is rendered only when this is greater than 0. */
@@ -10,14 +10,14 @@ interface BadgeProps {
   ariaLabel?: string;
 }
 
-export const Badge: FC<BadgeProps> = ({
-  count,
-  className = "",
-  ariaLabel,
-}) => {
+export const Badge: FC<BadgeProps> = ({ count, className = "", ariaLabel }) => {
   if (count <= 0) return null;
 
-  const defaultAriaLabel = `You have ${count} new ${count === 1 ? "notification" : "notifications"}`;
+  const { t } = useTranslation();
+  const defaultAriaLabel = t("badge.ariaLabel", {
+    count,
+    type: count === 1 ? "notification" : "notifications",
+  });
 
   return (
     <span
