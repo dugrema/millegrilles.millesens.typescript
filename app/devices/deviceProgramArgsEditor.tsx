@@ -218,7 +218,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                       onChange={(e) =>
                         updateSchedule(idx, "etat", Number(e.target.value))
                       }
-                      className="border rounded p-1 dark:bg-gray-800"
+                      className="border rounded p-1 ml-1 dark:bg-gray-800"
                     >
                       <option value={0}>OFF</option>
                       <option value={1}>ON</option>
@@ -235,7 +235,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                       onChange={(e) =>
                         updateSchedule(idx, "heure", Number(e.target.value))
                       }
-                      className={`w-16 border rounded p-1 ${item.solaire ? "bg-gray-200" : ""}`}
+                      className={`w-16 border rounded p-1 ml-1 ${item.solaire ? "bg-gray-200" : ""}`}
                       disabled={!!item.solaire}
                     />
                   </label>
@@ -250,14 +250,14 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                       onChange={(e) =>
                         updateSchedule(idx, "minute", Number(e.target.value))
                       }
-                      className="w-16 border rounded p-1"
+                      className="w-16 border rounded p-1 ml-1"
                     />
                   </label>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <label>
-                    Jour (0-6):
+                    Jour:
                     <select
                       value={item.jour ?? ""}
                       onChange={(e) =>
@@ -269,7 +269,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                             : Number(e.target.value),
                         )
                       }
-                      className="w-28 border rounded p-1 dark:bg-gray-800"
+                      className="w-28 border rounded p-1 ml-1 dark:bg-gray-800"
                     >
                       <option value="">None</option>
                       <option value="6">Sunday</option>
@@ -293,7 +293,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                           e.target.value === "" ? undefined : e.target.value,
                         )
                       }
-                      className="border rounded p-1 dark:bg-gray-800"
+                      className="border rounded p-1 ml-1 dark:bg-gray-800"
                     >
                       <option value="">None</option>
                       <option value="sunset">Sunset</option>
@@ -460,6 +460,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
               />
             </label>
           </div>
+
           <input
             type="hidden"
             name="switches"
@@ -529,6 +530,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
               />
             </label>
           </div>
+
           <input
             type="hidden"
             name="switches"
