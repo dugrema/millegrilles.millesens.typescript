@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import type { DeviceGroup } from "../state/deviceGroupsStore";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
+import { useTranslation } from "react-i18next";
 
 /** A minimal two‑step registration flow:
  *
@@ -14,6 +15,7 @@ import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
  */
 
 export default function NoticesPage() {
+  const { t } = useTranslation();
   const workers = useMilleGrillesWorkers();
   const groups = useDeviceGroupsStore((s) => s.groups);
   const pending = groups.filter((g) => g.registrationPending);
@@ -123,7 +125,7 @@ export default function NoticesPage() {
     return (
       <div className="p-4">
         <p className="text-gray-600 dark:text-gray-400">
-          No pending registrations.
+          {t("noticesPage.noPendingRegistrations")}
         </p>
       </div>
     );
@@ -139,24 +141,24 @@ export default function NoticesPage() {
             </h3>
             {g.microcode && (
               <p className="text-gray-700 dark:text-gray-300">
-                Microcode: {g.microcode}
+                {t("noticesPage.microcode")}: {g.microcode}
               </p>
             )}
             <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-yellow-200 dark:bg-yellow-700 text-yellow-800 dark:text-yellow-200">
-              Pending registration
+              {t("noticesPage.pendingRegistration")}
             </span>
 
             <div className="mt-4 flex items-center space-x-2">
               {steps[g.id]?.submitted ? (
                 <>
                   <span className="text-sm font-mono text-gray-800 dark:text-gray-200">
-                    Code: {steps[g.id].code.join("")}
+                    {t("noticesPage.code")}: {steps[g.id].code.join("")}
                   </span>
                   <button
                     className="px-3 py-1 rounded text-sm bg-blue-500 dark:bg-blue-600 text-white"
                     onClick={() => handleConfirm(g, code)}
                   >
-                    Confirm
+                    {t("noticesPage.confirm")}
                   </button>
                 </>
               ) : (
@@ -164,7 +166,7 @@ export default function NoticesPage() {
                   className="px-3 py-1 rounded text-sm bg-green-500 dark:bg-green-600 text-white"
                   onClick={() => handleRegister(g)}
                 >
-                  Register
+                  {t("noticesPage.register")}
                 </button>
               )}
             </div>

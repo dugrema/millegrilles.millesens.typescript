@@ -54,8 +54,8 @@
     "unassigned": "Non assigné"
   },
   "devices": {
-    "none": "Aucun appareil disponible",
-    "title": "Appareils"
+    "title": "Appareils",
+    "none": "Aucun appareil disponible"
   },
   "devicePage": {
     "notFound": "Appareil non trouvé.",
@@ -79,5 +79,88 @@
     "cancel": "Annuler",
     "restore": "Restaurer",
     "hide": "Masquer"
+  },
+  "deviceGroupPage": {
+    "heading": "Groupe :",
+    "id": "ID",
+    "displays": "Écrans",
+    "microcode": "Version microcode",
+    "timezone": "Fuseau horaire",
+    "name": "Nom",
+    "location": "Emplacement",
+    "notSet": "Non défini",
+    "useLocation": "Utiliser ma position",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "noDevices": "Aucun appareil dans ce groupe.",
+    "lastUpdated": "Dernière mise à jour"
+  },
+  "devicePrograms": {
+    "heading": "Programmes pour l’appareil",
+    "back": "Retour",
+    "addProgram": "Ajouter un programme",
+    "noPrograms": "Aucun programme défini",
+    "untitled": "Sans titre",
+    "classLabel": "Classe",
+    "activeLabel": "Actif",
+    "yes": "Oui",
+    "no": "Non",
+    "confirmDelete": "Confirmer la suppression",
+    "delete": "Supprimer"
+  },
+  "deviceProgramArgsEditor": {
+    "activationInitiale": "Activation initiale",
+    "horaire": "Horaire",
+    "etat": "État",
+    "off": "OFF",
+    "on": "ON",
+    "heure": "Heure",
+    "minute": "Minute",
+    "jour": "Jour",
+    "none": "Aucun",
+    "sunday": "Dimanche",
+    "monday": "Lundi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi",
+    "thursday": "Jeudi",
+    "friday": "Vendredi",
+    "saturday": "Samedi",
+    "solaire": "Solaire",
+    "sunset": "Coucher du soleil",
+    "dusk": "Crépuscule",
+    "noon": "Midi",
+    "dawn": "Aube",
+    "sunrise": "Lever du soleil",
+    "remove": "Supprimer",
+    "addSchedule": "Ajouter un horaire",
+    "senseurs": "Senseurs",
+    "humidityTarget": "Humidité cible",
+    "precision": "Précision",
+    "dureeOffMin": "Durée arrêt (min)",
+    "dureeOnMin": "Durée allumage (min)",
+    "temperature": "Température",
+    "unsupportedClass": "Classe de programme non prise en charge"
+  },
+  "programsPage": {
+    "title": "Tous les programmes",
+    "note": "Note:",
+    "noteText": "pour ajouter un nouveau programme, allez sur un appareil interrupteur et cliquez sur le bouton Programmes.",
+    "noPrograms": "Aucun programme défini.",
+    "untitled": "Sans titre",
+    "classLabel": "Classe",
+    "activeLabel": "Actif",
+    "yes": "Oui",
+    "no": "Non",
+    "groupLabel": "Groupe",
+    "confirmDelete": "Confirmer la suppression",
+    "delete": "Supprimer"
+  },
+  "noticesPage": {
+    "noPendingRegistrations": "Aucun enregistrement en attente.",
+    "microcode": "Microcode",
+    "pendingRegistration": "Enregistrement en attente",
+    "code": "Code",
+    "confirm": "Confirmer",
+    "register": "Enregistrer"
   }
 }

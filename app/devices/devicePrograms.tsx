@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useParams } from "react-router";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { useDevicesStore } from "../state/devicesStore";
 import { Button } from "~/components/Button";
 import { ConfirmButton } from "~/components/ConfirmButton";
-import { useParams } from "react-router";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
+import { useTranslation } from "react-i18next";
 
 interface Program {
   programme_id: string;
@@ -22,6 +22,7 @@ interface Program {
  * A delete button is also provided to remove the program from the group.
  */
 export default function DevicePrograms() {
+  const { t } = useTranslation();
   const { deviceId } = useParams<{ deviceId: string }>();
 
   const workers = useMilleGrillesWorkers();
@@ -98,7 +99,7 @@ export default function DevicePrograms() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">
-        Programs for device{" "}
+        {t("devicePrograms.heading")}{" "}
         <strong>
           {group?.name ?? group?.id} / {device?.name}
         </strong>
@@ -107,19 +108,19 @@ export default function DevicePrograms() {
       <div className="space-x-2">
         <NavLink to={`/devices/device/${deviceId}`}>
           <Button variant="secondary" className="mb-4">
-            Back
+            {t("devicePrograms.back")}
           </Button>
         </NavLink>
         {/* Add Program button – navigates to the dedicated add page */}
         <Link to={`/devices/programs/${deviceId}/add`}>
           <Button variant="primary" className="mb-4">
-            Add Program
+            {t("devicePrograms.addProgram")}
           </Button>
         </Link>
       </div>
 
       {programs.length === 0 ? (
-        <p>No programs defined.</p>
+        <p>{t("devicePrograms.noPrograms")}</p>
       ) : (
         <ul className="space-y-2">
           {programs.map((p) => (
@@ -134,23 +135,28 @@ export default function DevicePrograms() {
               >
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-gray-900 dark:text-gray-100">
-                    {p.descriptif || "Untitled"}
+                    {p.descriptif || t("devicePrograms.untitled")}
                   </span>
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">Class:</span> {p.class}
+                  <span className="font-medium">
+                    {t("devicePrograms.classLabel")}:
+                  </span>{" "}
+                  {p.class}
                   <br />
-                  <span className="font-medium">Active:</span>{" "}
-                  {p.actif ? "Yes" : "No"}
+                  <span className="font-medium">
+                    {t("devicePrograms.activeLabel")}:
+                  </span>{" "}
+                  {p.actif ? t("devicePrograms.yes") : t("devicePrograms.no")}
                 </div>
               </Link>
               <ConfirmButton
                 variant="outline"
-                confirmLabel="Confirm delete"
+                confirmLabel={t("devicePrograms.confirmDelete")}
                 className="absolute top-2 right-2"
                 onClick={() => deleteProgram(p.programme_id)}
               >
-                Delete
+                {t("devicePrograms.delete")}
               </ConfirmButton>
             </li>
           ))}

@@ -1,11 +1,10 @@
-// File: millegrilles.millesens.typescript/app/devices/programs.tsx
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { useDevicesStore } from "../state/devicesStore";
 import { ConfirmButton } from "~/components/ConfirmButton";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
+import { useTranslation } from "react-i18next";
 
 interface Program {
   programme_id: string;
@@ -22,6 +21,7 @@ interface ProgramWithGroup extends Program {
 }
 
 export default function Programs() {
+  const { t } = useTranslation();
   const workers = useMilleGrillesWorkers();
 
   const groups = useDeviceGroupsStore((state) => state.groups);
@@ -97,15 +97,15 @@ export default function Programs() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">All Programs</h1>
+      <h1 className="text-2xl font-semibold mb-4">{t("programsPage.title")}</h1>
 
       <p className="pb-2">
-        <span className="font-bold">Note:</span> to add a new program, go to a
-        switch device and click the Programs button.
+        <span className="font-bold">{t("programsPage.note")}</span>{" "}
+        {t("programsPage.noteText")}
       </p>
 
       {programs.length === 0 ? (
-        <p>No programs defined.</p>
+        <p>{t("programsPage.noPrograms")}</p>
       ) : (
         <ul className="space-y-2">
           {programs.map((p) => (
@@ -120,42 +120,58 @@ export default function Programs() {
                 >
                   <div className="flex justify-between items-center">
                     <span className="font-medium">
-                      {p.descriptif || "Untitled"}
+                      {p.descriptif || t("programsPage.untitled")}
                     </span>
                   </div>
                   <div className="text-sm text-gray-600">
-                    <span className="font-medium">Class:</span> {p.class}
+                    <span className="font-medium">
+                      {t("programsPage.classLabel")}:
+                    </span>{" "}
+                    {p.class}
                     <br />
-                    <span className="font-medium">Active:</span>{" "}
-                    {p.actif ? "Yes" : "No"}
+                    <span className="font-medium">
+                      {t("programsPage.activeLabel")}:
+                    </span>{" "}
+                    {p.actif ? t("programsPage.yes") : t("programsPage.no")}
                     <br />
-                    <span className="font-medium">Group:</span> {p.groupName}
+                    <span className="font-medium">
+                      {t("programsPage.groupLabel")}:
+                    </span>{" "}
+                    {p.groupName}
                   </div>
                 </Link>
               ) : (
                 <div className="block w-full">
                   <div className="flex justify-between items-center">
                     <span className="font-medium">
-                      {p.descriptif || "Untitled"}
+                      {p.descriptif || t("programsPage.untitled")}
                     </span>
                   </div>
                   <div className="text-sm text-gray-600">
-                    <span className="font-medium">Class:</span> {p.class}
+                    <span className="font-medium">
+                      {t("programsPage.classLabel")}:
+                    </span>{" "}
+                    {p.class}
                     <br />
-                    <span className="font-medium">Active:</span>{" "}
-                    {p.actif ? "Yes" : "No"}
+                    <span className="font-medium">
+                      {t("programsPage.activeLabel")}:
+                    </span>{" "}
+                    {p.actif ? t("programsPage.yes") : t("programsPage.no")}
                     <br />
-                    <span className="font-medium">Group:</span> {p.groupName}
+                    <span className="font-medium">
+                      {t("programsPage.groupLabel")}:
+                    </span>{" "}
+                    {p.groupName}
                   </div>
                 </div>
               )}
               <ConfirmButton
                 variant="outline"
-                confirmLabel="Confirm delete"
+                confirmLabel={t("programsPage.confirmDelete")}
                 className="absolute top-2 right-2"
                 onClick={() => deleteProgram(p.groupId, p.programme_id)}
               >
-                Delete
+                {t("programsPage.delete")}
               </ConfirmButton>
             </li>
           ))}

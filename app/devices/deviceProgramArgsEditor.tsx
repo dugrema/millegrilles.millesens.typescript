@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { useDevicesStore } from "../state/devicesStore";
 import { DevicePickList } from "../components/DevicePickList";
 import { ConfirmButton } from "~/components/ConfirmButton";
+import { useTranslation } from "react-i18next";
 
 interface Horaire {
   etat: 0 | 1;
@@ -98,14 +99,14 @@ interface Props {
 }
 
 export function DeviceProgramArgsEditor({ program, onChange }: Props) {
-  // Retrieve the current device id from the route and get its internal id
+  const { t } = useTranslation();
+
   const { deviceId } = useParams<{ deviceId: string }>();
   const device = useDevicesStore((s) =>
     s.devices.find((d) => d.id === deviceId),
   );
   const deviceInternalId = device?.internalId ?? "";
 
-  // Create default values for the program class - include the switch device.
   const defaultForClass = (): ProgramArgs => {
     switch (program.class) {
       case "programmes.horaire.HoraireHebdomadaire":
@@ -131,25 +132,22 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
   });
 
   const initLoadingDone = useRef(false);
-  // Keep local copy in sync with prop changes only when the program itself changes
   useEffect(() => {
-    if (!program.class || initLoadingDone.current) return; // Prevent looping
+    if (!program.class || initLoadingDone.current) return;
 
     const defaults = defaultForClass();
     const merged = { ...defaults, ...program.args } as any;
     setLocalArgs(merged);
     onChange(merged);
-    initLoadingDone.current = true; // Prevent infinite looping
+    initLoadingDone.current = true;
   }, [program.args, program.class, deviceInternalId]);
 
-  // Notify parent of any arg changes
   const update = (field: string, value: any) => {
     const updated = { ...localArgs, [field]: value };
     setLocalArgs(updated as any);
     onChange(updated as any);
   };
 
-  // Safe helpers for list inputs
   const stringListToArray = (value: string) =>
     value
       .split(",")
@@ -157,13 +155,11 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
       .filter(Boolean);
   const arrayToStringList = (arr?: string[]) => (arr ?? []).join(", ");
 
-  // Render specific UI based on program class
   switch (program.class) {
     case "programmes.horaire.HoraireHebdomadaire": {
       const args = localArgs as HoraireHebdomadaireArgs;
       const horaire = args.horaire ?? [];
 
-      // Update a specific schedule entry
       const updateSchedule = (
         index: number,
         field: keyof Horaire,
@@ -175,13 +171,11 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
         update("horaire", newHoraire);
       };
 
-      // Remove a schedule entry
       const removeSchedule = (index: number) => {
         const newHoraire = horaire.filter((_, i) => i !== index);
         update("horaire", newHoraire);
       };
 
-      // Add a blank schedule entry
       const addSchedule = () => {
         const newEntry: Horaire = { etat: 0, heure: 0, minute: 0 };
         update("horaire", [...horaire, newEntry]);
@@ -195,7 +189,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
               checked={args.activationInitiale ?? false}
               onChange={(e) => update("activationInitiale", e.target.checked)}
             />
-            Activation initiale
+            {t("deviceProgramArgsEditor.activationInitiale")}
           </label>
           <input
             type="hidden"
@@ -204,7 +198,9 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
           />
 
           <fieldset className="border p-3 rounded">
-            <legend className="font-medium mb-2">Horaire</legend>
+            <legend className="font-medium mb-2">
+              {t("deviceProgramArgsEditor.horaire")}
+            </legend>
             {horaire.map((item, idx) => (
               <div
                 key={idx}
@@ -212,7 +208,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
               >
                 <div className="flex items-center gap-2">
                   <label>
-                    Etat:
+                    {t("deviceProgramArgsEditor.etat")}:
                     <select
                       value={item.etat}
                       onChange={(e) =>
@@ -220,13 +216,17 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                       }
                       className="border rounded p-1 ml-1 dark:bg-gray-800"
                     >
-                      <option value={0}>OFF</option>
-                      <option value={1}>ON</option>
+                      <option value={0}>
+                        {t("deviceProgramArgsEditor.off")}
+                      </option>
+                      <option value={1}>
+                        {t("deviceProgramArgsEditor.on")}
+                      </option>
                     </select>
                   </label>
 
                   <label>
-                    Heure:
+                    {t("deviceProgramArgsEditor.heure")}:
                     <input
                       type="number"
                       min={0}
@@ -241,7 +241,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                   </label>
 
                   <label>
-                    Minute:
+                    {t("deviceProgramArgsEditor.minute")}:
                     <input
                       type="number"
                       min={0}
@@ -257,7 +257,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
 
                 <div className="flex items-center gap-2">
                   <label>
-                    Jour:
+                    {t("deviceProgramArgsEditor.jour")}:
                     <select
                       value={item.jour ?? ""}
                       onChange={(e) =>
@@ -271,19 +271,35 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                       }
                       className="w-28 border rounded p-1 ml-1 dark:bg-gray-800"
                     >
-                      <option value="">None</option>
-                      <option value="6">Sunday</option>
-                      <option value="0">Monday</option>
-                      <option value="1">Tuesday</option>
-                      <option value="2">Wednesday</option>
-                      <option value="3">Thursday</option>
-                      <option value="4">Friday</option>
-                      <option value="5">Saturday</option>
+                      <option value="">
+                        {t("deviceProgramArgsEditor.none")}
+                      </option>
+                      <option value="6">
+                        {t("deviceProgramArgsEditor.sunday")}
+                      </option>
+                      <option value="0">
+                        {t("deviceProgramArgsEditor.monday")}
+                      </option>
+                      <option value="1">
+                        {t("deviceProgramArgsEditor.tuesday")}
+                      </option>
+                      <option value="2">
+                        {t("deviceProgramArgsEditor.wednesday")}
+                      </option>
+                      <option value="3">
+                        {t("deviceProgramArgsEditor.thursday")}
+                      </option>
+                      <option value="4">
+                        {t("deviceProgramArgsEditor.friday")}
+                      </option>
+                      <option value="5">
+                        {t("deviceProgramArgsEditor.saturday")}
+                      </option>
                     </select>
                   </label>
 
                   <label>
-                    Solaire:
+                    {t("deviceProgramArgsEditor.solaire")}:
                     <select
                       value={item.solaire ?? ""}
                       onChange={(e) =>
@@ -295,12 +311,24 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                       }
                       className="border rounded p-1 ml-1 dark:bg-gray-800"
                     >
-                      <option value="">None</option>
-                      <option value="sunset">Sunset</option>
-                      <option value="dusk">Dusk</option>
-                      <option value="noon">Noon</option>
-                      <option value="dawn">Dawn</option>
-                      <option value="sunrise">Sunrise</option>
+                      <option value="">
+                        {t("deviceProgramArgsEditor.none")}
+                      </option>
+                      <option value="sunset">
+                        {t("deviceProgramArgsEditor.sunset")}
+                      </option>
+                      <option value="dusk">
+                        {t("deviceProgramArgsEditor.dusk")}
+                      </option>
+                      <option value="noon">
+                        {t("deviceProgramArgsEditor.noon")}
+                      </option>
+                      <option value="dawn">
+                        {t("deviceProgramArgsEditor.dawn")}
+                      </option>
+                      <option value="sunrise">
+                        {t("deviceProgramArgsEditor.sunrise")}
+                      </option>
                     </select>
                   </label>
                 </div>
@@ -310,7 +338,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
                   onClick={() => removeSchedule(idx)}
                   className="self-start text-red-600 hover:text-red-800 hover:bg-red-500"
                 >
-                  Remove
+                  {t("deviceProgramArgsEditor.remove")}
                 </ConfirmButton>
               </div>
             ))}
@@ -320,7 +348,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
               onClick={addSchedule}
               className="bg-green-600 text-white rounded p-2 hover:bg-green-700"
             >
-              Add Schedule
+              {t("deviceProgramArgsEditor.addSchedule")}
             </button>
           </fieldset>
         </div>
@@ -332,7 +360,9 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
       return (
         <div className="space-y-3">
           <label className="flex flex-col lg:flex-row lg:items-center lg:gap-4 w-full">
-            <span className="lg:w-1/5">Senseurs:</span>
+            <span className="lg:w-1/5">
+              {t("deviceProgramArgsEditor.senseurs")}
+            </span>
             <DevicePickList
               value={args.senseurs_humidite?.[0] ?? ""}
               onChange={(e) =>
@@ -349,7 +379,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
 
           <div className="flex flex-col lg:flex-row lg:gap-4 w-full">
             <label className="flex-1">
-              Humidité target:
+              {t("deviceProgramArgsEditor.humidityTarget")}:
               <input
                 type="number"
                 value={args.humidite ?? 40}
@@ -359,7 +389,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             </label>
 
             <label className="flex-1">
-              Precision:
+              {t("deviceProgramArgsEditor.precision")}:
               <input
                 type="number"
                 value={args.precision ?? 2}
@@ -369,7 +399,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             </label>
 
             <label className="flex-1">
-              Duree_off_min:
+              {t("deviceProgramArgsEditor.dureeOffMin")}:
               <input
                 type="number"
                 value={args.duree_off_min ?? 30}
@@ -381,7 +411,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             </label>
 
             <label className="flex-1">
-              Duree_on_min:
+              {t("deviceProgramArgsEditor.dureeOnMin")}:
               <input
                 type="number"
                 value={args.duree_on_min ?? 30}
@@ -405,7 +435,9 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
       return (
         <div className="space-y-3">
           <label className="flex flex-col lg:flex-row lg:items-center lg:gap-4 w-full">
-            <span className="lg:w-1/5">Senseurs:</span>
+            <span className="lg:w-1/5">
+              {t("deviceProgramArgsEditor.senseurs")}
+            </span>
             <DevicePickList
               value={args.senseurs?.[0] ?? ""}
               onChange={(e) =>
@@ -419,7 +451,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
 
           <div className="flex flex-col lg:flex-row lg:gap-4 w-full">
             <label className="flex-1">
-              Temperature:
+              {t("deviceProgramArgsEditor.temperature")}:
               <input
                 type="number"
                 value={args.temperature ?? 20}
@@ -429,7 +461,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             </label>
 
             <label className="flex-1">
-              Precision:
+              {t("deviceProgramArgsEditor.precision")}:
               <input
                 type="number"
                 value={args.precision ?? 1}
@@ -439,7 +471,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             </label>
 
             <label className="flex-1">
-              Duree_off_min:
+              {t("deviceProgramArgsEditor.dureeOffMin")}:
               <input
                 type="number"
                 value={args.duree_off_min ?? 30}
@@ -451,7 +483,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             </label>
 
             <label className="flex-1">
-              Duree_on_min:
+              {t("deviceProgramArgsEditor.dureeOnMin")}:
               <input
                 type="number"
                 value={args.duree_on_min ?? 10}
@@ -475,7 +507,9 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
       return (
         <div className="space-y-3">
           <label className="flex flex-col lg:flex-row lg:items-center lg:gap-4 w-full">
-            <span className="lg:w-1/5">Senseurs:</span>
+            <span className="lg:w-1/5">
+              {t("deviceProgramArgsEditor.senseurs")}
+            </span>
             <DevicePickList
               currentDeviceGroup={device?.deviceGroup}
               value={args.senseurs?.[0] ?? ""}
@@ -489,7 +523,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
 
           <div className="flex flex-col lg:flex-row lg:gap-4 w-full">
             <label className="flex-1">
-              Temperature:
+              {t("deviceProgramArgsEditor.temperature")}:
               <input
                 type="number"
                 value={args.temperature ?? 20}
@@ -499,7 +533,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             </label>
 
             <label className="flex-1">
-              Precision:
+              {t("deviceProgramArgsEditor.precision")}:
               <input
                 type="number"
                 value={args.precision ?? 1}
@@ -509,7 +543,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             </label>
 
             <label className="flex-1">
-              Duree_off_min:
+              {t("deviceProgramArgsEditor.dureeOffMin")}:
               <input
                 type="number"
                 value={args.duree_off_min ?? 60}
@@ -521,7 +555,7 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
             </label>
 
             <label className="flex-1">
-              Duree_on_min:
+              {t("deviceProgramArgsEditor.dureeOnMin")}:
               <input
                 type="number"
                 value={args.duree_on_min ?? 10}
@@ -541,6 +575,6 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
     }
 
     default:
-      return <p>Unsupported program class: {program.class}</p>;
+      return <p>{t("deviceProgramArgsEditor.unsupportedClass")}</p>;
   }
 }

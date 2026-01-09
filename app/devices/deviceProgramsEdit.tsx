@@ -5,6 +5,7 @@ import { DeviceProgramArgsEditor } from "./deviceProgramArgsEditor";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { useDevicesStore } from "../state/devicesStore";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
+import { useTranslation } from "react-i18next";
 
 export interface Program {
   programme_id: string;
@@ -14,15 +15,24 @@ export interface Program {
   args: any;
 }
 
-/* Program class options – used for the selector */
+/* Program class options – labels are translated at render time */
 const PROGRAM_CLASS_OPTIONS = [
   {
     value: "programmes.horaire.HoraireHebdomadaire",
-    label: "Horaire Hebdomadaire",
+    key: "deviceProgramsEdit.classOptions.horaireHebdomadaire",
   },
-  { value: "programmes.environnement.Humidificateur", label: "Humidificateur" },
-  { value: "programmes.environnement.Chauffage", label: "Chauffage" },
-  { value: "programmes.environnement.Climatisation", label: "Climatisation" },
+  {
+    value: "programmes.environnement.Humidificateur",
+    key: "deviceProgramsEdit.classOptions.humidificateur",
+  },
+  {
+    value: "programmes.environnement.Chauffage",
+    key: "deviceProgramsEdit.classOptions.chauffage",
+  },
+  {
+    value: "programmes.environnement.Climatisation",
+    key: "deviceProgramsEdit.classOptions.climatisation",
+  },
 ] as const;
 
 const defaultProgram: Program = {
@@ -34,6 +44,7 @@ const defaultProgram: Program = {
 };
 
 export default function DeviceProgramsEdit() {
+  const { t } = useTranslation();
   const { deviceId, programId } = useParams<{
     deviceId: string;
     programId?: string;
@@ -180,13 +191,19 @@ export default function DeviceProgramsEdit() {
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-2">
         {programId
-          ? `Edit Program for ${group?.name} / ${device?.name}`
-          : `Add Program for ${group?.name} / ${device?.name}`}
+          ? t("deviceProgramsEdit.editHeader", {
+              group: group?.name ?? "",
+              device: device?.name ?? "",
+            })
+          : t("deviceProgramsEdit.addHeader", {
+              group: group?.name ?? "",
+              device: device?.name ?? "",
+            })}
       </h2>
 
       <div className="space-y-2">
         <label>
-          Description:
+          {t("deviceProgramsEdit.descriptionLabel")}:
           <input
             type="text"
             value={editProgram?.descriptif ?? ""}
@@ -196,24 +213,24 @@ export default function DeviceProgramsEdit() {
         </label>
 
         <label>
-          Class:
+          {t("deviceProgramsEdit.classLabel")}:
           <select
             disabled={programId !== "add"}
             value={editProgram?.class ?? ""}
             onChange={handleChange("class")}
             className="w-full border rounded p-1 dark:bg-gray-800"
           >
-            <option value="">Select class</option>
+            <option value="">{t("deviceProgramsEdit.selectClass")}</option>
             {PROGRAM_CLASS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
-                {opt.label}
+                {t(opt.key)}
               </option>
             ))}
           </select>
         </label>
 
         <label className="flex items-center">
-          Active:
+          {t("deviceProgramsEdit.activeLabel")}:
           <input
             type="checkbox"
             checked={editProgram?.actif ?? true}
@@ -234,10 +251,10 @@ export default function DeviceProgramsEdit() {
 
         <div className="flex space-x-2 mt-2">
           <Button variant="primary" onClick={handleSave}>
-            Save
+            {t("deviceProgramsEdit.save")}
           </Button>
           <Button variant="secondary" onClick={handleCancel}>
-            Cancel
+            {t("deviceProgramsEdit.cancel")}
           </Button>
         </div>
       </div>

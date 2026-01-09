@@ -12,9 +12,11 @@ import { useToggleSwitch } from "~/hooks/useToggleSwitch";
 import { RegistrationButton } from "~/components/RegistrationButton";
 import { useMilleGrillesWorkers } from "~/workers/MilleGrillesWorkerContext";
 import type { GeopositionConfiguration } from "~/workers/connection.worker";
+import { useTranslation } from "react-i18next";
 
 export default function DeviceGroup() {
   const { groupId } = useParams<{ groupId: string }>();
+  const { t } = useTranslation();
 
   const workers = useMilleGrillesWorkers();
   const toggleSwitch = useToggleSwitch();
@@ -56,12 +58,11 @@ export default function DeviceGroup() {
     updateGroup({ ...group, [field]: value });
   };
 
-  // Registration flow – toggles a persistent registrationPending flag.
   const handleRegister = async (): Promise<boolean> => {
     if (!group) return false;
     updateGroup({ ...group, registrationPending: true });
     try {
-      await new Promise((r) => setTimeout(r, 2000)); // Simulate async registration
+      await new Promise((r) => setTimeout(r, 2000));
       updateGroup({ ...group, registrationPending: false });
       return true;
     } catch {
@@ -70,7 +71,6 @@ export default function DeviceGroup() {
     }
   };
 
-  // Updated: set local latitude/longitude rather than store
   const handleUseLocation = () => {
     if (!group) return;
     if (!navigator.geolocation) {
@@ -93,29 +93,32 @@ export default function DeviceGroup() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">
-        Group: {group?.name ?? groupId}
+        {t("deviceGroupPage.heading")} {group?.name ?? groupId}
       </h1>
 
       {group && (
         <>
           <div className="mb-6 space-y-1 text-sm text-gray-700 dark:text-gray-300">
             <div>
-              <strong>ID:</strong> {group.id}
+              <strong>{t("deviceGroupPage.id")}:</strong> {group.id}
             </div>
             <RegistrationButton onRegister={handleRegister} className="ml-2" />
             {group.displays && group.displays.length > 0 && (
               <NavLink to={`/devices/displays/${groupId}`} className="ml-2">
-                <Button variant="secondary">Displays</Button>
+                <Button variant="secondary">
+                  {t("deviceGroupPage.displays")}
+                </Button>
               </NavLink>
             )}
             {group.version && (
               <div>
-                <strong>Microcode version:</strong> {group.version}
+                <strong>{t("deviceGroupPage.microcode")}:</strong>{" "}
+                {group.version}
               </div>
             )}
 
             <div>
-              <strong>Timezone:</strong>{" "}
+              <strong>{t("deviceGroupPage.timezone")}:</strong>{" "}
               <input
                 type="text"
                 value={localTimezone}
@@ -124,7 +127,7 @@ export default function DeviceGroup() {
               />
             </div>
             <div>
-              <strong>Name:</strong>{" "}
+              <strong>{t("deviceGroupPage.name")}:</strong>{" "}
               <input
                 type="text"
                 value={localName}
@@ -133,7 +136,7 @@ export default function DeviceGroup() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <strong>Location:</strong>{" "}
+              <strong>{t("deviceGroupPage.location")}:</strong>{" "}
               {(localLatitude ?? localLongitude) ? (
                 <span>
                   {typeof localLatitude === "number"
@@ -145,14 +148,16 @@ export default function DeviceGroup() {
                     : localLongitude}
                 </span>
               ) : (
-                <span className="italic text-gray-500">Not set</span>
+                <span className="italic text-gray-500">
+                  {t("deviceGroupPage.notSet")}
+                </span>
               )}
               <Button
                 variant="outline"
                 onClick={handleUseLocation}
                 className="ml-2"
               >
-                Use my location
+                {t("deviceGroupPage.useLocation")}
               </Button>
               <input
                 type="number"
@@ -238,7 +243,7 @@ export default function DeviceGroup() {
                     : undefined)
               }
             >
-              Save
+              {t("deviceGroupPage.save")}
             </Button>
             <Button
               type="button"
@@ -265,12 +270,12 @@ export default function DeviceGroup() {
                     : undefined)
               }
             >
-              Cancel
+              {t("deviceGroupPage.cancel")}
             </Button>
           </div>
 
           {groupDevices.length === 0 ? (
-            <p className="text-gray-500">No devices in this group.</p>
+            <p className="text-gray-500">{t("deviceGroupPage.noDevices")}</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {groupDevices.map((device) => {
@@ -310,7 +315,7 @@ export default function DeviceGroup() {
 
           {lastUpdated && (
             <p className="mt-4 text-sm text-gray-600">
-              Last updated:{" "}
+              {t("deviceGroupPage.lastUpdated")}:{" "}
               {DateTime.fromSeconds(lastUpdated)
                 .setZone(tz)
                 .toFormat("yyyy-MM-dd HH:mm:ss")}
