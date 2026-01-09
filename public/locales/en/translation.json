@@ -289,5 +289,10 @@
     "title": "General settings",
     "timezoneLabel": "Time zone",
     "currentSelection": "Current selection: {{timezone}}"
+  },
+  "settingsSidebar": {
+    "General": "General",
+    "Bluetooth": "Bluetooth",
+    "DEV": "DEV"
   }
 }
