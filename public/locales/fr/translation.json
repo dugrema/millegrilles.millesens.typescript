@@ -192,5 +192,9 @@
     "samplePage": "Page d’exemple",
     "save": "Enregistrer",
     "cancel": "Annuler"
+  },
+  "devicesFilterHidden": {
+    "title": "Appareils cachés et supprimés",
+    "noHiddenDevices": "Aucun appareil n'est caché."
   }
 }

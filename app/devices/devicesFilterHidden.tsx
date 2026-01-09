@@ -6,8 +6,11 @@ import type { Device } from "../state/devicesStore";
 import { useDeviceGroupsStore } from "../state/deviceGroupsStore";
 import { useDeviceValuesStore } from "../state/deviceValueStore";
 import { NavLink } from "react-router";
+import { useTranslation } from "react-i18next";
 
 export default function Devices() {
+  const { t } = useTranslation();
+
   // Get static and dynamic data
   const devices = useDevicesStore((state) => state.devices);
   const groups = useDeviceGroupsStore((state) => state.groups);
@@ -32,9 +35,13 @@ export default function Devices() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold">Hidden and deleted devices</h1>
+      <h1 className="text-2xl font-semibold">
+        {t("devicesFilterHidden.title")}
+      </h1>
       {sortedDevices.length === 0 ? (
-        <p className="text-center text-gray-500 mt-4">No devices are hidden.</p>
+        <p className="text-center text-gray-500 mt-4">
+          {t("devicesFilterHidden.noHiddenDevices")}
+        </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mt-2">
           {sortedDevices.map((device: Device) => {

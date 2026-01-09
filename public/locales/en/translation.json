@@ -208,5 +208,9 @@
     "samplePage": "Sample page",
     "save": "Save",
     "cancel": "Cancel"
+  },
+  "devicesFilterHidden": {
+    "title": "Hidden and deleted devices",
+    "noHiddenDevices": "No devices are hidden."
   }
 }
