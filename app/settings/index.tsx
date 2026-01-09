@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "../components/Button";
+import { useTranslation } from "react-i18next";
 import { useConfigurationStore } from "../state/configurationStore";
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const { preferences, setPreferences } = useConfigurationStore();
 
   // Use a local state to keep the <select> value in sync
@@ -40,11 +41,11 @@ export default function SettingsPage() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold mb-4">General settings</h1>
+      <h1 className="text-2xl font-semibold mb-4">{t("settingsPage.title")}</h1>
 
       <div className="mb-4">
         <label className="block mb-2 font-medium">
-          Time zone
+          {t("settingsPage.timezoneLabel")}
           <select
             className="mt-1 block w-full rounded border px-2 py-1 dark:bg-gray-800"
             value={timezone}
@@ -59,7 +60,8 @@ export default function SettingsPage() {
         </label>
         {timezone && (
           <p className="text-sm text-gray-500">
-            Current selection: <strong>{timezone}</strong>
+            {t("settingsPage.currentSelection", { timezone })}{" "}
+            <strong>{timezone}</strong>
           </p>
         )}
       </div>

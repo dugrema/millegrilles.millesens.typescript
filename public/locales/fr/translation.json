@@ -275,5 +275,10 @@
       "on": "ON",
       "off": "OFF"
     }
+  },
+  "settingsPage": {
+    "title": "Paramètres généraux",
+    "timezoneLabel": "Fuseau horaire",
+    "currentSelection": "Sélection actuelle : {{timezone}}"
   }
 }
