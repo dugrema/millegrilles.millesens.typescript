@@ -9,9 +9,8 @@ import {
   ScrollRestoration,
   NavLink,
 } from "react-router";
-import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
-import { useTranslation } from "react-i18next";
+import { I18nextProvider, useTranslation } from "react-i18next";
 
 import type { Route } from "./+types/root";
 import { SidebarProvider, useSidebar } from "./components/SidebarContext";
