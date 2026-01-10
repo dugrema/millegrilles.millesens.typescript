@@ -17,7 +17,7 @@ Each section (Devices, Settings) will feature a left sidebar whose options depen
 ## Tool usage
 + When using the tool `edit_file` in `edit` mode to update an existing file, the tool will likely fail to apply the changes. When the tool fails to apply changes on the first try, list the expected changes using the `thinking` tool and then try again.
 
-> **Important:** When the `edit_file` in `edit` mode fails to apply the expected changes, make a detailed list of changes to apply in the `thinking` tool then try again. If it keeps failing, switch to `overwrite` mode.
+> **Important:** When the `edit_file` in `edit` mode fails to apply the expected changes, make a detailed list of changes to apply in the `thinking` tool then try again. After 3 failed attempts at `edit`, switch to `overwrite` mode.
 
 ## Development
 

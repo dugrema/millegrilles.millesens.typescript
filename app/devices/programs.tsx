@@ -111,19 +111,19 @@ export default function Programs() {
           {programs.map((p) => (
             <li
               key={`${p.groupId}-${p.programme_id}`}
-              className="p-2 border rounded cursor-pointer relative"
+              className="p-2 border rounded cursor-pointer relative dark:border-gray-700"
             >
               {p.deviceId ? (
                 <Link
                   to={`/devices/programs/${p.deviceId}/${p.programme_id}`}
-                  className="block w-full hover:bg-blue-100"
+                  className="block w-full hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
                       {p.descriptif || t("programsPage.untitled")}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
                     <span className="font-medium">
                       {t("programsPage.classLabel")}:
                     </span>{" "}
@@ -143,11 +143,11 @@ export default function Programs() {
               ) : (
                 <div className="block w-full">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
                       {p.descriptif || t("programsPage.untitled")}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
                     <span className="font-medium">
                       {t("programsPage.classLabel")}:
                     </span>{" "}
