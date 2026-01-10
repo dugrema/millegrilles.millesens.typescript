@@ -15,9 +15,9 @@ This project is a progressive web application (PWA) that mimics a Home Assistant
 Each section (Devices, Settings) will feature a left sidebar whose options depend on the active section. The right (main) part of the screen will host the routed pages that change based on navigation within that section.
 
 ## Tool usage
-+ When using the tool `edit_file` in `edit` mode to update an existing file, the tool will likely fail to apply the changes. When the tool fails to apply changes on the first try, immediately switch to the `overwrite` operation and supply the entire modified file content.
++ When using the tool `edit_file` in `edit` mode to update an existing file, the tool will likely fail to apply the changes. When the tool fails to apply changes on the first try, list the expected changes in output text (to the user) and then try again.
 
-> **Important:** All future modifications to the project should be performed with the `overwrite` mode of the `edit_file` tool.  The `edit` mode is unreliable for inserting new lines or making non‑trivial changes, so to avoid accidental omissions, always supply the complete file content when editing.
+> **Important:** When the `edit_file` in `edit` mode fails to apply the expected changes, make a detailed list of changes in output text then try to edit the file again.
 
 ## Development
 
@@ -34,7 +34,3 @@ Each section (Devices, Settings) will feature a left sidebar whose options depen
   - Date format is: YYYY-MM-DD
   - Time format is: HH:mm:ss  (24h time)
   - Use timezone from the configurationStore.
-
-## Memory
-
-Use files memory.md and tasks.md under the project directory to persist useful information. Ensure that the high level file listing and the tasks are up to date.
