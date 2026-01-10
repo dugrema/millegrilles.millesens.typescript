@@ -4,6 +4,7 @@ import { useDevicesStore } from "../state/devicesStore";
 import { DevicePickList } from "../components/DevicePickList";
 import { ConfirmButton } from "~/components/ConfirmButton";
 import { useTranslation } from "react-i18next";
+import { Button } from "../components/Button";
 
 interface Horaire {
   etat: 0 | 1;
@@ -343,13 +344,9 @@ export function DeviceProgramArgsEditor({ program, onChange }: Props) {
               </div>
             ))}
 
-            <button
-              type="button"
-              onClick={addSchedule}
-              className="bg-green-600 text-white rounded p-2 hover:bg-green-700"
-            >
+            <Button variant="secondary" onClick={addSchedule}>
               {t("deviceProgramArgsEditor.addSchedule")}
-            </button>
+            </Button>
           </fieldset>
         </div>
       );
