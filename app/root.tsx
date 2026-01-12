@@ -10,6 +10,7 @@ import {
   NavLink,
 } from "react-router";
 import i18n from "./i18n";
+import { TooltipOverlay } from "./components/TooltipOverlay";
 import { I18nextProvider, useTranslation } from "react-i18next";
 
 import type { Route } from "./+types/root";
@@ -140,9 +141,21 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
 
       <footer className="py-4 bg-gray-200 dark:bg-gray-800 text-center">
         {t("footer.text")}{" "}
-        <span className="text-sm">
+        <TooltipOverlay
+          content={
+            <>
+              <p className="mb-1 font-semibold">Build date</p>
+              <p className="text-gray-400">{__APP_BUILD_DATE__}</p>
+            </>
+          }
+          placement="top"
+          offset={8}
+          delay={200}
+          className="ml-1 cursor-help underline text-sm"
+          as="span"
+        >
           {t("footer.version", { version: __APP_VERSION__ })}
-        </span>
+        </TooltipOverlay>
       </footer>
     </>
   );
