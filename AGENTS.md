@@ -14,11 +14,6 @@ This project is a progressive web application (PWA) that mimics a Home Assistant
 **Sidebar Layout**  
 Each section (Devices, Settings) will feature a left sidebar whose options depend on the active section. The right (main) part of the screen will host the routed pages that change based on navigation within that section.
 
-## Tool usage
-+ When using the tool `edit_file` in `edit` mode to update an existing file, the tool will likely fail to apply the changes. When the tool fails to apply changes on the first try, list the expected changes using the `thinking` tool and then try again.
-
-> **Important:** When the `edit_file` in `edit` mode fails to apply the expected changes, make a detailed list of changes to apply in the `thinking` tool then try again. After 3 failed attempts at `edit`, switch to `overwrite` mode.
-
 ## Development
 
 - **Source code**: Use `app/` instead of `src/`.
