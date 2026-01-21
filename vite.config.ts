@@ -12,7 +12,11 @@ export default defineConfig({
     tsconfigPaths(),
     VitePWA({
       registerType: "autoUpdate",
-      inlineInjection: "inline",
+      devOptions: {
+        enabled: true,
+        type: "module",
+        navigateFallback: "/millesens/",
+      },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
         runtimeCaching: [
