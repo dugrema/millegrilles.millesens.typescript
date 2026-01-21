@@ -113,7 +113,8 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
               (isActive ? " font-semibold underline" : "")
             }
           >
-            {t("nav.devices")}
+            <span className="md:hidden">{t("nav.devices")}</span>
+            <span className="hidden md:inline-block">{t("nav.devices")}</span>
           </NavLink>
           <NavLink
             to="/settings"
@@ -122,7 +123,8 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
               (isActive ? " font-semibold underline" : "")
             }
           >
-            {t("nav.settings")}
+            <span className="md:hidden">{t("nav.settings")}</span>
+            <span className="hidden md:inline-block">{t("nav.settings")}</span>
           </NavLink>
         </nav>
         <a
@@ -131,7 +133,7 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
         >
           <img
             src="/millesens/icons/logout-svgrepo-com.svg"
-            alt={t("header.logout")}
+            alt="Logout"
             className="h-6 w-6"
           />
         </a>
@@ -140,12 +142,14 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
       {children}
 
       <footer className="py-4 bg-gray-200 dark:bg-gray-800 text-center">
-        {t("footer.text")}{" "}
+        <p suppressHydrationWarning>{t("footer.text")} </p>
         <TooltipOverlay
           content={
             <>
               <p className="mb-1 font-semibold">Build date</p>
-              <p className="text-gray-400">{__APP_BUILD_DATE__}</p>
+              <p className="text-gray-400" suppressHydrationWarning>
+                {__APP_BUILD_DATE__}
+              </p>
             </>
           }
           placement="top"
@@ -154,7 +158,9 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
           className="ml-1 cursor-help underline text-sm"
           as="span"
         >
-          {t("footer.version", { version: __APP_VERSION__ })}
+          <span suppressHydrationWarning>
+            {t("footer.version", { version: __APP_VERSION__ })}
+          </span>
         </TooltipOverlay>
       </footer>
     </>
@@ -166,20 +172,7 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
  * throughout the application.
  */
 export default function App() {
-  // Service worker registration for production
-  // useEffect(() => {
-  //   if ("serviceWorker" in navigator && !import.meta.env.DEV) {
-  //     navigator.serviceWorker
-  //       .register("/millesens/sw.js")
-  //       .then((registration) => {
-  //         console.log("Service worker registered:", registration);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Service worker registration failed:", error);
-  //       });
-  //   }
-  // }, []);
-
+  // Service worker registration handled by VitePWA plugin
   return (
     <I18nextProvider i18n={i18n}>
       <TimeProvider>

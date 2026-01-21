@@ -5,6 +5,7 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev --host",
+    "preview": "vite preview --host",
     "start": "react-router-serve ./build/server/index.js",
     "test": "vitest run",
     "typecheck": "react-router typegen && tsc"
@@ -28,6 +29,7 @@
     "react-router": "7.10.1",
     "recharts": "^3.5.1",
     "vite-plugin-comlink": "^5.3.0",
+    "vite-plugin-pwa": "^1.2.0",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
