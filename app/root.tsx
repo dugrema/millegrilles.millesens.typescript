@@ -72,8 +72,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </SidebarProvider>
         <ScrollRestoration />
         <Scripts />
-        {/* Service Worker Registration for PWA */}
-        <script src="/millesens/sw.js" type="module" />
       </body>
     </html>
   );
