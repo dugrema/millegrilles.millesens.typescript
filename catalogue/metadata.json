@@ -1,0 +1,10 @@
+{
+  "name": "millesens",
+  "version": "DEV",
+  "labels": {
+    "en": "Millesens - Console for switches and sensors in MilleGrilles ",
+    "fr": "Millesens - Console pour senseurs et autres appareils MilleGrilles"
+  },
+  "path": "millesens",
+  "portal": []
+}
