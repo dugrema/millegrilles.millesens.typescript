@@ -1,4 +1,5 @@
 # Makefile
+# Makefile
 # --- Configuration ---
 VERSION ?= 2026.3
 BUILD_NUMBER ?= 1
@@ -8,28 +9,24 @@ DATE_STR := $(shell date '+%Y-%m-%d %H:%M')
 
 # --- Paths ---
 ARTIFACTS_DIR = artifacts
-DIST_DIR = dist
-BUILD_ASSETS_DIR = build_assets
-MANIFEST_FILE = $(BUILD_ASSETS_DIR)/manifest.build.json
-STAGING_DIR = staging
 
 # --- Environment ---
 NODE_OPTIONS = --openssl-legacy-provider
 CI = false
 
 # --- Targets ---
-.PHONY: all build prepare package clean
+.PHONY: all build prepare package clean deploy
 
 all: package
 
-# 1. Prepare build assets
+# 1. Prepare build assets (Kept for backward compatibility or local use)
 prepare:
 	@echo "==> Preparing build assets..."
-	@mkdir -p $(BUILD_ASSETS_DIR)
-	@printf '{\n' > $(MANIFEST_FILE)
-	@printf '  "date": "%s",\n' "$(DATE_STR)" >> $(MANIFEST_FILE)
-	@printf '  "version": "%s"\n' "$(VERSION_FULL)" >> $(MANIFEST_FILE)
-	@printf '}\n' >> $(MANIFEST_FILE)
+	@mkdir -p build_assets
+	@printf '{\n' > build_assets/manifest.build.json
+	@printf '  "date": "%s",\n' "$(DATE_STR)" >> build_assets/manifest.build.json
+	@printf '  "version": "%s"\n' "$(VERSION_FULL)" >> build_assets/manifest.build.json
+	@printf '}\n' >> build_assets/manifest.build.json
 
 # 2. Install and Build
 build: prepare
@@ -38,28 +35,14 @@ build: prepare
 	@NODE_OPTIONS=$(NODE_OPTIONS) CI=$(CI) npm run build
 
 # 3. Package the artifacts using docker buildx
-package: build
-	@echo "==> Packaging artifacts..."
-	@rm -rf $(STAGING_DIR) $(ARTIFACTS_DIR)
+package:
+	@echo "==> Packaging artifacts using Docker..."
 	@mkdir -p $(ARTIFACTS_DIR)
-	@mkdir -p $(STAGING_DIR)/files
-	# Copy catalogue files to root of staging
-	@cp -r catalogue/. $(STAGING_DIR)/
-	# Update version in metadata.json
-	@python3 -c 'import json, sys; \
-		path = sys.argv[1]; \
-		data = json.load(open(path)); \
-		data["version"] = sys.argv[2]; \
-		json.dump(data, open(path, "w"), indent=2)' $(STAGING_DIR)/metadata.json "$(VERSION_FULL)"
-	# Copy dist files to staging/files
-	@cp -r $(DIST_DIR)/. $(STAGING_DIR)/files/
-	# Gzip files in staging/files
-	@find $(STAGING_DIR)/files/ -type f \( -name "*.js" -o -name "*.css" -o -name "*.map" -o -name "*.json" \) -exec gzip -k {} \;
-	# Create archive from staging
-	@tar -C $(STAGING_DIR) -zcf "$(ARTIFACTS_DIR)/$(ARCHIVE_NAME).$(VERSION_FULL).tar.gz" .
-	@echo "==> Generating SHA256 digest..."
-	@sha256sum "$(ARTIFACTS_DIR)/$(ARCHIVE_NAME).$(VERSION_FULL).tar.gz"
-	@rm -rf $(STAGING_DIR) $(BUILD_ASSETS_DIR)
+	@docker build --target export \
+		--output type=local,dest=$(ARTIFACTS_DIR) \
+		--build-arg VERSION=$(VERSION) \
+		--build-arg BUILD_NUMBER=$(BUILD_NUMBER) .
+	@echo "==> Artifacts generated in $(ARTIFACTS_DIR)"
 
 # 4. Deploy the artifacts
 deploy: package
@@ -72,7 +55,7 @@ deploy: package
 clean:
 	@echo "==> Cleaning..."
 	@rm -rf $(ARTIFACTS_DIR)
-	@rm -rf $(STAGING_DIR)
-	@rm -rf $(BUILD_ASSETS_DIR)
-	@rm -rf $(DIST_DIR)
+	@rm -rf build_assets
+	@rm -rf build
+	@rm -rf dist
 	@rm -rf node_modules

@@ -15,59 +15,28 @@ pipeline {
     }
 
     stages {
-
-        stage('react build') {
+        stage('Checkout') {
             steps {
-                echo 'Build react'
-
                 checkout scmGit(branches: [[name: params.BRANCH]], extensions: [], userRemoteConfigs: [[credentialsId: params.CREDENTIALS_ID, url: params.GIT_URL]])
-
-                sh '''
-                BUILD_DATE=`date '+%Y-%m-%d %H:%M:%S %z'`
-                echo "Build date $BUILD_DATE"
-
-                # Inject version number
-                echo "Update vite.config.ts"
-                sed -i "s/0\\.0\\.0-placeholder/${VBUILD}/" vite.config.ts
-                sed -i "s/placeholder-date/${BUILD_DATE}/" vite.config.ts
-                cat vite.config.ts
-                '''
-
-                sh '''
-                echo Copier signed api mapping
-                cp app/workers/apiMapping.signed.json app/workers/apiMapping.json
-                '''
-
-                sh '''
-                export NODE_OPTIONS=--openssl-legacy-provider
-                export CI=false
-
-                echo "Env ---"
-                printenv
-                echo "---"
-
-                npm i
-                npm run build
-                
-                # gzip all resource files
-                find build/client/ -type f \\( -name "*.js" -o -name "*.css" -o -name "*.map" -o -name "*.json" \\) -exec gzip -k {} \\;
-
-                rm -r artifacts/ | true
-                mkdir -p artifacts/
-                tar -C build/client/ -zcf "artifacts/${ARCHIVE_NAME}.${VBUILD}.tar.gz" .
-
-                . /var/lib/jenkins/venv_build2/bin/activate
-                echo "Digest: "
-                python3 /var/lib/jenkins/bin/runDigest.py "artifacts/${ARCHIVE_NAME}.${VBUILD}.tar.gz"
-                '''
-
-                archiveArtifacts artifacts: 'artifacts/', followSymlinks: false
-                
-                sh '''
-                rsync artifacts/* fs1.maple.maceroc.com:archives/apps
-                '''
-
             }
+        }
+
+        stage('Build & Package') {
+            steps {
+                sh "make deploy VERSION_FULL=${VBUILD} ARCHIVE_NAME=${ARCHIVE_NAME}"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh "rsync artifacts/* ${DEPLOY_RSYNC_WEBAPP_DEST}/copudoeil"
+            }
+        }
+    }
+
+    post {
+        success {
+            archiveArtifacts artifacts: 'artifacts/', followSymlinks: false
         }
     }
 }
