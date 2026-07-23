@@ -13,6 +13,8 @@ RUN npm ci
 # --- Builder stage for React build ---
 FROM base AS builder
 COPY . .
+RUN mkdir -p build_assets && \
+    echo "{\n  \"date\": \"DUMMY\",\n  \"version\": \"DUMMY\"\n}" > build_assets/manifest.build.json
 RUN npm run build
 
 # --- Packager stage ---
