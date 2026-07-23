@@ -4,7 +4,7 @@ import {
   type SubscriptionCallback,
 } from "millegrilles.reactdeps.typescript";
 
-import apiMapping from "./apiMapping.json";
+import apiMapping from "@apiMapping-json";
 import { expose } from "comlink";
 
 import {
