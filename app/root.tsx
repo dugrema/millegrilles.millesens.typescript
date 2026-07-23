@@ -21,6 +21,8 @@ import { TimeProvider } from "./components/TimeContext";
 import { useConnectionStore } from "./state/connectionStore";
 import { useSyncWhenReady } from "./hooks/useSyncWhenReady";
 
+import buildManifest from '@manifest-build-json';
+
 /* Hamburger icon (Heroicons) */
 const HamburgerIcon = () => (
   <svg
@@ -86,6 +88,9 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
   const ready = useConnectionStore((state) => state.ready);
   const { t } = useTranslation();
 
+  const version = buildManifest.version;
+  const buildDate = buildManifest.date;
+
   return (
     <>
       <header
@@ -148,7 +153,7 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
             <>
               <p className="mb-1 font-semibold">Build date</p>
               <p className="text-gray-400" suppressHydrationWarning>
-                {__APP_BUILD_DATE__}
+                {buildDate}
               </p>
             </>
           }
@@ -159,7 +164,7 @@ function LayoutBody({ children }: { children: React.ReactNode }) {
           as="span"
         >
           <span suppressHydrationWarning>
-            {t("footer.version", { version: __APP_VERSION__ })}
+            {t("footer.version", { version })}
           </span>
         </TooltipOverlay>
       </footer>

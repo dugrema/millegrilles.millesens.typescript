@@ -17,7 +17,7 @@ export default defineConfig(({ command }) => {
           : path.resolve(__dirname, 'app/workers/apiMapping.json'),
         '@manifest-build-json': isBuild 
           ? path.resolve(__dirname, 'build_assets/manifest.build.json')
-          : path.resolve(__dirname, 'src/manifest.build.json'),
+          : path.resolve(__dirname, 'app/manifest.build.json'),
       },
     },
     base: "/millesens/",
