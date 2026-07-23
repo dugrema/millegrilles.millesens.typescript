@@ -33,6 +33,10 @@ ENV ARCHIVE_NAME=millegrilles_millesens_typescript
 COPY --from=builder /app/build/client ./build_client
 COPY --from=builder /app/catalogue ./catalogue
 
+# 1. Prepare build assets (mimic Makefile prepare)
+RUN mkdir -p build_assets && \
+    echo "{\n  \"date\": \"$(date '+%Y-%m-%d %H:%M')\",\n  \"version\": \"${VERSION_FULL}\"\n}" > build_assets/manifest.build.json
+
 # 2. Update version in metadata.json (mimic Makefile package step)
 RUN python3 -c "import json, sys; \
     path = sys.argv[1]; \
