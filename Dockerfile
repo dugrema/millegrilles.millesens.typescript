@@ -13,8 +13,9 @@ RUN npm ci
 # --- Builder stage for React build ---
 FROM base AS builder
 COPY . .
+# 1. Prepare build assets (mimic Makefile prepare)
 RUN mkdir -p build_assets && \
-    echo "{\n  \"date\": \"DUMMY\",\n  \"version\": \"DUMMY\"\n}" > build_assets/manifest.build.json
+    echo "{\n  \"date\": \"$(date '+%Y-%m-%d %H:%M')\",\n  \"version\": \"${VERSION_FULL}\"\n}" > build_assets/manifest.build.json
 RUN npm run build
 
 # --- Packager stage ---
@@ -31,10 +32,6 @@ ENV ARCHIVE_NAME=millegrilles_millesens_typescript
 # Copy build artifacts from builder
 COPY --from=builder /app/build/client ./build_client
 COPY --from=builder /app/catalogue ./catalogue
-
-# 1. Prepare build assets (mimic Makefile prepare)
-RUN mkdir -p build_assets && \
-    echo "{\n  \"date\": \"$(date '+%Y-%m-%d %H:%M')\",\n  \"version\": \"${VERSION_FULL}\"\n}" > build_assets/manifest.build.json
 
 # 2. Update version in metadata.json (mimic Makefile package step)
 RUN python3 -c "import json, sys; \
