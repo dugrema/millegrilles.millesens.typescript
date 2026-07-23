@@ -12,15 +12,6 @@ RUN npm ci
 
 # --- Builder stage for React build ---
 FROM base AS builder
-COPY . .
-# 1. Prepare build assets (mimic Makefile prepare)
-RUN mkdir -p build_assets && \
-    echo "{\n  \"date\": \"$(date '+%Y-%m-%d %H:%M')\",\n  \"version\": \"${VERSION_FULL}\"\n}" > build_assets/manifest.build.json
-RUN npm run build
-
-# --- Packager stage ---
-FROM python:3-slim-bookworm AS packager
-WORKDIR /app
 
 # Arguments for versioning
 ARG VERSION=2026.3
@@ -28,6 +19,15 @@ ARG BUILD_NUMBER=1
 # These are used during the build process
 ENV VERSION_FULL=${VERSION}.${BUILD_NUMBER}
 ENV ARCHIVE_NAME=millegrilles_millesens_typescript
+
+COPY . .
+RUN mkdir -p build_assets && \
+    echo "{\n  \"date\": \"$(date '+%Y-%m-%d %H:%M')\",\n  \"version\": \"${VERSION_FULL}\"\n}" > build_assets/manifest.build.json
+RUN npm run build
+
+# --- Packager stage ---
+FROM python:3-slim-bookworm AS packager
+WORKDIR /app
 
 # Copy build artifacts from builder
 COPY --from=builder /app/build/client ./build_client
