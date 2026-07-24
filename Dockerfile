@@ -12,6 +12,7 @@ RUN npm ci
 
 # --- Builder stage for React build ---
 FROM base AS builder
+WORKDIR /app
 
 # Arguments for versioning
 ARG VERSION=2026.3
@@ -25,16 +26,28 @@ COPY . .
 # 1. Prepare build assets (mimic Makefile prepare)
 RUN mkdir -p build_assets && \
     echo "{\n  \"date\": \"$(date '+%Y-%m-%d %H:%M')\",\n  \"version\": \"${VERSION_FULL}\"\n}" > build_assets/manifest.build.json
+
 RUN npm run build
 
 # --- Packager stage ---
 FROM python:3-slim-bookworm AS packager
 WORKDIR /app
 
+# Arguments for versioning
+ARG VERSION=2026.3
+ARG BUILD_NUMBER=1
+# These are used during the build process
+ENV VERSION_FULL=${VERSION}.${BUILD_NUMBER}
+ENV ARCHIVE_NAME=millegrilles_millesens_typescript
+
 # Copy build artifacts from builder
 COPY --from=builder /app/build/client ./build_client
 COPY --from=builder /app/catalogue ./catalogue
-COPY --from=builder /app/build_assets ./build_assets
+
+# COPY --from=builder /app/build_assets ./build_assets
+RUN mkdir -p build_assets && \
+    echo "{\n  \"date\": \"$(date '+%Y-%m-%d %H:%M')\",\n  \"version\": \"${VERSION_FULL}\"\n}" > build_assets/manifest.build.json
+
 
 # 2. Update version in metadata.json (mimic Makefile package step)
 RUN python3 -c "import json, sys; \
@@ -56,10 +69,10 @@ RUN mkdir -p staging/files && \
     cp -r build_assets/ staging/build_assets/ && \
     mkdir -p artifacts && \
     tar -C staging -zcf "artifacts/${ARCHIVE_NAME}.${VERSION_FULL}.tar.gz" . && \
-    sha256sum "artifacts/${ARCHIVE_NAME}.${VERSION_FULL}.tar.gz" > "artifacts/${ARCHIVE_NAME}.${VERSION_FULL}.tar.gz.sha256"
+    sha256sum "artifacts/${ARCHIVE_NAME}.${VERSION_FULL}.tar.gz" > "artifacts/${ARCHIVE_NAME}.${VERSION_FULL}.tar.gz.sha256" && \
+    ls artifacts && cat "artifacts/${ARCHIVE_NAME}.${VERSION_FULL}.tar.gz.sha256"
 
 # --- Export stage ---
 FROM scratch AS export
 # Copying files to the root of the export stage
-COPY --from=packager /app/artifacts/millegrilles_millesens_typescript.*.tar.gz /
-COPY --from=packager /app/artifacts/millegrilles_millesens_typescript.*.tar.gz.sha256 /
+COPY --from=packager /app/artifacts/. /
