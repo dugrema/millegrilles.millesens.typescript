@@ -146,7 +146,7 @@ export default function DeviceChart() {
       .catch((err: any) =>
         console.error("Error fetching component statistics:", err),
       );
-  }, [workers, tz, selectedDataset, device]);
+  }, [workers, tz, selectedDataset, device, rangeStart, rangeEnd]);
   useEffect(() => {
     reloadData();
   }, [workers, tz, selectedDataset, device]);
@@ -308,9 +308,9 @@ export default function DeviceChart() {
                       .setZone(tz)
                       .toFormat("yyyy-LL-dd HH:mm:ss")}
                   </td>
-                  <td className="px-4 py-2 dark:text-white">{row.min}</td>
-                  <td className="px-4 py-2 dark:text-white">{row.avg}</td>
-                  <td className="px-4 py-2 dark:text-white">{row.max}</td>
+                  <td className="px-4 py-2 dark:text-white">{row.max?row.min.toFixed(1):row.min}</td>
+                  <td className="px-4 py-2 dark:text-white">{row.avg?row.avg.toFixed(1):row.avg}</td>
+                  <td className="px-4 py-2 dark:text-white">{row.max?row.max.toFixed(1):row.max}</td>
                 </tr>
               ))}
             </tbody>
