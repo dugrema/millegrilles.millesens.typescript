@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { NavLink, useParams } from "react-router";
 import { useDevicesStore } from "~/state/devicesStore";
 import { useDeviceGroupsStore } from "~/state/deviceGroupsStore";
@@ -17,6 +17,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import type { StatisticsRequestType } from "~/types/connection.types";
 
 /**
  * 3‑day (hourly) dummy data – kept unchanged for the default view.
@@ -92,6 +93,8 @@ export default function DeviceChart() {
 
   const [showChart, setShowChart] = useState(true);
   const [selectedDataset, setSelectedDataset] = useState<DatasetType>("3days");
+  const [rangeStart, setRangeStart] = useState("2026-06-01");
+  const [rangeEnd, setRangeEnd] = useState("2026-09-01");
   const [chartData, setChartData] = useState<
     Array<{ timestamp: string; min: number; avg: number; max: number }>
   >([]);
@@ -109,18 +112,27 @@ export default function DeviceChart() {
   }, [chartData]);
 
   const workers = useMilleGrillesWorkers();
-  useEffect(() => {
+  const reloadData = useCallback(()=>{
     if (!workers || !device) return;
     const request = {
       senseur_id: device.internalId ?? "",
       uuid_appareil: device.deviceGroup ?? "",
       timezone: tz,
-    };
+    } as StatisticsRequestType;
+    if(selectedDataset === 'custom') {
+      request.custom_grouping = "jours";
+      request.custom_intervalle_min = Math.round(Date.parse(rangeStart) / 1000);
+      request.custom_intervalle_max = Math.round(Date.parse(rangeEnd) / 1000);
+    }
     workers.connection
       ?.getComponentStatistics(request)
       .then((res: any) => {
-        const period =
-          selectedDataset === "month" ? "periode31j" : "periode72h";
+        console.debug("Response", res);
+        // const period =
+        //   selectedDataset === "month" ? "periode31j" : "periode72h";
+        let period = 'custom';
+        if(selectedDataset === 'month') { period = 'periode31j'; }
+        else if(selectedDataset === '3days') { period = 'periode72h'; }
         const mapped =
           (res as any)[period]?.map((item: any) => ({
             timestamp: new Date(item.heure * 1000).toISOString(),
@@ -134,6 +146,9 @@ export default function DeviceChart() {
       .catch((err: any) =>
         console.error("Error fetching component statistics:", err),
       );
+  }, [workers, tz, selectedDataset, device]);
+  useEffect(() => {
+    reloadData();
   }, [workers, tz, selectedDataset, device]);
 
   if (!device) {
@@ -196,6 +211,15 @@ export default function DeviceChart() {
           <option value="month">{t("deviceChart.datasetMonth")}</option>
           <option value="custom">{t("deviceChart.datasetCustom")}</option>
         </select>
+
+        { (selectedDataset === 'custom')?(<>
+            <label htmlFor="dataset-range-start">Range</label>
+            <input id="dataset-range-start" value={rangeStart} onChange={(e) => setRangeStart(e.target.value)} className="border rounded p-1 ml-2"></input>
+            to
+            <input id="dataset-range-start" value={rangeEnd} onChange={(e) => setRangeEnd(e.target.value)} className="border rounded p-1 ml-2"></input>
+            <Button variant="secondary" onClick={reloadData}>Reload</Button>
+          </>):null
+        }
       </div>
 
       <div className="flex justify-end mb-2">
