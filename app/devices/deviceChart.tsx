@@ -101,6 +101,8 @@ export default function DeviceChart() {
   const [chartData, setChartData] = useState<
     Array<{ timestamp: string; min: number; avg: number; max: number }>
   >([]);
+  const [dataset, setDataset] = useState([] as DatasetStructure);
+  const [period, setPeriod] = useState('');
 
   const { preferences } = useConfigurationStore();
   const tz =
@@ -130,20 +132,25 @@ export default function DeviceChart() {
     workers.connection
       ?.getComponentStatistics(request)
       .then((res: any) => {
-        console.debug("Response", res);
-        // const period =
-        //   selectedDataset === "month" ? "periode31j" : "periode72h";
+        // console.debug("Response", res);
         let period = 'custom';
         if(selectedDataset === 'month') { period = 'periode31j'; }
         else if(selectedDataset === '3days') { period = 'periode72h'; }
-        const paddedMappedData = padData(res, period);
-        setChartData(paddedMappedData);
-        console.log(`Component statistics (${period}):`, paddedMappedData);
+        setDataset(res[period]);
+        setPeriod(period);
       })
       .catch((err: any) =>
         console.error("Error fetching component statistics:", err),
       );
-  }, [workers, tz, selectedDataset, device, rangeStart, rangeEnd]);
+  }, [workers, tz, selectedDataset, device, rangeStart, rangeEnd, setDataset, setPeriod]);
+  
+  useEffect(()=>{
+    if(!dataset && !period) return;
+    const paddedMappedData = padData(dataset, period);
+    setChartData(paddedMappedData);
+    console.log(`Component statistics (${period}):`, paddedMappedData);
+  }, [dataset, period]);
+  
   useEffect(() => {
     reloadData();
   }, [workers, tz, selectedDataset, device]);
@@ -272,47 +279,51 @@ export default function DeviceChart() {
           </p>
         )
       ) : (
-        <div className="overflow-x-auto bg-white dark:bg-gray-800">
-          <table className="min-w-full text-sm text-left">
-            <thead>
-              <tr className="bg-gray-100 dark:bg-gray-800 dark:text-gray-200">
-                <th className="px-4 py-2 dark:text-gray-200">
-                  {t("deviceChart.tableTimestamp")}
-                </th>
-                <th className="px-4 py-2 dark:text-gray-200">
-                  {t("deviceChart.tableMin")}
-                </th>
-                <th className="px-4 py-2 dark:text-gray-200">
-                  {t("deviceChart.tableAvg")}
-                </th>
-                <th className="px-4 py-2 dark:text-gray-200">
-                  {t("deviceChart.tableMax")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.map((row, i) => (
-                <tr
-                  key={i}
-                  className={
-                    i % 2 === 0
-                      ? "bg-white dark:bg-gray-800"
-                      : "bg-gray-50 dark:bg-gray-700"
-                  }
-                >
-                  <td className="px-4 py-2">
-                    {DateTime.fromISO(row.timestamp)
-                      .setZone(tz)
-                      .toFormat("yyyy-LL-dd HH:mm:ss")}
-                  </td>
-                  <td className="px-4 py-2 dark:text-white">{row.min?row.min.toFixed(1):row.min}</td>
-                  <td className="px-4 py-2 dark:text-white">{row.avg?row.avg.toFixed(1):row.avg}</td>
-                  <td className="px-4 py-2 dark:text-white">{row.max?row.max.toFixed(1):row.max}</td>
+        <>
+          <div className="overflow-x-auto bg-white dark:bg-gray-800">
+            <table className="min-w-full text-sm text-left">
+              <thead>
+                <tr className="bg-gray-100 dark:bg-gray-800 dark:text-gray-200">
+                  <th className="px-4 py-2 dark:text-gray-200">
+                    {t("deviceChart.tableTimestamp")}
+                  </th>
+                  <th className="px-4 py-2 dark:text-gray-200">
+                    {t("deviceChart.tableMin")}
+                  </th>
+                  <th className="px-4 py-2 dark:text-gray-200">
+                    {t("deviceChart.tableAvg")}
+                  </th>
+                  <th className="px-4 py-2 dark:text-gray-200">
+                    {t("deviceChart.tableMax")}
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {data?.map((row, i) => (
+                  <tr
+                    key={i}
+                    className={
+                      i % 2 === 0
+                        ? "bg-white dark:bg-gray-800"
+                        : "bg-gray-50 dark:bg-gray-700"
+                    }
+                  >
+                    <td className="px-4 py-2">
+                      {DateTime.fromISO(row.timestamp)
+                        .setZone(tz)
+                        .toFormat("yyyy-LL-dd HH:mm:ss")}
+                    </td>
+                    <td className="px-4 py-2 dark:text-white">{row.min?row.min.toFixed(1):row.min}</td>
+                    <td className="px-4 py-2 dark:text-white">{row.avg?row.avg.toFixed(1):row.avg}</td>
+                    <td className="px-4 py-2 dark:text-white">{row.max?row.max.toFixed(1):row.max}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <DaysRangeCounter dataset={dataset} />
+        </>
       )}
 
       <NavLink to={`/devices/device/${device.id}`}>
@@ -322,26 +333,106 @@ export default function DeviceChart() {
   );
 }
 
-function padData(response: any, grouping: string): DatasetStructureMapped {
-  let data = null as DatasetStructure | null;
+function DaysRangeCounter(props: {dataset: DatasetStructure}) {
+  const { t } = useTranslation();
 
+  const { deviceId } = useParams<{ deviceId: string }>();
+
+  const device = useDevicesStore((s) =>
+    s.devices.find((d) => d.id === deviceId),
+  );
+
+  const [maxData, minData] = useMemo(()=>temperatureDayCounts(props.dataset), [props.dataset]);
+
+  if(device?.type !== 'Temperature') return <></>;  // 
+
+  return (
+    <div className="grid grid-cols-2 space-x-2">
+
+      <div className="overflow-x-auto bg-white dark:bg-gray-800 p-2">
+        <p>Values above value</p>
+        <table className="min-w-full text-sm text-left">
+          <thead>
+            <tr className="bg-gray-100 dark:bg-gray-800 dark:text-gray-200">
+              <th className="px-4 py-2 dark:text-gray-200">
+                {t("deviceChart.tableMax")}
+              </th>
+              <th className="px-4 py-2 dark:text-gray-200">
+                {t("deviceChart.tableCount")}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {maxData?.map((row, i) => (
+              <tr
+                key={i}
+                className={
+                  i % 2 === 0
+                    ? "bg-white dark:bg-gray-800"
+                    : "bg-gray-50 dark:bg-gray-700"
+                }
+              >
+                <td className="px-4 py-2">
+                  {row.maxTemp}C
+                </td>
+                <td className="px-4 py-2 dark:text-white">{row.count}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="overflow-x-auto bg-white dark:bg-gray-800 p-2">
+        <p>Values below value</p>
+        <table className="min-w-full text-sm text-left">
+          <thead>
+            <tr className="bg-gray-100 dark:bg-gray-800 dark:text-gray-200">
+              <th className="px-4 py-2 dark:text-gray-200">
+                {t("deviceChart.tableMin")}
+              </th>
+              <th className="px-4 py-2 dark:text-gray-200">
+                {t("deviceChart.tableCount")}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {minData?.map((row, i) => (
+              <tr
+                key={i}
+                className={
+                  i % 2 === 0
+                    ? "bg-white dark:bg-gray-800"
+                    : "bg-gray-50 dark:bg-gray-700"
+                }
+              >
+                <td className="px-4 py-2">
+                  {row.minTemp}C
+                </td>
+                <td className="px-4 py-2 dark:text-white">{row.count}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  )
+}
+
+function padData(data: DatasetStructure, grouping: string): DatasetStructureMapped {
   let interval = 86_400_000;
-  if(grouping === 'periode72h') {
-    data = response.periode72h;
-    interval = 3_600_000;
-  } else {
-    data = response.periode31j;
-  }
-
   if(!data || data.length === 0) return []; 
-  console.debug("Mapping data for grouping %s: %O", grouping, data);
 
   const firstDay = new Date(data[0].heure * 1000);
-  if(grouping !== 'periode72h') {
+  if(grouping === 'periode72h') {
+    interval = 3_600_000;
+  } else {
     firstDay.setHours(0);
   }
   firstDay.setMinutes(0);
   firstDay.setSeconds(0);
+
+  // console.debug("Mapping data for grouping %s: %O", grouping, data);
 
   const counter = firstDay;
   const paddedMapping = [] as DatasetStructureMapped;
@@ -352,10 +443,10 @@ function padData(response: any, grouping: string): DatasetStructureMapped {
     }
 
     while(counter < itemDate) {
-      console.debug("Counter time: ", counter);
+      // console.debug("Counter time: ", counter);
       paddedMapping.push({timestamp: counter.toISOString(), min: null, max: null, avg: null});
       counter.setTime(counter.getTime() + interval);
-      console.debug("Counter time after interval: ", counter);
+      // console.debug("Counter time after interval: ", counter);
     }
     paddedMapping.push({
       timestamp: itemDate.toISOString(),
@@ -366,16 +457,39 @@ function padData(response: any, grouping: string): DatasetStructureMapped {
     counter.setTime(counter.getTime() + interval);
   }
 
-  console.debug("Padded mapping:", paddedMapping);
-
-  // const mapped =
-  // (res as any)[period]?.map((item: any) => ({
-  //   timestamp: new Date(item.heure * 1000).toISOString(),
-  //   min: item.min,
-  //   max: item.max,
-  //   avg: item.avg,
-  // })) ?? [];
-
+  // console.debug("Padded mapping:", paddedMapping);
 
   return paddedMapping;
+}
+
+/** Count the number of days for min and max scalings */
+function temperatureDayCounts(dataset: DatasetStructure): any {
+
+  const interval = 5;
+  const minRange = [-40, 40];
+  const maxRange = [40, -40];
+
+  const resultMinDays = [], resultMaxDays = [];
+
+  // Number of days with a min below the value
+  for(let minTemp = minRange[0]; minTemp<minRange[1]; minTemp+=interval) {
+    const count = dataset.reduce((acc, item)=>{
+      if(item.min !== null && item.min < minTemp) return acc+1;
+      return acc;
+    }, 0);
+    if(count > 0) resultMinDays.push({minTemp, count});
+  }
+
+  // Number of days with a max above the value
+  for(let maxTemp = maxRange[0]; maxTemp>maxRange[1]; maxTemp-=interval) {
+    const count = dataset.reduce((acc, item)=>{
+      if(item.max !== null && item.max > maxTemp) return acc+1;
+      return acc;
+    }, 0);
+    if(count > 0) resultMaxDays.push({maxTemp, count});
+  }
+
+  // console.debug("Result maxDays %O\nminDays %O", resultMaxDays, resultMinDays);
+
+  return [resultMaxDays, resultMinDays];
 }

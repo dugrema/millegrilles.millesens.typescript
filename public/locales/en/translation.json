@@ -233,6 +233,7 @@
     "tableMin": "Min",
     "tableAvg": "Avg",
     "tableMax": "Max",
+    "tableCount": "Count",
     "backToDevice": "Back to Device"
   },
   "bluetooth": {
