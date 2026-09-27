@@ -16,6 +16,7 @@ import {
   Legend,
   ResponsiveContainer,
   CartesianGrid,
+  ReferenceLine,
 } from "recharts";
 import type { StatisticsRequestType } from "~/types/connection.types";
 
@@ -256,6 +257,8 @@ export default function DeviceChart() {
                   "" + Math.round(value)
                 }
               />
+              <ReferenceLine y={0} stroke="#555" strokeDasharray="5 10" strokeWidth={3} />
+
               <Tooltip
                 labelFormatter={(label) =>
                   DateTime.fromISO(label)
