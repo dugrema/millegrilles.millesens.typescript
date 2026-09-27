@@ -79,6 +79,9 @@ const monthData = [
  * Possible dataset types that a user can pick.
  */
 type DatasetType = "3days" | "month" | "custom";
+type DatasetStructure = {heure: number, min: number | null, max: number | null, avg: number | null}[];
+type DatasetStructureMapped = {timestamp: string, min: number | null, max: number | null, avg: number | null}[];
+
 
 export default function DeviceChart() {
   const { t } = useTranslation();
@@ -133,15 +136,9 @@ export default function DeviceChart() {
         let period = 'custom';
         if(selectedDataset === 'month') { period = 'periode31j'; }
         else if(selectedDataset === '3days') { period = 'periode72h'; }
-        const mapped =
-          (res as any)[period]?.map((item: any) => ({
-            timestamp: new Date(item.heure * 1000).toISOString(),
-            min: item.min,
-            max: item.max,
-            avg: item.avg,
-          })) ?? [];
-        setChartData(mapped);
-        console.log(`Component statistics (${period}):`, mapped);
+        const paddedMappedData = padData(res, period);
+        setChartData(paddedMappedData);
+        console.log(`Component statistics (${period}):`, paddedMappedData);
       })
       .catch((err: any) =>
         console.error("Error fetching component statistics:", err),
@@ -323,4 +320,62 @@ export default function DeviceChart() {
       </NavLink>
     </div>
   );
+}
+
+function padData(response: any, grouping: string): DatasetStructureMapped {
+  let data = null as DatasetStructure | null;
+
+  let interval = 86_400_000;
+  if(grouping === 'periode72h') {
+    data = response.periode72h;
+    interval = 3_600_000;
+  } else {
+    data = response.periode31j;
+  }
+
+  if(!data || data.length === 0) return []; 
+  console.debug("Mapping data for grouping %s: %O", grouping, data);
+
+  const firstDay = new Date(data[0].heure * 1000);
+  if(grouping !== 'periode72h') {
+    firstDay.setHours(0);
+  }
+  firstDay.setMinutes(0);
+  firstDay.setSeconds(0);
+
+  const counter = firstDay;
+  const paddedMapping = [] as DatasetStructureMapped;
+  for(const item of data) {
+    const itemDate = new Date(item.heure * 1000);
+    if(grouping !== 'periode72h') {
+      itemDate.setHours(0);
+    }
+
+    while(counter < itemDate) {
+      console.debug("Counter time: ", counter);
+      paddedMapping.push({timestamp: counter.toISOString(), min: null, max: null, avg: null});
+      counter.setTime(counter.getTime() + interval);
+      console.debug("Counter time after interval: ", counter);
+    }
+    paddedMapping.push({
+      timestamp: itemDate.toISOString(),
+      min: item.min,
+      max: item.max,
+      avg: item.avg,
+    })
+    counter.setTime(counter.getTime() + interval);
+  }
+
+  console.debug("Padded mapping:", paddedMapping);
+
+  // const mapped =
+  // (res as any)[period]?.map((item: any) => ({
+  //   timestamp: new Date(item.heure * 1000).toISOString(),
+  //   min: item.min,
+  //   max: item.max,
+  //   avg: item.avg,
+  // })) ?? [];
+
+
+  return paddedMapping;
 }
