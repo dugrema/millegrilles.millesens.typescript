@@ -78,7 +78,10 @@ function ConfigurationForDevice() {
   const userId = useConnectionStore((state) => state.userId);
 
   const [userFile, relaisFile] = useMemo(()=>{
-    const userFile = `{ "idmg":${idmg}, "userId":${userId} }`;
+    const userFile = `{
+    "idmg":"${idmg}", 
+    "user_id":"${userId}" 
+  }`;
     const hostname = window.location.hostname;
     const relaisFile = `{"relais": ["https://${hostname}/senseurspassifs_relai"]}`;
     return [userFile, relaisFile];
@@ -104,7 +107,12 @@ function ConfigurationForDevice() {
 
 const SAMPLE_WIFI=`{"ssids": {"DUMMY_SSID": {"password": "DUMMY_PASSWORD"}}}`
 
-const SAMPLE_WORKAROUNDS=`{"rebootInterval": 86400, "disableWatchdog": false, "enableBluetooth": false}`
+const SAMPLE_WORKAROUNDS=`{
+  "rebootInterval": 86400, 
+  "disableWatchdog": false, 
+  "enableBluetooth": false,
+  "": 86400
+}`
 
 const SAMPLE_DEVICES=`{
     "bus": [
