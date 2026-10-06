@@ -92,13 +92,13 @@ function ConfigurationForDevice() {
   return (
     <>
       <p className="mt-4 font-medium py-4">Content for device <span className="font-semibold">user.json</span> file</p>
-      <p className='w-full overflow-x-auto bg-slate-800 p-2'>{userFile}</p>
+      <pre className='w-full overflow-x-auto bg-slate-800 p-2'>{userFile}</pre>
       <p className="mt-4 font-medium py-4">Content for device <span className="font-semibold">relais.json</span> file</p>
-      <p className='w-full overflow-x-auto bg-slate-800 p-2'>{relaisFile}</p>
+      <pre className='w-full overflow-x-auto bg-slate-800 p-2'>{relaisFile}</pre>
       <p className="mt-4 font-medium py-4">Sample <span className="font-semibold">wifi.json</span> file</p>
-      <p className='w-full overflow-x-auto bg-slate-800 p-2'>{SAMPLE_WIFI}</p>
+      <pre className='w-full overflow-x-auto bg-slate-800 p-2'>{SAMPLE_WIFI}</pre>
       <p className="mt-4 font-medium py-4">Sample <span className="font-semibold">workarounds.json</span> file</p>
-      <p className='w-full overflow-x-auto bg-slate-800 p-2'>{SAMPLE_WORKAROUNDS}</p>
+      <pre className='w-full overflow-x-auto bg-slate-800 p-2'>{SAMPLE_WORKAROUNDS}</pre>
       <p className="mt-4 font-medium py-4">Sample <span className="font-semibold">devices.json</span> file</p>
       <pre className='w-full overflow-x-auto bg-slate-800 p-2'>{SAMPLE_DEVICES}</pre>
     </>
