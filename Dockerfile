@@ -2,13 +2,17 @@
 
 # --- Base stage for dependencies ---
 FROM node:26-bookworm-slim AS base
+
+ARG NPM_REGISTRY
+
 WORKDIR /app
 # Install git for github dependencies
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 COPY package*.json ./
 # Use the same NODE_OPTIONS as in Makefile
 ENV NODE_OPTIONS=--openssl-legacy-provider
-RUN npm ci
+RUN export npm_config_registry=${NPM_REGISTRY} && \
+    npm ci
 
 # --- Builder stage for React build ---
 FROM base AS builder

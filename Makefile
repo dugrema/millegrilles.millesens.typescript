@@ -1,10 +1,11 @@
 # Makefile
 # Makefile
 # --- Configuration ---
-VERSION ?= 2026.3
+VERSION ?= 2026.7
 BUILD_NUMBER ?= 1
 VERSION_FULL ?= $(VERSION).$(BUILD_NUMBER)
 ARCHIVE_NAME ?= millegrilles_millesens_typescript
+NPM_REGISTRY ?= https://nexus.maple.maceroc.com/nexus/repository/npm/
 DATE_STR := $(shell date '+%Y-%m-%d %H:%M')
 
 # --- Paths ---
@@ -40,6 +41,7 @@ package:
 	@mkdir -p $(ARTIFACTS_DIR)
 	@docker build --target export \
 		--output type=local,dest=$(ARTIFACTS_DIR) \
+		--build-arg NPM_REGISTRY=$(NPM_REGISTRY) \
 		--build-arg VERSION=$(VERSION) \
 		--build-arg BUILD_NUMBER=$(BUILD_NUMBER) .
 	@echo "==> Artifacts generated in $(ARTIFACTS_DIR)"
@@ -48,7 +50,7 @@ package:
 deploy: package
 	@echo "==> Deploying artifact $(ARCHIVE_NAME).$(VERSION_FULL).tar.gz"
 	@rsync "$(ARTIFACTS_DIR)/$(ARCHIVE_NAME).$(VERSION_FULL).tar.gz" ${DEPLOY_RSYNC_WEBAPP_DEST}/millesens
-	${DEPLOY_CATALOGUE_UPDATE_COMMAND} --baseurl https://libs.millegrilles.com/archives/millesens --archive "archives/millesens/$(ARCHIVE_NAME).$(VERSION_FULL).tar.gz"
+	${DEPLOY_CATALOGUE_UPDATE_COMMAND} --baseurl ${DEPLOY_ARCHIVE_URL}/millesens --archive "archives/millesens/$(ARCHIVE_NAME).$(VERSION_FULL).tar.gz"
 
 
 # Clean up build artifacts
