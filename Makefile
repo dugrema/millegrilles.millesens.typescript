@@ -6,6 +6,7 @@ BUILD_NUMBER ?= 1
 VERSION_FULL ?= $(VERSION).$(BUILD_NUMBER)
 ARCHIVE_NAME ?= millegrilles_millesens_typescript
 NPM_REGISTRY ?= https://nexus.maple.maceroc.com/nexus/repository/npm/
+APT_PROXY ?= http://fs1.maple.maceroc.com:3142
 DATE_STR := $(shell date '+%Y-%m-%d %H:%M')
 
 # --- Paths ---
@@ -42,6 +43,7 @@ package:
 	@docker build --target export \
 		--output type=local,dest=$(ARTIFACTS_DIR) \
 		--build-arg NPM_REGISTRY=$(NPM_REGISTRY) \
+		--build-arg APT_PROXY=$(APT_PROXY) \
 		--build-arg VERSION=$(VERSION) \
 		--build-arg BUILD_NUMBER=$(BUILD_NUMBER) .
 	@echo "==> Artifacts generated in $(ARTIFACTS_DIR)"

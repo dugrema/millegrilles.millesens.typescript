@@ -4,10 +4,14 @@
 FROM node:26-bookworm-slim AS base
 
 ARG NPM_REGISTRY
+ARG APT_PROXY
 
 WORKDIR /app
 # Install git for github dependencies
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+RUN if [ -n "$APT_PROXY" ]; then \
+         echo "Acquire::http::Proxy \"$APT_PROXY\";" > /etc/apt/apt.conf.d/01proxy; \
+    fi && \
+    apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 COPY package*.json ./
 # Use the same NODE_OPTIONS as in Makefile
 ENV NODE_OPTIONS=--openssl-legacy-provider
