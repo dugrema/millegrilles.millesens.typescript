@@ -1,7 +1,7 @@
 # Dockerfile
 
 # --- Base stage for dependencies ---
-FROM node:26-bookworm-slim AS base
+FROM nexus.maple.maceroc.com/docker_proxy/node:26-bookworm-slim AS base
 
 ARG NPM_REGISTRY
 ARG APT_PROXY
@@ -38,7 +38,7 @@ RUN mkdir -p build_assets && \
 RUN npm run build
 
 # --- Packager stage ---
-FROM python:3-slim-bookworm AS packager
+FROM nexus.maple.maceroc.com/docker_proxy/python:3-slim-bookworm AS packager
 WORKDIR /app
 
 # Arguments for versioning
